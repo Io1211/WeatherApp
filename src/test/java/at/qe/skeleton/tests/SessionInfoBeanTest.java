@@ -7,9 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import at.qe.skeleton.model.UserxRole;
-import at.qe.skeleton.services.UserxService;
-import at.qe.skeleton.ui.beans.SessionInfoBean;
+import at.qe.skeleton.internal.model.UserxRole;
+import at.qe.skeleton.internal.services.UserxService;
+import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 
 /**
  * Some very basic tests for {@link UserxService}.
