@@ -1,4 +1,4 @@
-package at.qe.skeleton.ui.beans;
+package at.qe.skeleton.internal.ui.beans;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;

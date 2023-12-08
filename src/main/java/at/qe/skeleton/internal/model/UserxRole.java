@@ -1,4 +1,4 @@
-package at.qe.skeleton.model;
+package at.qe.skeleton.internal.model;
 
 /**
  * Enumeration of available user roles.

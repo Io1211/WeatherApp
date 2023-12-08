@@ -1,7 +1,7 @@
-package at.qe.skeleton.ui.controllers;
+package at.qe.skeleton.internal.ui.controllers;
 
-import at.qe.skeleton.model.Userx;
-import at.qe.skeleton.services.UserxService;
+import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.services.UserxService;
 import java.io.Serializable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;

@@ -9,9 +9,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import at.qe.skeleton.model.Userx;
-import at.qe.skeleton.model.UserxRole;
-import at.qe.skeleton.services.UserxService;
+import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.model.UserxRole;
+import at.qe.skeleton.internal.services.UserxService;
 
 /**
  * Some very basic tests for {@link UserxService}.

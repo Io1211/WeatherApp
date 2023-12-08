@@ -26,7 +26,8 @@
                     </p:submenu>
                     <p:submenu label="Test Submenu" rendered="#{sessionInfoBean.loggedIn}">
                         <p:menuitem value="Security Test" url="/secured/test.xhtml"/>
-                    </p:submenu>                    
+                        <p:menuitem value="Weather API Demo" url="/secured/weather_api_demo.xhtml"/>
+                    </p:submenu>
                     
                     <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
                     <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>                    

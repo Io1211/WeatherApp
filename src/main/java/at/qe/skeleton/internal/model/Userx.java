@@ -1,4 +1,4 @@
-package at.qe.skeleton.model;
+package at.qe.skeleton.internal.model;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,8 +13,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.domain.Persistable;
 
 /**
@@ -35,11 +35,11 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
     @ManyToOne(optional = false)
     private Userx createUser;
     @Column(nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     private LocalDateTime createDate;
     @ManyToOne(optional = true)
     private Userx updateUser;
-    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
     private LocalDateTime updateDate;
 
     private String password;
