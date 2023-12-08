@@ -1,0 +1,13 @@
+at/qe/skeleton/configs/CustomServletContextInitializer.class
+at/qe/skeleton/services/UserxService.class
+at/qe/skeleton/ui/controllers/UserDetailController.class
+at/qe/skeleton/model/UserxRole.class
+at/qe/skeleton/configs/WebSecurityConfig.class
+at/qe/skeleton/ui/beans/SecurityTestBean.class
+at/qe/skeleton/ui/beans/SessionInfoBean.class
+at/qe/skeleton/Main.class
+at/qe/skeleton/repositories/UserxRepository.class
+at/qe/skeleton/ui/controllers/UserListController.class
+at/qe/skeleton/model/Userx.class
+at/qe/skeleton/ui/beans/HelloWorldBean.class
+at/qe/skeleton/repositories/AbstractRepository.class
