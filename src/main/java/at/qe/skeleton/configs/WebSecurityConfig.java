@@ -54,13 +54,13 @@ public class WebSecurityConfig {
                             .requestMatchers(new AntPathRequestMatcher("/secured/**")).hasAnyAuthority(ADMIN, MANAGER, EMPLOYEE)
                             .anyRequest().authenticated()
                     )
-                    // :TODO: user failureUrl(/login.xhtml?error) and make sure that a corresponding message is displayed
                     .formLogin(form -> form
                             .loginPage(LOGIN)
                             .permitAll()
                             .defaultSuccessUrl("/secured/welcome.xhtml")
                             .loginProcessingUrl("/login")
                             .successForwardUrl("/secured/welcome.xhtml")
+                            .failureUrl("/login.xhtml?error")
                     )
                     .logout(logout -> logout
                             .logoutSuccessUrl(LOGIN)
