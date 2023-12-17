@@ -54,7 +54,7 @@ public class WebSecurityConfig {
                 .requestMatchers(new AntPathRequestMatcher("/secured/**")).hasAnyAuthority(ADMIN, MANAGER, EMPLOYEE)
                 .anyRequest().authenticated()
             )
-            // :TODO: user failureUrl(/login.xhtml?error) and make sure that a corresponding message is displayed
+
             .formLogin(form -> form
                 .loginPage(LOGIN)
                 .permitAll()
@@ -88,7 +88,7 @@ public class WebSecurityConfig {
 
     @Bean
     public static PasswordEncoder passwordEncoder() {
-        // :TODO: use proper passwordEncoder and do not store passwords in plain text
+
         return NoOpPasswordEncoder.getInstance();
     }
 }

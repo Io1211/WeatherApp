@@ -58,5 +58,84 @@ public record CurrentWeatherDTO(
     @Serial
     private static final long serialVersionUID = 1;
 
+    @Override
+    public Instant timestamp() {
+        return timestamp;
+    }
+
+    @Override
+    public Instant sunrise() {
+        return sunrise;
+    }
+
+    @Override
+    public Instant sunset() {
+        return sunset;
+    }
+
+    @Override
+    public double temperature() {
+        return temperature;
+    }
+
+    @Override
+    public double feelsLikeTemperature() {
+        return feelsLikeTemperature;
+    }
+
+    @Override
+    public int pressure() {
+        return pressure;
+    }
+
+    @Override
+    public int humidity() {
+        return humidity;
+    }
+
+    @Override
+    public double dewPoint() {
+        return dewPoint;
+    }
+
+    @Override
+    public int clouds() {
+        return clouds;
+    }
+
+    @Override
+    public int uvi() {
+        return uvi;
+    }
+
+    @Override
+    public int visibility() {
+        return visibility;
+    }
+
+    @Override
+    public Double rain() {
+        return rain;
+    }
+
+    @Override
+    public Double snow() {
+        return snow;
+    }
+
+    @Override
+    public double windSpeed() {
+        return windSpeed;
+    }
+
+    @Override
+    public double windGust() {
+        return windGust;
+    }
+
+    @Override
+    public double windDirection() {
+        return windDirection;
+    }
 }
 
