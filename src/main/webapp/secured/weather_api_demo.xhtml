@@ -6,6 +6,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
+
     <ui:define name="content">
         <h:form>
             <p:panel header="Request">
@@ -13,30 +14,8 @@
                     https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value</div>
             </p:panel>
             <p:panel header="Response">
-                <label>
-                    Hier kommt das Wetter:
-                </label>
                 <div>
-                    <h:outputText escape="false" value="TEMPERATUR: #{weatherApiDemoBean.temperature}"/>
-                    <div></div>
-                    <h:outputText escape="false" value="FEELS LIKE: #{weatherApiDemoBean.feelsLikeTemperature}"/>
-                    <div></div>
-                    <h:outputText escape="false" value="TIMEZONE: #{weatherApiDemoBean.timezone}"/>
-                    <div></div>
-                    //ähnliche wie in users.xhtml:
-                    <!-- DataTable for Hourly Weather -->
-                    <p:dataTable var="hourlyWeather" value="#{weatherApiDemoBean.hourlyWeather}" rows="10">
-                        <p:column headerText="Time">
-                            <h:outputText value="#{hourlyWeather.timestamp()}" />
-                        </p:column>
-                        <p:column headerText="Temperature">
-                            <h:outputText value="#{hourlyWeather.temperature}" />
-                        </p:column>
-                        <p:column headerText="Feels Like">
-                            <h:outputText value="#{hourlyWeather.feelsLikeTemperature()}" />
-                        </p:column>
-                        <!-- Add more columns for other details as needed -->
-                    </p:dataTable>
+                    <h:outputText escape="false" value="#{weatherApiDemoBean.currentWeather}"/>
                 </div>
             </p:panel>
         </h:form>

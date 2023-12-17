@@ -34,8 +34,6 @@ public record CurrentAndForecastAnswerDTO(
         String timezone,
         @JsonProperty("timezone_offset") int timezoneOffset,
         @JsonProperty("current") CurrentWeatherDTO currentWeather,
-
-        //minutely brauchen wir eigentlich nicht oder?
         @JsonProperty("minutely") List<PrecipitationByTimestampDTO> minutelyPrecipitation,
         @JsonProperty("hourly") List<HourlyWeatherDTO> hourlyWeather,
         @JsonProperty("daily") List<DailyWeatherDTO> dailyWeather,
