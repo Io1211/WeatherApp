@@ -1,4 +1,0 @@
-Wir verfolgen das MVC Konzept. Gemäß dem Modell entspricht:
- - View = Baumstruktur aus JSF-Komponenten (alles unter webapp)
- - Controller = Java Beans -> ui/beans & ui/controllers (i guess?)
- - Model = Pojos (?)
