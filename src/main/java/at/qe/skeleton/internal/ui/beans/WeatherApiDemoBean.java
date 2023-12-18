@@ -2,6 +2,7 @@ package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.external.services.WeatherApiRequestService;
+import at.qe.skeleton.internal.services.CurrentAndForecastWeatherService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.annotation.PostConstruct;
@@ -25,10 +26,16 @@ public class WeatherApiDemoBean {
     @Autowired
     private WeatherApiRequestService weatherApiRequestService;
 
+    @Autowired
+    private CurrentAndForecastWeatherService currentAndForecastWeatherService;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
     private String currentWeather;
 
+    private Long searchId;
+
+    private String searchedWeather;
     //hard coded coordinates of innsbruck
     private double latitude = 47.2692;
 
@@ -46,9 +53,34 @@ public class WeatherApiDemoBean {
             String escapedHtmlAnswerWithLineBreaks = escapedHtmlAnswer.replace("\n", "<br>")
                     .replace(" ", "&nbsp;");
             this.setCurrentWeather(escapedHtmlAnswerWithLineBreaks);
+            currentAndForecastWeatherService.saveWeather(escapedHtmlAnswerWithLineBreaks);
         } catch (final Exception e) {
             LOGGER.error("error in request", e);
         }
+    }
+
+    public void weatherSearch() {
+        if (this.getSearchID() == null) {
+            this.searchedWeather = "Please provide a search ID first";
+        } else {
+            this.searchedWeather = currentAndForecastWeatherService.findWeather(this.getSearchID());
+        }
+    }
+
+    public String getSearchedWeather() {
+        return searchedWeather;
+    }
+
+    public Long getSearchID() {
+        return searchId;
+    }
+
+    public void setSearchID(Long searchID) {
+        this.searchId = searchID;
+    }
+
+    public void setSearchedWeather(String searchedWeather) {
+        this.searchedWeather = searchedWeather;
     }
 
     public String getCurrentWeather() {

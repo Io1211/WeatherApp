@@ -9,9 +9,16 @@
 
     <ui:define name="content">
         <h:form>
+            <p:panel header="Search">
+                <p:inputText value="#{weatherApiDemoBean.searchID}" type="text"/>
+                <h:commandButton value="click" action="#{weatherApiDemoBean.weatherSearch()}"/>
+                <br/>
+                <h:outputText escape="false" value="#{weatherApiDemoBean.searchedWeather}"/>
+            </p:panel>
             <p:panel header="Request">
                 <div style="height: 50px">
-                    https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value</div>
+                    https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value
+                </div>
             </p:panel>
             <p:panel header="Response">
                 <div>
