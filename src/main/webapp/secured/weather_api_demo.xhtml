@@ -7,13 +7,34 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
 
+    <!--Explanation of sequence of Events in frontend:
+    Here's a simplified sequence of events:
+
+    1. User clicks the "CommitSearchRequest" button.
+    2. The performLocationSearch method is invoked, updating the latitude and longitude values in WeatherApiDemoBean.
+    3. The performWeatherApiRequest method is called directly within the commandButton action, and it can access the updated latitude and longitude values from WeatherApiDemoBean.
+    4. Both methods execute within the same request-response cycle, so the bean state is available and consistent throughout.
+
+    Since the view scope keeps the bean alive for the duration of the user's interaction with a specific view,
+    both methods (performLocationSearch and performWeatherApiRequest) will operate on the same instance of the bean
+    during the same view lifecycle.
+    Therefore, any changes made in one method will be reflected in the other within the same view scope.
+    -->
     <ui:define name="content">
-        <h:form>
-            <p:panel header="Request">
+        <h:form id="weatherForm">
+            <p:panel header="Location Search">
+                <p:inputText value="#{weatherApiDemoBean.locationSearchInput}"/>
+                <!-- You can bind the input value to a property in your managed bean -->
+            </p:panel>
+            <p:commandButton value="CommitSearchRequest"
+                             action="#{weatherApiDemoBean.performLocationSearchAndWeatherRequest}"
+                             update=":weatherForm:Request, :weatherForm:Response"/>
+            <p:panel header="Request" id="Request">
                 <div style="height: 50px">
+                    Location searched for: #{weatherApiDemoBean.locationSearchInput}
                     https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value</div>
             </p:panel>
-            <p:panel header="Response">
+            <p:panel header="Response" id="Response">
                 <div>
                     <h:outputText escape="false" value="#{weatherApiDemoBean.currentWeather}"/>
                 </div>

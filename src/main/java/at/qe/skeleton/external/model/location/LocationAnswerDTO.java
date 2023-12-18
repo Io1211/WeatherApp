@@ -3,6 +3,9 @@ package at.qe.skeleton.external.model.location;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * This class is part of the Weather App project by Group g8t2 in Software Architecture.
  * <br><br>
@@ -22,4 +25,7 @@ public record LocationAnswerDTO (
     @JsonProperty("country") String country,
     @JsonProperty("state") String state
     )
-{}
+{
+}
+
+// Todo: write Tests

@@ -7,11 +7,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
 
 /**
  * Makes an API call to get the exact geographical coordinates to the given name of a location or zip/post code
@@ -38,9 +41,10 @@ public class GeocodingApiRequestService {
 
     private static final String GEOCODING_URI = "/geo/1.0/direct";
 
-    private static final String CITY_NAME = "city name";
+    private static final String LOCATION_NAME = "q";
+    private static final String LIMIT_OF_RESULTS = "limit";
 
-    private static final String COUNTRY_CODE = "country code";
+
 
     @Autowired
     private RestClient restClient;
@@ -54,18 +58,18 @@ public class GeocodingApiRequestService {
      * @param longitude of the location
      * @return the current and forecast weather
      */
-    public LocationAnswerDTO retrieveLocationLonLat(String locationName, String countryCode) {
+    public List<LocationAnswerDTO> retrieveLocationLonLat(String locationName, int limit) {
 
-        ResponseEntity<LocationAnswerDTO> responseEntity = this.restClient.get()
+        return this.restClient.get()
                 .uri(UriComponentsBuilder.fromPath(GEOCODING_URI)
-                        .queryParam(CITY_NAME, locationName)
-                        .queryParam(COUNTRY_CODE, countryCode)
+                        .queryParam(LOCATION_NAME, locationName)
+                        .queryParam(LIMIT_OF_RESULTS, String.valueOf(limit))
                         .build().toUriString())
                 .retrieve()
-                .toEntity(LocationAnswerDTO.class);
-
+                .body(new ParameterizedTypeReference<List<LocationAnswerDTO>>() {});
         // todo introduce error handling using responseEntity.getStatusCode.isXXXError
-        return responseEntity.getBody();
-    }
 
+        //todo: write tests
+
+    }
 }
