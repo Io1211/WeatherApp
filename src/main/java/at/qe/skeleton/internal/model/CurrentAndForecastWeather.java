@@ -1,10 +1,6 @@
 package at.qe.skeleton.internal.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import org.hibernate.annotations.CreationTimestamp;
+import jakarta.persistence.*;
 import org.springframework.data.domain.Persistable;
 
 import java.io.Serializable;
@@ -17,26 +13,34 @@ public class CurrentAndForecastWeather implements Persistable<String>, Serializa
     @GeneratedValue
     private Long id;
 
-    @CreationTimestamp
-    private LocalDateTime createDate;
+    private LocalDateTime lastModified;
     @Lob
     private byte[] weatherData;
 
-
-    public LocalDateTime getCreateDate() {
-        return createDate;
+    public LocalDateTime getLastModified() {
+        return lastModified;
     }
 
     public byte[] getWeatherData() {
         return weatherData;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
-    }
-
     public void setWeatherData(byte[] weatherData) {
         this.weatherData = weatherData;
+    }
+
+    public void setLastModified(LocalDateTime lastModified) {
+        this.lastModified = lastModified;
+    }
+
+    @PrePersist
+    public void onCreate() {
+        this.lastModified = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.lastModified = LocalDateTime.now();
     }
 
     @Override
@@ -46,6 +50,6 @@ public class CurrentAndForecastWeather implements Persistable<String>, Serializa
 
     @Override
     public boolean isNew() {
-        return (null == createDate);
+        return (null == lastModified);
     }
 }
