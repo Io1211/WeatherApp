@@ -22,15 +22,19 @@ public class AuditLogService {
         auditLogRepository.save(al);
     }
 
+    public String convertRolesToString(Userx userx) {
+        return String.join(", ", userx.getRoles());
+    }
+
     public void saveDeletedUserEntry(Userx userx) {
-        saveEntry("User with username " + userx.getUsername() + "and role(s) " + userx.getRoles() + " has been deleted!");
+        saveEntry("User with username " + userx.getUsername() + "and role(s) " + convertRolesToString(userx) + " has been deleted!");
     }
 
     public void saveCreatedUserEntry(Userx userx) {
-        saveEntry("User with username " + userx.getUsername() + "and role(s) " + userx.getRoles() + " has been saved!");
+        saveEntry("User with username " + userx.getUsername() + "and role(s) " + convertRolesToString(userx) + " has been saved!");
     }
 
     public void saveModifiedUserEntry(Userx userx) {
-        saveEntry("User with username " + userx.getUsername() + "has changed to the role(s) " + userx.getRoles() + ".");
+        saveEntry("User with username " + userx.getUsername() + "has changed to the role(s) " + convertRolesToString(userx) + ".");
     }
 }
