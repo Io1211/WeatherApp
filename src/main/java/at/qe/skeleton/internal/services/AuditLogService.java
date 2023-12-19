@@ -37,4 +37,12 @@ public class AuditLogService {
     public void saveModifiedUserEntry(Userx userx) {
         saveEntry("User with username " + userx.getUsername() + "has changed to the role(s) " + convertRolesToString(userx) + ".");
     }
+
+    public List<AuditLog> getLogsForUser(String username) {
+        return auditLogRepository.findLogsForUser(username);
+    }
+
+    public List<AuditLog> getLogsInLastHour() {
+        return auditLogRepository.findLogsInLastHour(LocalDateTime.now().minusHours(1));
+    }
 }
