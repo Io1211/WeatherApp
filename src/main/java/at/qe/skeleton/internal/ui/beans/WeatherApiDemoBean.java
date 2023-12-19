@@ -60,10 +60,12 @@ public class WeatherApiDemoBean {
     }
 
     public void weatherSearch() {
-        if (this.getSearchID() == null) {
-            this.searchedWeather = "Please provide a search ID first";
-        } else {
+        try {
             this.searchedWeather = currentAndForecastWeatherService.findWeather(this.getSearchID());
+        } catch (Exception e) {
+            LOGGER.warn("error in fetching weather data", e);
+            this.searchedWeather = "No weather data with the provided id was found.\n" +
+                    "Please provide a valid search id";
         }
     }
 
