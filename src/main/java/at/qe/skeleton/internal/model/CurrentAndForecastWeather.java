@@ -6,6 +6,9 @@ import org.springframework.data.domain.Persistable;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * Entity to persist current and forecast weather data
+ */
 @Entity
 public class CurrentAndForecastWeather implements Persistable<String>, Serializable {
 
