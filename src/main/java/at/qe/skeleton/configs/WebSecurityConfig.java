@@ -11,7 +11,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -24,8 +24,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  */
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig
-{
+public class WebSecurityConfig {
 
     private static final String ADMIN = UserxRole.ADMIN.name();
     private static final String MANAGER = UserxRole.MANAGER.name();
@@ -37,11 +36,9 @@ public class WebSecurityConfig
     DataSource dataSource;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception
-    {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        try
-        {
+        try {
 
             http
                     .cors(cors -> cors.disable())
@@ -57,13 +54,13 @@ public class WebSecurityConfig
                             .requestMatchers(new AntPathRequestMatcher("/secured/**")).hasAnyAuthority(ADMIN, MANAGER, EMPLOYEE)
                             .anyRequest().authenticated()
                     )
-                    // :TODO: use failureUrl(/login.xhtml?error) and make sure that a corresponding message is displayed
                     .formLogin(form -> form
                             .loginPage(LOGIN)
                             .permitAll()
                             .defaultSuccessUrl("/secured/welcome.xhtml")
                             .loginProcessingUrl("/login")
                             .successForwardUrl("/secured/welcome.xhtml")
+                            .failureUrl("/login.xhtml?error")
                     )
                     .logout(logout -> logout
                             .logoutSuccessUrl(LOGIN)
@@ -76,25 +73,21 @@ public class WebSecurityConfig
                     );
 
             return http.build();
-        } catch (Exception ex)
-        {
+        } catch (Exception ex) {
             throw new BeanCreationException("Wrong spring security configuration", ex);
         }
     }
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception
-    {
-        //Configure roles and passwords via datasource
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication().dataSource(dataSource)
                 .usersByUsernameQuery("select username, password, enabled from userx where username=?")
-                .authoritiesByUsernameQuery("select userx_username, roles from userx_userx_role where userx_username=?");
+                .authoritiesByUsernameQuery("select userx_username, roles from userx_userx_role where userx_username=?")
+                .passwordEncoder(passwordEncoder());
     }
 
     @Bean
-    public static PasswordEncoder passwordEncoder()
-    {
-        // :TODO: use proper passwordEncoder and do not store passwords in plain text
-        return NoOpPasswordEncoder.getInstance();
+    public static PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
