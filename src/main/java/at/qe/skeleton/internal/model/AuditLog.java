@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-
 @Entity
 public class AuditLog implements Persistable<Long>, Serializable {
 

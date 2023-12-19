@@ -31,6 +31,6 @@ public class AuditLogService {
     }
 
     public void saveModifiedUserEntry(Userx userx) {
-        saveEntry("User with username " + userx.getUsername() + "has changed roles from " + "TO-DO" + "to role(s) " + "TO-DO" + ".");
+        saveEntry("User with username " + userx.getUsername() + "has changed to the role(s) " + userx.getRoles() + ".");
     }
 }

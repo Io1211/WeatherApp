@@ -23,6 +23,7 @@ import org.springframework.data.domain.Persistable;
  * This class is part of the skeleton project provided for students of the
  * course "Software Architecture" offered by Innsbruck University.
 */
+
 @Entity
 public class Userx implements Persistable<String>, Serializable, Comparable<Userx> {
 
@@ -55,6 +56,9 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
     @CollectionTable(name = "Userx_UserxRole")
     @Enumerated(EnumType.STRING)
     private Set<UserxRole> roles;
+
+    @Autowired
+    private AuditLogService auditLogService;
 
     public String getUsername() {
         return username;
@@ -118,6 +122,7 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
     public void setRoles(Set<UserxRole> roles) {
         this.roles = roles;
+        auditLogService.saveModifiedUserEntry(user);
     }
 
     public Userx getCreateUser() {
