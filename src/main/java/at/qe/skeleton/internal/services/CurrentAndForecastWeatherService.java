@@ -1,7 +1,10 @@
 package at.qe.skeleton.internal.services;
 
+import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.internal.model.CurrentAndForecastWeather;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastWeatherRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -37,10 +40,14 @@ public class CurrentAndForecastWeatherService {
      * @param id the CurrentAndForecastWeather id
      * @return the deserialized CurrentAndForecastWeather object with the corresponding id
      */
-    public String findWeather(Long id) {
+    public CurrentAndForecastAnswerDTO findWeather(Long id) throws JsonMappingException {
         CurrentAndForecastWeather currentAndForecastWeather = currentAndForecastWeatherRepository.findById(id);
-        // important: if the byte array the weather is stored as in CurrentAndForecastWeather isn't transformed
-        // bach to String in the correct way, the output will be gibberish
-        return new String(currentAndForecastWeather.getWeatherData(), StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper()
+                .findAndRegisterModules();
+        try {
+            return mapper.readValue(new String(currentAndForecastWeather.getWeatherData()), CurrentAndForecastAnswerDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new JsonMappingException("error while mapping stored Json to CurrentAndForecastWeatherDTO");
+        }
     }
 }
