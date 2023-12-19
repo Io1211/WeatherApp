@@ -1,0 +1,36 @@
+package at.qe.skeleton.services;
+
+import at.qe.skeleton.model.AuditLog;
+import at.qe.skeleton.repositories.AuditLogRepository;
+import at.qe.skeleton.model.Userx;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+public class AuditLogService {
+
+    @Autowired
+    private AuditLogRepository auditLogRepository;
+
+    public void saveEntry(String message) {
+        AuditLog al = new AuditLog();
+        al.setMessage(message);
+        al.setDate(LocalDateTime.now());
+        auditLogRepository.save(al);
+    }
+
+    public void saveDeletedUserEntry(Userx userx) {
+        saveEntry("User with username " + userx.getUsername() + "and role(s) " + userx.getRoles() + " has been deleted!");
+    }
+
+    public void saveCreatedUserEntry(Userx userx) {
+        saveEntry("User with username " + userx.getUsername() + "and role(s) " + userx.getRoles() + " has been saved!");
+    }
+
+    public void saveModifiedUserEntry(Userx userx) {
+        saveEntry("User with username " + userx.getUsername() + "has changed roles from " + "TO-DO" + "to role(s) " + "TO-DO" + ".");
+    }
+}
