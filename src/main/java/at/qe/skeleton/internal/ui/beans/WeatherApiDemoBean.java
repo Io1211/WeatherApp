@@ -53,7 +53,7 @@ public class WeatherApiDemoBean {
             String escapedHtmlAnswerWithLineBreaks = escapedHtmlAnswer.replace("\n", "<br>")
                     .replace(" ", "&nbsp;");
             this.setCurrentWeather(escapedHtmlAnswerWithLineBreaks);
-            currentAndForecastWeatherService.saveWeather(escapedHtmlAnswerWithLineBreaks);
+            currentAndForecastWeatherService.saveWeather(plainTextAnswer);
         } catch (final Exception e) {
             LOGGER.error("error in request", e);
         }
@@ -61,7 +61,7 @@ public class WeatherApiDemoBean {
 
     public void weatherSearch() {
         try {
-            this.searchedWeather = currentAndForecastWeatherService.findWeather(this.getSearchID());
+            this.searchedWeather = currentAndForecastWeatherService.findWeather(this.getSearchID()).toString();
         } catch (Exception e) {
             LOGGER.warn("error in fetching weather data", e);
             this.searchedWeather = "No weather data with the provided id was found.\n" +
