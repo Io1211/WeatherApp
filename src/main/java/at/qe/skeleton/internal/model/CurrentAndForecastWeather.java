@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.data.domain.Persistable;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * Entity to persist current and forecast weather data
@@ -16,12 +16,12 @@ public class CurrentAndForecastWeather implements Persistable<String>, Serializa
     @GeneratedValue
     private Long id;
 
-    private LocalDateTime lastModified;
+    private ZonedDateTime timestampLastCall;
     @Lob
     private byte[] weatherData;
 
-    public LocalDateTime getLastModified() {
-        return lastModified;
+    public ZonedDateTime getTimestampLastCall() {
+        return timestampLastCall;
     }
 
     public byte[] getWeatherData() {
@@ -32,18 +32,18 @@ public class CurrentAndForecastWeather implements Persistable<String>, Serializa
         this.weatherData = weatherData;
     }
 
-    public void setLastModified(LocalDateTime lastModified) {
-        this.lastModified = lastModified;
+    public void setTimestampLastCall(ZonedDateTime timestampLastCall) {
+        this.timestampLastCall = timestampLastCall;
     }
 
     @PrePersist
     public void onCreate() {
-        this.lastModified = LocalDateTime.now();
+        this.timestampLastCall = ZonedDateTime.now();
     }
 
     @PreUpdate
     public void onUpdate() {
-        this.lastModified = LocalDateTime.now();
+        this.timestampLastCall = ZonedDateTime.now();
     }
 
     @Override
@@ -53,6 +53,6 @@ public class CurrentAndForecastWeather implements Persistable<String>, Serializa
 
     @Override
     public boolean isNew() {
-        return (null == lastModified);
+        return (null == timestampLastCall);
     }
 }
