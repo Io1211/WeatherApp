@@ -69,7 +69,5 @@ public class GeocodingApiRequestService {
                 .body(new ParameterizedTypeReference<List<LocationAnswerDTO>>() {});
         // todo introduce error handling using responseEntity.getStatusCode.isXXXError
 
-        //todo: write tests
-
     }
 }

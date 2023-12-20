@@ -5,9 +5,14 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -16,6 +21,8 @@ import org.springframework.web.util.UriComponentsBuilder;
  * This class is part of the skeleton project provided for students of the
  * course "Software Architecture" offered by Innsbruck University.
  */
+
+// The "application" scope creates the bean instance for the lifecycle of a ServletContext.
 @Scope("application")
 @Component
 @Validated // makes sure the parameter validation annotations are checked during runtime
@@ -39,7 +46,7 @@ public class WeatherApiRequestService {
      * @return the current and forecast weather
      */
     public CurrentAndForecastAnswerDTO retrieveCurrentAndForecastWeather(@Min(-90) @Max(90) double latitude,
-                                                                         @Min(-180) @Max(180) double longitude) {
+                                                                         @Min(-180) @Max(180) double longitude) throws HttpStatusCodeException {
 
         ResponseEntity<CurrentAndForecastAnswerDTO> responseEntity = this.restClient.get()
                 .uri(UriComponentsBuilder.fromPath(CURRENT_AND_FORECAST_URI)
@@ -49,7 +56,15 @@ public class WeatherApiRequestService {
                 .retrieve()
                 .toEntity(CurrentAndForecastAnswerDTO.class);
 
-        // todo introduce error handling using responseEntity.getStatusCode.isXXXError
+        HttpStatusCode statusCode = responseEntity.getStatusCode();
+
+        if (statusCode.is4xxClientError()){
+            throw new HttpClientErrorException(responseEntity.getStatusCode(), "Client error for values: lat=%f, lon=%f".formatted(latitude, longitude));
+        }
+        if (statusCode.is5xxServerError()){
+            throw new HttpServerErrorException(responseEntity.getStatusCode(), "Server error for values: lat=%f, lon=%f".formatted(latitude, longitude));
+        }
+
         return responseEntity.getBody();
     }
 
