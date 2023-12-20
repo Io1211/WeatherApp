@@ -1,16 +1,15 @@
 package at.qe.skeleton.internal.model;
 
 import jakarta.persistence.*;
-import org.springframework.data.domain.Persistable;
-
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import org.springframework.data.domain.Persistable;
 
 /**
  * Entity to persist current and forecast weather data
  */
 @Entity
-public class CurrentAndForecastWeather implements Persistable<String>, Serializable {
+public class CurrentAndForecastAnswer implements Persistable<String>, Serializable {
 
     @Id
     @GeneratedValue
