@@ -34,9 +34,14 @@ public class WeatherApiRequestService {
 
     private static final String LATITUDE_PARAMETER = "lat";
 
-    @Autowired
     private RestClient restClient;
 
+    // had to add constructor with RestClient as Argument, found no otherwise to test WeatherApiRequestService with
+    // manipulated restClient in order to call MockServer URL, since baseUrl is stored in restClient
+    @Autowired
+    public WeatherApiRequestService(RestClient restClient){
+        this.restClient = restClient;
+    }
     /**
      * Makes an API call to get the current and a weather forecast for a specified location
      * <br><br>
@@ -44,7 +49,10 @@ public class WeatherApiRequestService {
      * @param latitude of the location
      * @param longitude of the location
      * @return the current and forecast weather
+     * @throws HttpStatusCodeException when 4xx or 5xx Status Code is returned
      */
+
+    //todo: decide what happens when 4xx or 5xx status code is retrieved from API. where do we handle HttpStatusCodeException?
     public CurrentAndForecastAnswerDTO retrieveCurrentAndForecastWeather(@Min(-90) @Max(90) double latitude,
                                                                          @Min(-180) @Max(180) double longitude) throws HttpStatusCodeException {
 
