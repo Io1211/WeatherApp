@@ -11,14 +11,13 @@
         <h:form>
             <p:panel header="Search">
                 <p:inputText value="#{weatherApiDemoBean.searchID}" type="text"/>
-                <h:commandButton value="click" action="#{weatherApiDemoBean.weatherSearch()}"/>
+                <h:commandButton value="Search by Id" action="#{weatherApiDemoBean.findById()}"/>
+                <h:commandButton value="Find all" action="#{weatherApiDemoBean.findAll()}"/>
                 <br/>
                 <h:outputText escape="false" value="#{weatherApiDemoBean.searchedWeather}"/>
             </p:panel>
             <p:panel header="Request">
-                <div style="height: 50px">
-                    https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value
-                </div>
+                <h:commandButton value="Call API" action="#{weatherApiDemoBean.callApi()}"/>
             </p:panel>
             <p:panel header="Response">
                 <div>
