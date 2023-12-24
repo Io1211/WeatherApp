@@ -1,18 +1,21 @@
 package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
+
 import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import at.qe.skeleton.internal.repositories.UserxRepository;
 
 /**
  * Service for accessing and manipulating user data.
- *
+ * <p>
  * This class is part of the skeleton project provided for students of the
  * course "Software Architecture" offered by Innsbruck University.
  */
@@ -22,6 +25,8 @@ public class UserxService {
 
     @Autowired
     private UserxRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Returns a collection of all users.
@@ -57,6 +62,7 @@ public class UserxService {
     public Userx saveUser(Userx user) {
         if (user.isNew()) {
             user.setCreateUser(getAuthenticatedUser());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         } else {
             user.setUpdateUser(getAuthenticatedUser());
         }
