@@ -1,89 +1,58 @@
 package at.qe.skeleton.tests;
 
-import at.qe.skeleton.configs.ApiConfiguration;
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
-import at.qe.skeleton.external.model.currentandforecast.misc.CurrentWeatherDTO;
 import at.qe.skeleton.external.services.WeatherApiRequestService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.Validator;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.Before;
+
 import org.junit.jupiter.api.*;
-import org.junit.runner.RunWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+
+import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.test.web.client.match.MockRestRequestMatchers;
-import org.springframework.test.web.client.response.ExecutingResponseCreator;
-import org.springframework.test.web.client.response.MockRestResponseCreators;
-import org.springframework.web.client.HttpClientErrorException;
+
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Method;
+import java.net.SocketException;
+import java.net.http.HttpConnectTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withException;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 
 class WeatherApiRequestServiceTest {
 
+    @BeforeAll
+    public static void validatorSetup() {
 
-    private RestTemplate restTemplate;
-
-    private MockRestServiceServer mockServer;
-
-
-    //todo: @before und beforeEach und so weiter refactoren.
-    @BeforeEach
-    public void setup() {
-        this.restTemplate = new RestTemplate();
-        this.mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+
     }
-
-    @BeforeEach
-    void initialize() throws IOException{
-        mockBackEnd = new MockWebServer();
-        mockBackEnd.start();
-        mockURL = String.format("http://localhost:%s",
-                mockBackEnd.getPort());
-        this.restClient = RestClient.builder()
-                .baseUrl(mockURL)
-                .build();
-        this.weatherApiRequestService = new WeatherApiRequestService(restClient);
-    }
-
-
-
 
     //reads the corresponding (json) file into a string.
     private String loadMockResponseFromFile(String filePath) {
@@ -98,39 +67,94 @@ class WeatherApiRequestServiceTest {
     }
 
 
-    //todo: positive Test Case
+    @Test
+    public void correctUrlOfWeatherApiCall() throws Exception {
+        double latitude = 42.0;
+        double longitude = -42.0;
+
+        // We are using a MockRestServiceServer which can mock responses to the api calls. the api calls dont really call
+        // the real api since we bind the MockRestServer to them via the RestTemplate defined here.
+        // since WeatherApiRequestService needs a RestClient and MockRestServiceServer needs to be bound to RestTemplate,
+        // we need to create a RestClient out of a restTemplate.
+        RestTemplate restTemplate = new RestTemplate();
+        MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+        RestClient testRestClient = RestClient.create(restTemplate);
+
+        WeatherApiRequestService testApiService = new WeatherApiRequestService(testRestClient);
+
+        // Set up expectations for the MockRestServiceServer
+        mockServer.expect(requestTo("/data/3.0/onecall?lat=42.0&lon=-42.0"))
+                .andRespond(withSuccess(loadMockResponseFromFile("WeatherApiResponse.json"), MediaType.APPLICATION_JSON));
+
+        testApiService.retrieveCurrentAndForecastWeather(latitude, longitude);
+        mockServer.verify();
+    }
+
     @Test
     public void testDtoCreation() {
         String responseBody = loadMockResponseFromFile("WeatherApiResponse.json");
 
-        this.mockServer.expect(MockRestRequestMatchers.requestTo("/data/3.0/onecall?lat=37.7749&lon=-122.4194"))
-                .andRespond(MockRestResponseCreators.withSuccess(responseBody, MediaType.APPLICATION_JSON));
+        RestTemplate restTemplate = new RestTemplate();
+        MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+        //since WeatherApiRequestService needs a RestClient and MockRestServiceServer needs to be bound to RestTemplate,
+        // we need to create a RestClient out of a restTemplate.
+        RestClient testRestClient = RestClient.create(restTemplate);
+
+        WeatherApiRequestService testApiService = new WeatherApiRequestService(testRestClient);
+
+        mockServer.expect(requestTo("/data/3.0/onecall?lat=37.7749&lon=-122.4194"))
+                .andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 
         CurrentAndForecastAnswerDTO actualDTOCreationResult =
-                this.restTemplate.getForObject("/data/3.0/onecall?lat={lat}&lon={lon}", CurrentAndForecastAnswerDTO.class, 37.7749, -122.4194);
+                testApiService.retrieveCurrentAndForecastWeather(37.7749, -122.4194);
 
-
-        this.mockServer.verify();
+        mockServer.verify();
         Assertions.assertEquals("America/Los_Angeles", actualDTOCreationResult.timezone());
         Assertions.assertEquals(287.29, actualDTOCreationResult.currentWeather().temperature());
         Assertions.assertEquals("Rain", actualDTOCreationResult.hourlyWeather().get(0).weather().title());
     }
 
 
-    // Es folgen einige Setup Schritte zur Erstellung und Aufruf eines Mock-Servers
+
+    @Test
+    public void simulateConnectionError(){
+
+        RestClient mockedRestClient = Mockito.mock(RestClient.class);
+        WeatherApiRequestService disconnectedApiRequestService = new WeatherApiRequestService(mockedRestClient);
+        when(mockedRestClient.get()).thenThrow(RuntimeException.class);
+
+        Assertions.assertThrows(Exception.class,
+                () -> disconnectedApiRequestService.retrieveCurrentAndForecastWeather(0,0));
+    }
+
+
+
+
+
+    // the following represents another approach for testing api calls with a MockWebServer from okhttp3 library.
+    // that is a "fake" server, which is actually located at the mockURL (see below) and handles the calls as you tell
+    // it to, with the enqueue Method.
+
+    @BeforeEach
+    void initializeMockApi() throws IOException {
+        mockBackEnd = new MockWebServer();
+        mockBackEnd.start();
+        String mockURL = String.format("http://localhost:%s",
+                mockBackEnd.getPort());
+        RestClient restClient = RestClient.builder()
+                .baseUrl(mockURL)
+                .build();
+        this.modifiedWeatherAPIRequestService = new WeatherApiRequestService(restClient);
+    }
+
     // Der Mock-Server wird tatsächlich angesteuert. Library ist: okhttp3
     public static MockWebServer mockBackEnd;
-
-
     @AfterEach
     void tearDownWebServer() throws IOException {
         mockBackEnd.shutdown();
     }
 
-    private RestClient restClient;
-    private WeatherApiRequestService weatherApiRequestService;
-    private String mockURL;
-
+    private WeatherApiRequestService modifiedWeatherAPIRequestService;
 
 
     // Tests the retrieveCurrentAndForecastWeather Method with a call to the mockBackEnd Server, which answers with
@@ -140,9 +164,8 @@ class WeatherApiRequestServiceTest {
         mockBackEnd.enqueue(new MockResponse().setBody(loadMockResponseFromFile("WeatherApiResponse.json"))
                 .addHeader("Content-Type", "application/json"));
 
-        CurrentAndForecastAnswerDTO mockedAnswerDto = weatherApiRequestService
+        CurrentAndForecastAnswerDTO mockedAnswerDto = modifiedWeatherAPIRequestService
                 .retrieveCurrentAndForecastWeather(37.7749, -122.4194);
-
 
         Assertions.assertEquals("America/Los_Angeles", mockedAnswerDto.timezone());
         Assertions.assertEquals(287.29, mockedAnswerDto.currentWeather().temperature());
@@ -151,23 +174,23 @@ class WeatherApiRequestServiceTest {
 
 
     //tests if error 504 is recognized by call-Method
-
     @Test
     public void apiRequestShouldThrowError5xx() {
         mockBackEnd.enqueue(new MockResponse().setResponseCode(504));
         assertThrows(HttpStatusCodeException.class,
-                () -> weatherApiRequestService.retrieveCurrentAndForecastWeather(99, 99));
+                () -> modifiedWeatherAPIRequestService.retrieveCurrentAndForecastWeather(99, 99));
     }
 
     @Test
     public void apiRequestShouldThrowError4xx() {
         mockBackEnd.enqueue(new MockResponse().setResponseCode(404));
         assertThrows(HttpStatusCodeException.class,
-                () -> weatherApiRequestService.retrieveCurrentAndForecastWeather(99, 99));
+                () -> modifiedWeatherAPIRequestService.retrieveCurrentAndForecastWeather(99, 99));
     }
 
 
-    private Validator validator;
+    private static Validator validator;
+
     @Test
     public void inputValidationTest() throws Exception {
         mockBackEnd.enqueue(new MockResponse().setBody(loadMockResponseFromFile("WeatherApiResponse.json"))
@@ -178,16 +201,14 @@ class WeatherApiRequestServiceTest {
         Double[] parameterValues = {-91.0, 0.0};
 
         Set<ConstraintViolation<WeatherApiRequestService>> violations = validator.forExecutables().validateParameters(
-                weatherApiRequestService, retrieveCurrentAndForecastWeather, parameterValues);
+                modifiedWeatherAPIRequestService, retrieveCurrentAndForecastWeather, parameterValues);
 
         assertFalse(violations.isEmpty());
 
     }
 
-
-    //todo: Network/Connection Error Test Case
-    //Simulate a network or connection error (e.g., using a mock that throws an exception).
-    // This verifies that your method handles network-related issues appropriately.
-
-
 }
+
+
+
+

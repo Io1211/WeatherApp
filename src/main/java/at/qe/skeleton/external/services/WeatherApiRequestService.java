@@ -10,11 +10,14 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.client.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.http.HttpConnectTimeoutException;
+
+import static org.primefaces.component.menuitem.UIMenuItemBase.PropertyKeys.url;
 
 
 /**
@@ -56,24 +59,26 @@ public class WeatherApiRequestService {
     public CurrentAndForecastAnswerDTO retrieveCurrentAndForecastWeather(@Min(-90) @Max(90) double latitude,
                                                                          @Min(-180) @Max(180) double longitude) throws HttpStatusCodeException {
 
-        ResponseEntity<CurrentAndForecastAnswerDTO> responseEntity = this.restClient.get()
-                .uri(UriComponentsBuilder.fromPath(CURRENT_AND_FORECAST_URI)
-                        .queryParam(LATITUDE_PARAMETER, String.valueOf(latitude))
-                        .queryParam(LONGITUDE_PARAMETER, String.valueOf(longitude))
-                        .build().toUriString())
-                .retrieve()
-                .toEntity(CurrentAndForecastAnswerDTO.class);
+            ResponseEntity<CurrentAndForecastAnswerDTO> responseEntity = this.restClient.get()
+                    .uri(UriComponentsBuilder.fromPath(CURRENT_AND_FORECAST_URI)
+                            .queryParam(LATITUDE_PARAMETER, String.valueOf(latitude))
+                            .queryParam(LONGITUDE_PARAMETER, String.valueOf(longitude))
+                            .build().toUriString())
+                    .retrieve()
+                    .toEntity(CurrentAndForecastAnswerDTO.class);
 
-        HttpStatusCode statusCode = responseEntity.getStatusCode();
+            HttpStatusCode statusCode = responseEntity.getStatusCode();
 
-        if (statusCode.is4xxClientError()){
-            throw new HttpClientErrorException(responseEntity.getStatusCode(), "Client error for values: lat=%f, lon=%f".formatted(latitude, longitude));
-        }
-        if (statusCode.is5xxServerError()){
-            throw new HttpServerErrorException(responseEntity.getStatusCode(), "Server error for values: lat=%f, lon=%f".formatted(latitude, longitude));
-        }
+            if (statusCode.is4xxClientError()) {
+                throw new HttpClientErrorException(responseEntity.getStatusCode(), "Client error for values: lat=%f, lon=%f".formatted(latitude, longitude));
+            }
+            if (statusCode.is5xxServerError()) {
+                throw new HttpServerErrorException(responseEntity.getStatusCode(), "Server error for values: lat=%f, lon=%f".formatted(latitude, longitude));
+            }
 
-        return responseEntity.getBody();
+            return responseEntity.getBody();
+
+
     }
 
 }
