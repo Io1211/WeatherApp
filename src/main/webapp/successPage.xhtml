@@ -1,0 +1,18 @@
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="content">
+        <h:panelGrid columns="1" styleClass="ui-panelgrid-blank">
+            <p:panel header="Operation Successful">
+                <h:outputText value="The operation was successful."/>
+            </p:panel>
+
+            <p:commandButton value="Home" action="/home" styleClass="ui-button-primary"/>
+        </h:panelGrid>
+    </ui:define>
+
+</ui:composition>
