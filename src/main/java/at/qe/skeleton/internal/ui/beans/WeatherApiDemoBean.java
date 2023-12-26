@@ -17,6 +17,9 @@ import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +39,6 @@ public class WeatherApiDemoBean {
     @Autowired
     private GeocodingApiRequestService geocodingApiRequestService;
 
-    private List<LocationAnswerDTO> locationAnswerDTOList;
     private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
     private String currentWeather;
@@ -46,7 +48,7 @@ public class WeatherApiDemoBean {
 
     private double longitude;
 
-    private String locationSearchInput = "Berlin";
+    private String locationSearchInput;
 
     //hardcoded limit - i.e. the number of locations in the API response
     //TODO: Maybe make it possible to show more than one result from the api
@@ -63,17 +65,11 @@ public class WeatherApiDemoBean {
     }
 
     public void performLocationSearch() {
-        //String input= this.locationSearchInput;
-        // lets start with a test call:
-        //TODO: more than one LocationAnswer: how to display the list?
         String input = this.locationSearchInput;
-        this.locationAnswerDTOList = this.geocodingApiRequestService.retrieveLocationLonLat(input, limit);
-        Optional<LocationAnswerDTO> optionalLocation = locationAnswerDTOList.stream().findAny();
-        if (optionalLocation.isPresent()) {
-            this.latitude = optionalLocation.get().latitude();
-            this.longitude = optionalLocation.get().longitude();
-        }
-        System.out.println("performing location Search for: " + input + " -> latitude: " + this.latitude + " longitude: " + this.longitude);
+        input = URLEncoder.encode(input, StandardCharsets.UTF_8);
+        LocationAnswerDTO locationAnswerDTO = this.geocodingApiRequestService.retrieveLocationLonLat(input);
+        this.longitude = locationAnswerDTO.longitude();
+        this.latitude = locationAnswerDTO.latitude();
     }
 
     public void performWeatherApiRequest() {
@@ -87,7 +83,7 @@ public class WeatherApiDemoBean {
             String escapedHtmlAnswerWithLineBreaks = escapedHtmlAnswer.replace("\n", "<br>")
                     .replace(" ", "&nbsp;");
             this.setCurrentWeather(escapedHtmlAnswerWithLineBreaks);
-            System.out.println("performing Weather api Request with latitude = " + getLatitude() + " and longitude = " + getLongitude());
+
         } catch (final Exception e) {
             LOGGER.error("error in request", e);
         }

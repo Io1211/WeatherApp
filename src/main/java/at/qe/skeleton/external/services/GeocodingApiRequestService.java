@@ -8,12 +8,19 @@ import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
+
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -43,6 +50,7 @@ public class GeocodingApiRequestService {
 
     private static final String LOCATION_NAME = "q";
     private static final String LIMIT_OF_RESULTS = "limit";
+    private static final int LIMIT_VALUE = 1;
 
 
 
@@ -58,16 +66,39 @@ public class GeocodingApiRequestService {
      * @param longitude of the location
      * @return the current and forecast weather
      */
-    public List<LocationAnswerDTO> retrieveLocationLonLat(String locationName, int limit) {
+    public LocationAnswerDTO retrieveLocationLonLat(String locationName) throws RuntimeException {
 
-        return this.restClient.get()
+        ResponseEntity<List<LocationAnswerDTO>> responseEntity=  this.restClient.get()
                 .uri(UriComponentsBuilder.fromPath(GEOCODING_URI)
                         .queryParam(LOCATION_NAME, locationName)
-                        .queryParam(LIMIT_OF_RESULTS, String.valueOf(limit))
+                        .queryParam(LIMIT_OF_RESULTS, String.valueOf(LIMIT_VALUE))
                         .build().toUriString())
                 .retrieve()
-                .body(new ParameterizedTypeReference<List<LocationAnswerDTO>>() {});
-        // todo introduce error handling using responseEntity.getStatusCode.isXXXError
+                .toEntity(new ParameterizedTypeReference<List<LocationAnswerDTO>>() {});
 
+
+
+        HttpStatusCode statusCode = responseEntity.getStatusCode();
+
+        if (statusCode.is4xxClientError()) {
+            throw new HttpClientErrorException(responseEntity.getStatusCode(), "Geocoding Client error for searchstring: %s".formatted(locationName));
+        }
+        if (statusCode.is5xxServerError()) {
+            throw new HttpServerErrorException(responseEntity.getStatusCode(), "Geocoding Client error for searchstring: %s".formatted(locationName));
+        }
+
+        //since the API returns a json List we need to take the first element out of the list, which is the DTO
+        List<LocationAnswerDTO> locationAnswerList = responseEntity.getBody();
+        if (locationAnswerList != null && !locationAnswerList.isEmpty()) {
+            return locationAnswerList.get(0);
+        } else {
+            throw new RuntimeException("GeocodingApiRequest returned no LocationAnswerDTO");
+        }
+
+
+
+        // todo introduce error handling using responseEntity.getStatusCode.isXXXError
     }
+
+
 }

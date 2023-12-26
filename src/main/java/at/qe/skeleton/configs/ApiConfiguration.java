@@ -1,5 +1,6 @@
 package at.qe.skeleton.configs;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +12,13 @@ import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 import java.io.IOException;
 import java.net.URI;
+
 
 /**
  * Configuration for the weather api used in this years software architecture course.
@@ -36,12 +42,17 @@ public class ApiConfiguration {
     private String baseUrl;
 
     private class QueryAddingRequestInterceptor implements ClientHttpRequestInterceptor {
+
+        private final Logger logger = LoggerFactory.getLogger(QueryAddingRequestInterceptor.class);
+
         @Override
         public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
             URI uri = UriComponentsBuilder.fromUri(request.getURI())
                     .queryParam(UNITS_PARAMETER, DEFAULT_UNITS)
                     .queryParam(APIKEY_PARAMETER, apiKey)
                     .build().toUri();
+
+            logger.info("Sending request to: {}", uri);
 
             HttpRequest modifiedRequest = new HttpRequestWrapper(request) {
                 @Override
@@ -61,4 +72,5 @@ public class ApiConfiguration {
                 .requestInterceptor(new QueryAddingRequestInterceptor())
                 .build();
     }
+
 }

@@ -48,17 +48,14 @@ class WeatherApiRequestServiceTest {
 
     @BeforeAll
     public static void validatorSetup() {
-
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-
     }
 
     //reads the corresponding (json) file into a string.
     private String loadMockResponseFromFile(String filePath) {
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);
              BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-
             // Read the file content
             return reader.lines().collect(Collectors.joining(System.lineSeparator()));
         } catch (IOException e) {
