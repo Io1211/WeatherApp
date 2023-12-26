@@ -59,17 +59,16 @@ public class UserxService {
      * @return the updated user
      */
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Userx saveUser(Userx user) {
+    public Userx saveUser(Userx user) throws JpaSystemException {
         if (user.isNew()) {
             user.setCreateUser(getAuthenticatedUser());
-            try {
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
-            } catch (IllegalArgumentException e) {
-                // Passing an empty string to the encoder will throw an IllegalArgumentException.
-                // The userxService test expects a JpaSystemException.
-                // This makes the test pass for now, but is far from being an ideal solution.
-                throw new JpaSystemException(e);
+            String password = user.getPassword();
+            // Passing null as an argument to the encoder throws IllegalArgumentException,
+            // but we want JpaSystemException
+            if (password == null) {
+                throw new JpaSystemException(new RuntimeException("Password can't be empty"));
             }
+            user.setPassword(passwordEncoder.encode(password));
         } else {
             user.setUpdateUser(getAuthenticatedUser());
         }
@@ -91,5 +90,4 @@ public class UserxService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findFirstByUsername(auth.getName());
     }
-
 }
