@@ -42,39 +42,6 @@ public class CurrentAndForecastAnswerService {
         return currentAndForecastAnswerRepository.save(currentAndForecastAnswer);
     }
 
-  /**
-   * Retrieve the persisted CurrentAndForecastAnswer objects by their id.
-   *
-   * @param id the CurrentAndForecastAnswer id
-   * @return the deserialized CurrentAndForecastAnswerDTO with the corresponding id
-   */
-  public CurrentAndForecastAnswerDTO findWeatherById(Long id) {
-    CurrentAndForecastAnswer currentAndForecastAnswer =
-        currentAndForecastAnswerRepository.findById(id);
-    try {
-      return mapSerializedWeatherToDto(currentAndForecastAnswer);
-    } catch (FailedJsonToDtoMappingException e) {
-      return null;
-    }
-  }
-
-  /**
-   * Retrieve all the persisted CurrentAndForecastAnswer objects.
-   *
-   * @return a collection of all the currently stored CurrentAndForecastAnswer API calls as DTOs
-   */
-  public Collection<CurrentAndForecastAnswerDTO> getAllCurrentAndForecastWeather() {
-    Collection<CurrentAndForecastAnswerDTO> allWeatherData = new ArrayList<>();
-    Collection<CurrentAndForecastAnswer> weather = currentAndForecastAnswerRepository.findAll();
-    try {
-      for (CurrentAndForecastAnswer currentAndForecastAnswer : weather) {
-        allWeatherData.add(mapSerializedWeatherToDto(currentAndForecastAnswer));
-      }
-      return allWeatherData;
-    } catch (FailedJsonToDtoMappingException e) {
-      return Collections.emptyList();
-    }
-  }
     /**
      * Retrieve all the persisted CurrentAndForecastAnswer objects.
      *
@@ -89,6 +56,31 @@ public class CurrentAndForecastAnswerService {
         return allWeatherDataDTOs;
     }
 
+    /**
+     * Returns the api calls made in the last hour
+     *
+     * @return the api calls made in the last hour as DTOs
+     * @throws FailedJsonToDtoMappingException if the retrieved data fails to map back to DTO
+     */
+    public Collection<CurrentAndForecastAnswerDTO> getLastHourCurrentAndForecastWeather() throws FailedJsonToDtoMappingException {
+        List<CurrentAndForecastAnswer> lastHourWeatherData = currentAndForecastAnswerRepository.findByTimestampLastCallIsAfter(ZonedDateTime.now().minusHours(1));
+        List<CurrentAndForecastAnswerDTO> lastHourWeatherDTOs = new ArrayList<>();
+        for (CurrentAndForecastAnswer weatherData : lastHourWeatherData) {
+            lastHourWeatherDTOs.add(deserializeDTO(weatherData.getWeatherData()));
+        }
+        return lastHourWeatherDTOs;
+    }
+
+    /**
+     * Find weather api calls by their id
+     *
+     * @param id
+     * @return
+     * @throws FailedJsonToDtoMappingException if the retrieved serialized data can't be mapped back to DTO
+     */
+    public CurrentAndForecastAnswerDTO findCurrentAndForecastWeatherById(Long id) throws FailedJsonToDtoMappingException {
+        return deserializeDTO(currentAndForecastAnswerRepository.findById(id).getWeatherData());
+    }
 
     /**
      * Deserialize a mapped CurrentAndForecastAnswer into a CurrentAndForecastAnswerDTO

@@ -1,9 +1,10 @@
 package at.qe.skeleton.internal.model;
 
 import jakarta.persistence.*;
+import org.springframework.data.domain.Persistable;
+
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import org.springframework.data.domain.Persistable;
 
 /**
  * Entity to persist current and forecast weather data
@@ -48,6 +49,10 @@ public class CurrentAndForecastAnswer implements Persistable<String>, Serializab
     @Override
     public String getId() {
         return String.valueOf(this.id);
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
