@@ -10,8 +10,8 @@
     <ui:define name="content">
         <h:form>
             <p:panel header="Search">
-                <p:inputText value="#{weatherApiDemoBean.searchID}" type="text"/>
-                <h:commandButton value="Search by Id" action="#{weatherApiDemoBean.findById()}"/>
+                <h:commandButton value="Find last hour calls" action="#{weatherApiDemoBean.findLastHour()}"/>
+                <br/>
                 <h:commandButton value="Find all" action="#{weatherApiDemoBean.findAll()}"/>
                 <br/>
                 <h:outputText escape="false" value="#{weatherApiDemoBean.searchedWeather}"/>
