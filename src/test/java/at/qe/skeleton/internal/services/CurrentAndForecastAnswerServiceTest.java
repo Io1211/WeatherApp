@@ -13,6 +13,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 @WebAppConfiguration
@@ -59,5 +61,42 @@ class CurrentAndForecastAnswerServiceTest {
         Assertions.assertEquals(answerDTO.hourlyWeather(), justCreatedDTO.hourlyWeather(), "The saved DTO doesn't have the correct hourlyWeather being saved");
         Assertions.assertEquals(answerDTO.dailyWeather(), justCreatedDTO.dailyWeather(), "The saved DTO doesn't have the correct dailyWeather being saved");
         Assertions.assertEquals(answerDTO.alerts(), justCreatedDTO.alerts(), "The saved DTO doesn't have the correct alerts being saved");
+    }
+
+    @Test
+    void testGetAllCurrentAndForecastWeather() {
+        CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
+        List<CurrentAndForecastAnswerDTO> answerDTOList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            answerDTOList.add(answerDTO);
+        }
+        try {
+            for (CurrentAndForecastAnswerDTO weatherDTO : answerDTOList) {
+                currentAndForecastAnswerService.saveWeather(weatherDTO);
+            }
+        } catch (FailedToSerializeDTOException e) {
+            e.getStackTrace();
+        }
+        List<CurrentAndForecastAnswerDTO> justCreatedDTOs = null;
+        try {
+            justCreatedDTOs = currentAndForecastAnswerService.getAllCurrentAndForecastWeather();
+        } catch (FailedJsonToDtoMappingException e) {
+            e.getStackTrace();
+        }
+        Assertions.assertNotNull(justCreatedDTOs, "Failed to retrieve saved DTOs from the database");
+        Assertions.assertEquals(justCreatedDTOs.size(), answerDTOList.size(), "The count of retrieved DTOs doesn't match the count of initially stored ones");
+        for (int i = 0; i < answerDTOList.size(); i++) {
+            CurrentAndForecastAnswerDTO justCreatedDTO = justCreatedDTOs.get(i);
+            CurrentAndForecastAnswerDTO controlDTO = answerDTOList.get(i);
+            Assertions.assertEquals(controlDTO.latitude(), justCreatedDTO.latitude(), "The " + i + "th saved DTO doesn't have the correct latitude being saved");
+            Assertions.assertEquals(controlDTO.longitude(), justCreatedDTO.longitude(), "The " + i + "th saved DTO doesn't have the correct longitude being saved");
+            Assertions.assertEquals(controlDTO.timezone(), justCreatedDTO.timezone(), "The " + i + "th saved DTO doesn't have the correct timezone being saved");
+            Assertions.assertEquals(controlDTO.timezoneOffset(), justCreatedDTO.timezoneOffset(), "The " + i + "th saved DTO doesn't have the correct timezoneOffset being saved");
+            Assertions.assertEquals(controlDTO.currentWeather(), justCreatedDTO.currentWeather(), "The " + i + "th saved DTO doesn't have the correct currentWeather being saved");
+            Assertions.assertEquals(controlDTO.minutelyPrecipitation(), justCreatedDTO.minutelyPrecipitation(), "The " + i + "th saved DTO doesn't have the correct minutelyPrecipitation being saved");
+            Assertions.assertEquals(controlDTO.hourlyWeather(), justCreatedDTO.hourlyWeather(), "The " + i + "th saved DTO doesn't have the correct hourlyWeather being saved");
+            Assertions.assertEquals(controlDTO.dailyWeather(), justCreatedDTO.dailyWeather(), "The " + i + "th saved DTO doesn't have the correct dailyWeather being saved");
+            Assertions.assertEquals(controlDTO.alerts(), justCreatedDTO.alerts(), "The " + i + "th saved DTO doesn't have the correct alerts being saved");
+        }
     }
 }
