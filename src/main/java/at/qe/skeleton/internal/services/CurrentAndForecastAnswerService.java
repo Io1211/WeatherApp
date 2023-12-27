@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -47,9 +46,9 @@ public class CurrentAndForecastAnswerService {
      *
      * @return a collection of all the currently stored CurrentAndForecastAnswer API calls as DTOs
      */
-    public Collection<CurrentAndForecastAnswerDTO> getAllCurrentAndForecastWeather() throws FailedJsonToDtoMappingException {
-        Collection<CurrentAndForecastAnswer> allWeatherData = currentAndForecastAnswerRepository.findAll();
-        Collection<CurrentAndForecastAnswerDTO> allWeatherDataDTOs = new ArrayList<>();
+    public List<CurrentAndForecastAnswerDTO> getAllCurrentAndForecastWeather() throws FailedJsonToDtoMappingException {
+        List<CurrentAndForecastAnswer> allWeatherData = currentAndForecastAnswerRepository.findAll();
+        List<CurrentAndForecastAnswerDTO> allWeatherDataDTOs = new ArrayList<>();
         for (CurrentAndForecastAnswer currentAndForecastAnswer : allWeatherData) {
             allWeatherDataDTOs.add(deserializeDTO(currentAndForecastAnswer.getWeatherData()));
         }
@@ -62,7 +61,7 @@ public class CurrentAndForecastAnswerService {
      * @return the api calls made in the last hour as DTOs
      * @throws FailedJsonToDtoMappingException if the retrieved data fails to map back to DTO
      */
-    public Collection<CurrentAndForecastAnswerDTO> getLastHourCurrentAndForecastWeather() throws FailedJsonToDtoMappingException {
+    public List<CurrentAndForecastAnswerDTO> getLastHourCurrentAndForecastWeather() throws FailedJsonToDtoMappingException {
         List<CurrentAndForecastAnswer> lastHourWeatherData = currentAndForecastAnswerRepository.findByTimestampLastCallIsAfter(ZonedDateTime.now().minusHours(1));
         List<CurrentAndForecastAnswerDTO> lastHourWeatherDTOs = new ArrayList<>();
         for (CurrentAndForecastAnswer weatherData : lastHourWeatherData) {
