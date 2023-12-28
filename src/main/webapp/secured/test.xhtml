@@ -12,7 +12,8 @@
                 <p>You can use the following buttons to test the security settings for specific user roles</p>
                 <p>If the currently logged on user does not have the denoted role, an AccessDeniedException is thrown.</p>
                 <h:panelGrid columns="3">
-                    <p:commandButton action="#{secTest.doRegisteredUserAction()}" value="REGISTERED_USER" update="okDialog"/>
+                    <p:commandButton action="#{secTest.doRegisteredUserAction()}" value="REGISTERED_USER"
+                                     update="okDialog"/>
                     <p:commandButton action="#{secTest.doManagerAction}" value="MANAGER" update="okDialog"/>
                     <p:commandButton action="#{secTest.doAdminAction}" value="ADMIN" update="okDialog"/>
                 </h:panelGrid>
