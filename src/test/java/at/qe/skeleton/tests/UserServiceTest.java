@@ -306,9 +306,7 @@ public class UserServiceTest {
         });
   }
 
-  // Todo: This test was added by the lecturers but the @Test was left out because the test is not
-  // working yet (problem is probably
-  // with PreAuthorize inside the userService)
+  @Test
   @WithMockUser(
       username = "user1",
       authorities = {"REGISTERED_USER"})
