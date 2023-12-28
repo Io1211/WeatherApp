@@ -24,6 +24,8 @@ public class UserServiceTest {
 
   @Autowired UserxService userService;
 
+  // Todo: update this and other tests for PREMIUM
+
   @Test
   @WithMockUser(
       username = "admin",
