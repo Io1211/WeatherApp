@@ -1,3 +1,5 @@
+# Configurations from recommended online templates
+
 # Default ignored files
 /shelf/
 /workspace.xml
@@ -6,12 +8,6 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-
-# Target folder
-/target/**
-
-# Module config file
-*.iml
 
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
@@ -106,3 +102,17 @@ fabric.properties
 # Built Visual Studio Code Extensions
 *.vsix
 /javadoc/
+
+
+#----------------------------------------
+
+# Specific configurations for this project
+
+# Target folder
+/target/**
+
+# Module config file
+*.iml
+
+# Ignore the whole .idea folder
+/.idea/
