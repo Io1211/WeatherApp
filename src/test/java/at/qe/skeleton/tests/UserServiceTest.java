@@ -60,8 +60,8 @@ public class UserServiceTest {
             user.getUpdateDate(), "User \"" + user + "\" has a updateDate defined");
       } else if ("user2".equals(user.getUsername())) {
         Assertions.assertTrue(
-            user.getRoles().contains(UserxRole.EMPLOYEE),
-            "User \"" + user + "\" does not have role EMPLOYEE");
+            user.getRoles().contains(UserxRole.REGISTERED_USER),
+            "User \"" + user + "\" does not have role REGISTERED_USER");
         Assertions.assertNotNull(
             user.getCreateUser(), "User \"" + user + "\" does not have a createUser defined");
         Assertions.assertNotNull(
@@ -191,7 +191,7 @@ public class UserServiceTest {
     toBeCreatedUser.setLastName(lName);
     toBeCreatedUser.setEmail(email);
     toBeCreatedUser.setPhone(phone);
-    toBeCreatedUser.setRoles(Sets.newSet(UserxRole.EMPLOYEE, UserxRole.MANAGER));
+    toBeCreatedUser.setRoles(Sets.newSet(UserxRole.REGISTERED_USER, UserxRole.MANAGER));
     userService.saveUser(toBeCreatedUser);
 
     Userx freshlyCreatedUser = userService.loadUser(username);
@@ -233,8 +233,8 @@ public class UserServiceTest {
         freshlyCreatedUser.getRoles().contains(UserxRole.MANAGER),
         "User \"" + username + "\" does not have role MANAGER");
     Assertions.assertTrue(
-        freshlyCreatedUser.getRoles().contains(UserxRole.EMPLOYEE),
-        "User \"" + username + "\" does not have role EMPLOYEE");
+        freshlyCreatedUser.getRoles().contains(UserxRole.REGISTERED_USER),
+        "User \"" + username + "\" does not have role REGISTERED_USER");
     Assertions.assertNotNull(
         freshlyCreatedUser.getCreateUser(),
         "User \"" + username + "\" does not have a createUser defined after being saved");
@@ -280,7 +280,7 @@ public class UserServiceTest {
   @Test
   @WithMockUser(
       username = "user",
-      authorities = {"EMPLOYEE"})
+      authorities = {"REGISTERED_USER"})
   public void testUnauthorizedLoadUsers() {
     Assertions.assertThrows(
         org.springframework.security.access.AccessDeniedException.class,
@@ -295,7 +295,7 @@ public class UserServiceTest {
   @Test
   @WithMockUser(
       username = "user1",
-      authorities = {"EMPLOYEE"})
+      authorities = {"REGISTERED_USER"})
   public void testUnauthorizedLoadUser() {
     Assertions.assertThrows(
         org.springframework.security.access.AccessDeniedException.class,
@@ -311,7 +311,7 @@ public class UserServiceTest {
   // with PreAuthorize inside the userService)
   @WithMockUser(
       username = "user1",
-      authorities = {"EMPLOYEE"})
+      authorities = {"REGISTERED_USER"})
   public void testAuthorizedLoadUser() {
     String username = "user1";
     Userx user = userService.loadUser(username);
@@ -322,7 +322,7 @@ public class UserServiceTest {
   @Test
   @WithMockUser(
       username = "user1",
-      authorities = {"EMPLOYEE"})
+      authorities = {"REGISTERED_USER"})
   public void testUnauthorizedSaveUser() {
     Assertions.assertThrows(
         org.springframework.security.access.AccessDeniedException.class,
@@ -338,7 +338,7 @@ public class UserServiceTest {
   @Test
   @WithMockUser(
       username = "user1",
-      authorities = {"EMPLOYEE"})
+      authorities = {"REGISTERED_USER"})
   public void testUnauthorizedDeleteUser() {
     Assertions.assertThrows(
         org.springframework.security.access.AccessDeniedException.class,

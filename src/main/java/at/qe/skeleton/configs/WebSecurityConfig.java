@@ -27,7 +27,7 @@ public class WebSecurityConfig {
 
   private static final String ADMIN = UserxRole.ADMIN.name();
   private static final String MANAGER = UserxRole.MANAGER.name();
-  private static final String EMPLOYEE = UserxRole.EMPLOYEE.name();
+  private static final String REGISTERED_USER = UserxRole.REGISTERED_USER.name();
   private static final String LOGIN = "/login.xhtml";
   private static final String ACCESSDENIED = "/error/access_denied.xhtml";
 
@@ -59,7 +59,7 @@ public class WebSecurityConfig {
                       .requestMatchers(new AntPathRequestMatcher("/admin/**"))
                       .hasAnyAuthority("ADMIN")
                       .requestMatchers(new AntPathRequestMatcher("/secured/**"))
-                      .hasAnyAuthority(ADMIN, MANAGER, EMPLOYEE)
+                      .hasAnyAuthority(ADMIN, MANAGER, REGISTERED_USER)
                       .anyRequest()
                       .authenticated())
           .formLogin(
