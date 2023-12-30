@@ -9,15 +9,15 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 /**
  * Spring boot application. Execute maven with <code>mvn spring-boot:run</code>
  * to start this web application.
- *
+ * <p>
  * This class is part of the skeleton project provided for students of the
  * course "Software Architecture" offered by Innsbruck University.
-*/
+ */
 @SpringBootApplication
 @EnableMethodSecurity(prePostEnabled = true)
 public class Main extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-            SpringApplication.run(Main.class, args);
+        SpringApplication.run(Main.class, args);
     }
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -19,10 +20,10 @@ import org.springframework.data.domain.Persistable;
 
 /**
  * Entity representing users.
- *
+ * <p>
  * This class is part of the skeleton project provided for students of the
  * course "Software Architecture" offered by Innsbruck University.
-*/
+ */
 @Entity
 public class Userx implements Persistable<String>, Serializable, Comparable<Userx> {
 

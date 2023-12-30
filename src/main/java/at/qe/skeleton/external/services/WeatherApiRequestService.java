@@ -34,7 +34,8 @@ public class WeatherApiRequestService {
      * Makes an API call to get the current and a weather forecast for a specified location
      * <br><br>
      * If you are unaware of lat/lon of the location use the geocoding api to determine those parameters
-     * @param latitude of the location
+     *
+     * @param latitude  of the location
      * @param longitude of the location
      * @return the current and forecast weather
      */

@@ -3,7 +3,9 @@ package at.qe.skeleton.internal.ui.beans;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.services.UserxService;
+
 import java.io.Serializable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Session information bean to retrieve session-specific parameters.
- *
+ * <p>
  * This class is part of the skeleton project provided for students of the
  * course "Software Architecture" offered by Innsbruck University.
  */

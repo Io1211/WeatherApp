@@ -14,7 +14,7 @@ import java.io.IOException;
  * <br><br>
  * The server answers with a json of the form
  * "rain": {
- *     "1h": <val>
+ * "1h": <val>
  * }
  * This deserializer is used to convert this wrapped value directly into an attribute rain
  */
