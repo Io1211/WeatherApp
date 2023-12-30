@@ -48,10 +48,7 @@ class ApiConfigurationTest {
     apiResponseForInnsbruck = mapper.writeValueAsString(jsonNodeIbk);
   }
 
-
   private static MockWebServer mockWebServer;
-
-
 
   static String mockURL;
   static String mockPasswort;
@@ -62,8 +59,8 @@ class ApiConfigurationTest {
       mockURL = String.format("http://localhost:%s",
               mockWebServer.getPort());
       mockPasswort = "someRandomPasswort";
-      System.setProperty("FAKE_API_KEY", mockPasswort);
-      System.setProperty("FAKE_API_URL", mockURL);
+      System.setProperty("api.key", mockPasswort);
+      System.setProperty("api.url", mockURL);
   }
 
   @AfterAll
