@@ -92,7 +92,7 @@ class WeatherApiRequestServiceTest {
   }
 
   @Test
-  public void testDtoCreationFromApiResponse() throws Exception{
+  public void testDtoCreationFromApiResponse() {
     mockRestServiceServer
         .expect(requestTo("/data/3.0/onecall?lat=37.7749&lon=-122.4194"))
         .andRespond(withSuccess(weatherApiResponseString, MediaType.APPLICATION_JSON));
@@ -161,8 +161,6 @@ class WeatherApiRequestServiceTest {
         HttpStatusCodeException.class,
         () -> modifiedWeatherAPIRequestService.retrieveCurrentAndForecastWeather(99, 99));
   }
-
-  private static Validator validator;
 
   @Test
   public void inputValidationTest() {

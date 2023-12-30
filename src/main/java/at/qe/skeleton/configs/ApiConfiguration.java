@@ -11,11 +11,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
-
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;

@@ -35,7 +35,7 @@ class ApiConfigurationTest {
   private static final ObjectMapper mapper = new ObjectMapper();
 
   @BeforeAll
-  private static void initializeTestEnvironment() throws IOException {
+  public static void initializeTestEnvironment() throws IOException {
     // writing the Wörgl json api response as String
     ClassPathResource classPathResourceUmlaut =
         new ClassPathResource("GeocodingResponseWörgl.json");
@@ -57,7 +57,7 @@ class ApiConfigurationTest {
   static String mockURL;
   static String mockPasswort;
   @BeforeAll
-  private static void setApiParametersForFakeApi() throws Exception{
+  public static void setApiParametersForFakeApi() throws Exception{
       mockWebServer = new MockWebServer();
       mockWebServer.start();
       mockURL = String.format("http://localhost:%s",
@@ -68,7 +68,7 @@ class ApiConfigurationTest {
   }
 
   @AfterAll
-  private static void shutDownMockServer() throws Exception {
+  public static void shutDownMockServer() throws Exception {
       mockWebServer.shutdown();
   }
 
@@ -80,10 +80,6 @@ class ApiConfigurationTest {
 
     mockWebServer.enqueue(new MockResponse().setBody(apiResponseForInnsbruck)
             .addHeader("Content-Type", "application/json"));
-
-
-    LocationAnswerDTO actualLocationAnswerDTO =
-        geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
 
     RecordedRequest request= mockWebServer.takeRequest();
     String actualRequestPath = request.getPath();
@@ -101,9 +97,6 @@ class ApiConfigurationTest {
             .addHeader("Content-Type", "application/json"));
 
     String Location = "Wörgl";
-
-    LocationAnswerDTO actualLocationAnswerDTO =
-        geocodingApiRequestService.retrieveLocationLonLat(Location);
 
     String encodedLocation = URLEncoder.encode(Location, StandardCharsets.UTF_8);
     RecordedRequest request= mockWebServer.takeRequest();

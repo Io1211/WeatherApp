@@ -21,7 +21,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-class GeocodingApi_LocationDTO_Test {
+class GeocodingApiLocationDtoTest {
 
 
   private static RestClient testRestClient;
@@ -62,7 +62,7 @@ class GeocodingApi_LocationDTO_Test {
   }
 
   @Test
-  public void GeocodingApiServiceBuildsAndCallsCorrectURI() throws IOException {
+  public void GeocodingApiServiceBuildsAndCallsCorrectURI() {
 
 
     // setting which call should be expected by Mockserver and how he responds.
@@ -78,7 +78,7 @@ class GeocodingApi_LocationDTO_Test {
   }
 
   @Test
-  public void geocodingApiServiceBuildsCorrectDtoObjectFromApiResponse() throws IOException {
+  public void geocodingApiServiceBuildsCorrectDtoObjectFromApiResponse() {
 
     mockServer
         .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
@@ -103,7 +103,7 @@ class GeocodingApi_LocationDTO_Test {
   // allerdings nicht, weil wir unseren eigenen RestTemplate einfügen und nicht den restClient aus der apiConfiguration
   // verwenden.
   @Test
-  public void geocodingApiServiceBuildsCorrectUrlAndDtoWithEncoding() throws IOException {
+  public void geocodingApiServiceBuildsCorrectUrlAndDtoWithEncoding() {
     // Wörgl is being encoded to URL compatible message with UTF-8 as Base to W%C3%B6rgl
     String locationName = "Wörgl";
     String locationNameEncoded = URLEncoder.encode(locationName, StandardCharsets.UTF_8);

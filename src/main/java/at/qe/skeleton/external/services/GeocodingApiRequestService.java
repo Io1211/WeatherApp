@@ -16,15 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
-/**
- * Makes an API call to get the exact geographical coordinates to the given name of a location or
- * zip/post code <br>
- * <br>
- *
- * @param locationName
- * @param countryCode
- * @return langitude & latitude of the location
- */
+
 @Scope("application")
 @Component
 @Validated // makes sure the parameter validation annotations are checked during runtime
@@ -68,8 +60,17 @@ public class GeocodingApiRequestService {
   // komisch ist dass der test eine richtige kodierung vorgibt. aber der test verwendet auch einen
   // fake restClient, vllt liegt da das problem?
 
+  /**
+   * Makes an API call to get the exact geographical coordinates to the given name of a location or
+   * zip/post code <br>
+   * <br>
+   *
+   * @param locationName
+   * @return langitude & latitude of the location
+   */
   public LocationAnswerDTO retrieveLocationLonLat(String locationName) throws RuntimeException {
 
+    // todo: should we include country code or something in that method?
     ResponseEntity<List<LocationAnswerDTO>> responseEntity =
         this.restClient
             .get()
@@ -82,7 +83,7 @@ public class GeocodingApiRequestService {
                     .build()
                     .toUriString())
             .retrieve()
-            .toEntity(new ParameterizedTypeReference<List<LocationAnswerDTO>>() {});
+            .toEntity(new ParameterizedTypeReference<>() {});
 
     HttpStatusCode statusCode = responseEntity.getStatusCode();
 

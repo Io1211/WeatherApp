@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
  * <br>
@@ -44,7 +41,6 @@ public class WeatherApiDemoBean {
   // TODO: Maybe make it possible to show more than one result from the api
   //          -> in that case the result should not be stored in single LocationAnswerDTO but
   // multiple LocationAnswerDTOs
-  private int limit = 1;
 
   public String getLocationSearchInput() {
     return locationSearchInput;
