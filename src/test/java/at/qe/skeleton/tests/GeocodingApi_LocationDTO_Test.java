@@ -11,95 +11,119 @@ import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
-
 import java.io.IOException;
-
-
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 class GeocodingApi_LocationDTO_Test {
-    //todo: write tests
-
-    private static RestClient testRestClient;
-
-    private static MockRestServiceServer mockServer;
-
-    private static final ObjectMapper mapper = new ObjectMapper();
-
-    private static String apiResponseStringUmlaut;
-
-    private static String apiResponseStringIbk;
 
 
-    @BeforeAll
-    static void prepareApiTestEnvironment() throws Exception{
-        RestTemplate restTemplate = new RestTemplate();
-        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-        testRestClient = RestClient.create(restTemplate);
+  private static RestClient testRestClient;
+  private static MockRestServiceServer mockServer;
+  private static final ObjectMapper mapper = new ObjectMapper();
+  private static String apiResponseStringWoergl;
+  private static String apiResponseStringIbk;
+  private static GeocodingApiRequestService geocodingApiRequestService;
+  @BeforeAll
+  static void prepareApiTestEnvironment() throws Exception {
 
-        ClassPathResource classPathResourceUmlaut = new ClassPathResource("GeocodingResponseWörgl.json");
-        JsonNode jsonNodeUmlaut = mapper.readTree(classPathResourceUmlaut.getInputStream());
-        apiResponseStringUmlaut = mapper.writeValueAsString(jsonNodeUmlaut);
+    // stub RestTemplate and Mockserver for mock-api-requests
+    RestTemplate restTemplate = new RestTemplate();
+    mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+    testRestClient = RestClient.create(restTemplate);
 
-        ClassPathResource classPathResourceIbk = new ClassPathResource("GeocodingResponseInnsbruck.json");
-        JsonNode jsonNodeIbk = mapper.readTree(classPathResourceIbk.getInputStream());
-        apiResponseStringIbk = mapper.writeValueAsString(jsonNodeIbk);
+    // writing the Wörgl json api response as String
+    ClassPathResource classPathResourceUmlaut =
+        new ClassPathResource("GeocodingResponseWörgl.json");
+    JsonNode jsonNodeUmlaut = mapper.readTree(classPathResourceUmlaut.getInputStream());
+    apiResponseStringWoergl = mapper.writeValueAsString(jsonNodeUmlaut);
 
-    }
+    // writing the Innsbruck json api response as String
+    ClassPathResource classPathResourceIbk =
+        new ClassPathResource("GeocodingResponseInnsbruck.json");
+    JsonNode jsonNodeIbk = mapper.readTree(classPathResourceIbk.getInputStream());
+    apiResponseStringIbk = mapper.writeValueAsString(jsonNodeIbk);
 
-    @BeforeEach
-    void clearMockServerExpectations () {
-        mockServer.reset();
-    }
+    // need to initialize the geocodingApiRequestService with the testRestClient
+    // testRestClient is bound to the mock Server so calls dont really go out to the web.
+    geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
 
-    @Test
-    public void testApiCallWithoutUmlaut() throws IOException {
+  }
 
-        mockServer.expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
+  @BeforeEach
+  void clearMockServerExpectations() {
+    mockServer.reset();
+  }
 
-        // need to initialize the geocodingApiRequestService with the testRestClient
-        GeocodingApiRequestService geocodingApiRequestService = new GeocodingApiRequestService();
-        ReflectionTestUtils.setField(geocodingApiRequestService, "restClient", testRestClient);
-        LocationAnswerDTO actualLocationAnswerDTO =
-                geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
-
-        mockServer.verify();
-        Assertions.assertEquals(actualLocationAnswerDTO.name(), "Innsbruck");
-        Assertions.assertEquals(actualLocationAnswerDTO.latitude(), 47.2654296);
-        Assertions.assertEquals(actualLocationAnswerDTO.longitude(), 11.3927685);
-        Assertions.assertEquals(actualLocationAnswerDTO.country(), "AT");
-        Assertions.assertEquals(actualLocationAnswerDTO.state(), "Tyrol");
-    }
+  @Test
+  public void GeocodingApiServiceBuildsAndCallsCorrectURI() throws IOException {
 
 
-    //Umlaute machen Probleme. Hier wiki Artikel: https://de.wikipedia.org/wiki/URL-Encoding
-    // -> siehe im Artikel: Nicht-Ascii-Zeichen
-    @Test
-    public void testApiCallWithUmlaut() throws IOException {
-        //Wörgl is being encoded to URL compatible message with UTF-8 as Base to W%C3%B6rgl
-        mockServer.expect(requestTo("/geo/1.0/direct?q=W%C3%B6rgl&limit=1"))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess(apiResponseStringUmlaut, MediaType.APPLICATION_JSON));
+    // setting which call should be expected by Mockserver and how he responds.
+    mockServer
+        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
+    // naking the api-request
+    geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
 
-        // need to initialize the geocodingApiRequestService with the testRestClient
-        GeocodingApiRequestService geocodingApiRequestService = new GeocodingApiRequestService();
-        ReflectionTestUtils.setField(geocodingApiRequestService, "restClient", testRestClient);
-        LocationAnswerDTO actualLocationAnswerDTO =
-                geocodingApiRequestService.retrieveLocationLonLat("Wörgl");
+    // the actual test: verifying if request reached the expected URI
+    mockServer.verify();
+  }
 
-        mockServer.verify();
-        Assertions.assertEquals(actualLocationAnswerDTO.name(), "Stadt Wörgl");
-        Assertions.assertEquals(actualLocationAnswerDTO.latitude(), 47.48033265);
-        Assertions.assertEquals(actualLocationAnswerDTO.longitude(), 12.07928067668956);
-        Assertions.assertEquals(actualLocationAnswerDTO.country(), "AT");
-        Assertions.assertEquals(actualLocationAnswerDTO.state(), "Tyrol");
-    }
+  @Test
+  public void geocodingApiServiceBuildsCorrectDtoObjectFromApiResponse() throws IOException {
+
+    mockServer
+        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
+
+    GeocodingApiRequestService geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
+
+    LocationAnswerDTO actualLocationAnswerDTO =
+        geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
+
+    mockServer.verify();
+    Assertions.assertEquals("Innsbruck", actualLocationAnswerDTO.name());
+    Assertions.assertEquals(47.2654296, actualLocationAnswerDTO.latitude());
+    Assertions.assertEquals(11.3927685, actualLocationAnswerDTO.longitude());
+    Assertions.assertEquals("AT", actualLocationAnswerDTO.country());
+    Assertions.assertEquals("Tyrol", actualLocationAnswerDTO.state());
+
+  }
+
+  // Durch den RequestInterceptor wurden special Characters doppelt enkodiert. Den Request Interceptor testen wir hier
+  // allerdings nicht, weil wir unseren eigenen RestTemplate einfügen und nicht den restClient aus der apiConfiguration
+  // verwenden.
+  @Test
+  public void geocodingApiServiceBuildsCorrectUrlAndDtoWithEncoding() throws IOException {
+    // Wörgl is being encoded to URL compatible message with UTF-8 as Base to W%C3%B6rgl
+    String locationName = "Wörgl";
+    String locationNameEncoded = URLEncoder.encode(locationName, StandardCharsets.UTF_8);
+    mockServer
+        .expect(requestTo("/geo/1.0/direct?q="+ locationNameEncoded +"&limit=1"))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(withSuccess(apiResponseStringWoergl, MediaType.APPLICATION_JSON));
+
+    // need to initialize the geocodingApiRequestService with the testRestClient
+    GeocodingApiRequestService geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
+
+    LocationAnswerDTO actualLocationAnswerDTO =
+        geocodingApiRequestService.retrieveLocationLonLat(locationName);
+
+    mockServer.verify();
+    Assertions.assertEquals("Stadt Wörgl", actualLocationAnswerDTO.name());
+    Assertions.assertEquals(47.48033265, actualLocationAnswerDTO.latitude());
+    Assertions.assertEquals(12.07928067668956, actualLocationAnswerDTO.longitude());
+    Assertions.assertEquals("AT", actualLocationAnswerDTO.country());
+    Assertions.assertEquals("Tyrol", actualLocationAnswerDTO.state());
+
+  }
 }

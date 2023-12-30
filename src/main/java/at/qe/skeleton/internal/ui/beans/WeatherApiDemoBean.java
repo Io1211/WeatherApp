@@ -6,111 +6,109 @@ import at.qe.skeleton.external.services.GeocodingApiRequestService;
 import at.qe.skeleton.external.services.WeatherApiRequestService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import jakarta.annotation.ManagedBean;
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Named;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
- * Demonstrates the working api and what the raw request data would look like
- * <br><br>
- * This class is part of the skeleton project provided for students of the
- * course "Software Architecture" offered by Innsbruck University.
+ * Demonstrates the working api and what the raw request data would look like <br>
+ * <br>
+ * This class is part of the skeleton project provided for students of the course "Software
+ * Architecture" offered by Innsbruck University.
  */
 @Component
 @Scope("view")
 public class WeatherApiDemoBean {
 
-    @Autowired
-    private WeatherApiRequestService weatherApiRequestService;
+  @Autowired private WeatherApiRequestService weatherApiRequestService;
 
-    @Autowired
-    private GeocodingApiRequestService geocodingApiRequestService;
+  @Autowired private GeocodingApiRequestService geocodingApiRequestService;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
-    private String currentWeather;
+  private String currentWeather;
 
-    //these were hard coded coordinates of innsbruck - i want to fill them now from the weather_api_demo.xhtml
-    private double latitude;
+  // these were hard coded coordinates of innsbruck - i want to fill them now from the
+  // weather_api_demo.xhtml
+  private double latitude;
+  private double longitude;
+  private String locationSearchInput;
 
-    private double longitude;
+  // hardcoded limit - i.e. the number of locations in the API response
+  // TODO: Maybe make it possible to show more than one result from the api
+  //          -> in that case the result should not be stored in single LocationAnswerDTO but
+  // multiple LocationAnswerDTOs
+  private int limit = 1;
 
-    private String locationSearchInput;
+  public String getLocationSearchInput() {
+    return locationSearchInput;
+  }
 
-    //hardcoded limit - i.e. the number of locations in the API response
-    //TODO: Maybe make it possible to show more than one result from the api
-    //          -> in that case the result should not be stored in single LocationAnswerDTO but multiple LocationAnswerDTOs
-    private int limit = 1;
+  // an dieser Stelle sind umlaute noch umlaute (= unkodiert)
+  public void setLocationSearchInput(String locationSearchInput) {
+    this.locationSearchInput = locationSearchInput;
 
+  }
 
-    public String getLocationSearchInput() {
-        return locationSearchInput;
+  public void performLocationSearch() {
+    String input = this.locationSearchInput;
+    //            .toLowerCase()
+    //            .replace("ä", "ae")
+    //            .replace("ö", "oe")
+    //            .replace("ü", "ue");
+    //input = URLEncoder.encode(input, StandardCharsets.UTF_8);
+    LocationAnswerDTO locationAnswerDTO =
+        this.geocodingApiRequestService.retrieveLocationLonLat(input);
+    this.longitude = locationAnswerDTO.longitude();
+    this.latitude = locationAnswerDTO.latitude();
+  }
+
+  public void performWeatherApiRequest() {
+    try {
+      CurrentAndForecastAnswerDTO answer =
+          this.weatherApiRequestService.retrieveCurrentAndForecastWeather(
+              getLatitude(), getLongitude());
+      ObjectMapper mapper =
+          new ObjectMapper().findAndRegisterModules().enable(SerializationFeature.INDENT_OUTPUT);
+      String plainTextAnswer = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(answer);
+      String escapedHtmlAnswer = StringEscapeUtils.escapeHtml4(plainTextAnswer);
+      String escapedHtmlAnswerWithLineBreaks =
+          escapedHtmlAnswer.replace("\n", "<br>").replace(" ", "&nbsp;");
+      this.setCurrentWeather(escapedHtmlAnswerWithLineBreaks);
+
+    } catch (final Exception e) {
+      LOGGER.error("error in request", e);
     }
+  }
 
-    public void setLocationSearchInput(String locationSearchInput) {
-        this.locationSearchInput = locationSearchInput;
-    }
+  public void performLocationSearchAndWeatherRequest() {
 
-    public void performLocationSearch() {
-        String input = this.locationSearchInput;
-        input = URLEncoder.encode(input, StandardCharsets.UTF_8);
-        LocationAnswerDTO locationAnswerDTO = this.geocodingApiRequestService.retrieveLocationLonLat(input);
-        this.longitude = locationAnswerDTO.longitude();
-        this.latitude = locationAnswerDTO.latitude();
-    }
+    this.performLocationSearch();
+    this.performWeatherApiRequest();
+  }
 
-    public void performWeatherApiRequest() {
-        try {
-            CurrentAndForecastAnswerDTO answer = this.weatherApiRequestService.retrieveCurrentAndForecastWeather(getLatitude(), getLongitude());
-            ObjectMapper mapper = new ObjectMapper()
-                    .findAndRegisterModules()
-                    .enable(SerializationFeature.INDENT_OUTPUT);
-            String plainTextAnswer = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(answer);
-            String escapedHtmlAnswer = StringEscapeUtils.escapeHtml4(plainTextAnswer);
-            String escapedHtmlAnswerWithLineBreaks = escapedHtmlAnswer.replace("\n", "<br>")
-                    .replace(" ", "&nbsp;");
-            this.setCurrentWeather(escapedHtmlAnswerWithLineBreaks);
+  public String getCurrentWeather() {
+    return currentWeather;
+  }
 
-        } catch (final Exception e) {
-            LOGGER.error("error in request", e);
-        }
-    }
+  public void setCurrentWeather(String currentWeather) {
+    this.currentWeather = currentWeather;
+  }
 
-    public void performLocationSearchAndWeatherRequest() {
-        this.performLocationSearch();
-        this.performWeatherApiRequest();
-    }
+  public double getLatitude() {
+    return latitude;
+  }
 
-    public String getCurrentWeather() {
-        return currentWeather;
-    }
-
-    public void setCurrentWeather(String currentWeather) {
-        this.currentWeather = currentWeather;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
+  public double getLongitude() {
+    return longitude;
+  }
 }
 
-
-//todo: introduce error handling
-//todo: write tests
+// todo: introduce error handling
+// todo: write tests
