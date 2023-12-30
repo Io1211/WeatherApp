@@ -1,12 +1,10 @@
 package at.qe.skeleton.external.services;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
-import jakarta.validation.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -14,13 +12,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.http.HttpConnectTimeoutException;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.primefaces.component.menuitem.UIMenuItemBase.PropertyKeys.url;
 
 /**
  * This class is part of the skeleton project provided for students of the course "Software
@@ -39,7 +30,7 @@ public class WeatherApiRequestService {
 
   private static final String LATITUDE_PARAMETER = "lat";
 
-  private RestClient restClient;
+  private final RestClient restClient;
 
   @Autowired
   public WeatherApiRequestService(RestClient restClient) {

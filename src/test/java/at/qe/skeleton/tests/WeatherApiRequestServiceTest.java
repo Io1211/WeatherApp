@@ -2,10 +2,8 @@ package at.qe.skeleton.tests;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.external.services.WeatherApiRequestService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.Validator;
@@ -23,15 +21,8 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import java.io.*;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
 
-import java.util.Locale;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -69,7 +60,7 @@ class WeatherApiRequestServiceTest {
     // we can now create a restClient (which we need for WeatherApiRequestService) with the
     // stubRestTemplate
     // which sends all his requests to the MockRestServiceServer
-    testRestClient = RestClient.create(stubRestTemplate);
+    RestClient testRestClient = RestClient.create(stubRestTemplate);
     weatherApiRequestService = new WeatherApiRequestService(testRestClient);
   }
 
@@ -77,7 +68,6 @@ class WeatherApiRequestServiceTest {
   private static String weatherApiResponseString;
   static MockRestServiceServer mockRestServiceServer;
   static String apiResponseForInnsbruck;
-  private static RestClient testRestClient;
 
   private static WeatherApiRequestService weatherApiRequestService;
 
@@ -87,10 +77,10 @@ class WeatherApiRequestServiceTest {
   }
 
   @Test
-  public void correctUrlOfWeatherApiCall() throws Exception {
+  public void correctUrlOfWeatherApiCall() {
     double latitude = 42.0;
     double longitude = -42.0;
-    String expectedUri = "/data/3.0/onecall?lat=" + String.valueOf(latitude) + "&lon=" + String.valueOf(longitude);
+    String expectedUri = "/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude;
 
     // Set up expectations for the MockRestServiceServer
     mockRestServiceServer
