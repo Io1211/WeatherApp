@@ -41,17 +41,6 @@ public class GeocodingApiRequestService {
     this.restClient = restClient;
   }
 
-  /**
-   * Makes an API call to get the current and a weather forecast for a specified location <br>
-   * <br>
-   * If you are unaware of lat/lon of the location use the geocoding api to determine those
-   * parameters
-   *
-   * @param latitude of the location
-   * @param longitude of the location
-   * @return the current and forecast weather
-   */
-
   // Umlaut-Locations werden hier doppelt kodiert vom uricomponentsbuilder... Warum? keine ahnung...
   // siehe hier:
   // https://stackoverflow.com/questions/34321361/avoid-double-encoding-of-url-query-param-with-springs-resttemplate
@@ -65,7 +54,7 @@ public class GeocodingApiRequestService {
    * zip/post code <br>
    * <br>
    *
-   * @param locationName
+   * @param locationName that is coming from UI
    * @return langitude & latitude of the location
    */
   public LocationAnswerDTO retrieveLocationLonLat(String locationName) throws RuntimeException {

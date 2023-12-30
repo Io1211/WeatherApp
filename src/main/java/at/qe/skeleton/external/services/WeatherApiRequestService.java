@@ -49,7 +49,8 @@ public class WeatherApiRequestService {
    * @throws HttpStatusCodeException when 4xx or 5xx Status Code is returned
    */
 
-  // todo: decide what happens when 4xx or 5xx status code is retrieved from API. where do we handle
+  // todo: decide what happens when 4xx or 5xx status code is retrieved from API.
+  //  We might set the limit to 5 and make user choose exact location.
   // HttpStatusCodeException?
   public CurrentAndForecastAnswerDTO retrieveCurrentAndForecastWeather(
       @Min(-90) @Max(90) double latitude, @Min(-180) @Max(180) double longitude) {

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
-import jakarta.validation.Validator;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 
@@ -33,9 +32,6 @@ class WeatherApiRequestServiceTest {
 
   @BeforeAll
   public static void Setup() throws IOException {
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    validator = factory.getValidator();
-
     // writing weather api response .json to string
     ClassPathResource classPathResourceUmlaut = new ClassPathResource("WeatherApiResponse.json");
     JsonNode jsonNodeWoergl = mapper.readTree(classPathResourceUmlaut.getInputStream());
