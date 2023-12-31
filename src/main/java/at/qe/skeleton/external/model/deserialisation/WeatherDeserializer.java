@@ -31,5 +31,4 @@ public class WeatherDeserializer extends JsonDeserializer<WeatherDTO> {
         }
         return null;
     }
-    //todo: use similar deserializer for LocationAnswerDTO
 }
