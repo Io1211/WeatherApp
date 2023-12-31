@@ -147,4 +147,33 @@ class CurrentAndForecastAnswerServiceTest {
         Assertions.assertEquals(answerDTO.dailyWeather(), lastHourDTO.dailyWeather(), "The saved DTO doesn't have the correct dailyWeather being saved");
         Assertions.assertEquals(answerDTO.alerts(), lastHourDTO.alerts(), "The saved DTO doesn't have the correct alerts being saved");
     }
+
+    @Test
+    void testFindCurrentAndForecastWeatherById() {
+        CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
+
+        CurrentAndForecastAnswer answer = new CurrentAndForecastAnswer();
+        try {
+            answer.setWeatherData(currentAndForecastAnswerService.serializeDTO(answerDTO));
+            currentAndForecastAnswerRepository.save(answer);
+        } catch (FailedToSerializeDTOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        CurrentAndForecastAnswerDTO lastHourDTO = null;
+        try {
+            lastHourDTO = currentAndForecastAnswerService.findCurrentAndForecastWeatherById(1L);
+        } catch (FailedJsonToDtoMappingException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        Assertions.assertNotNull(lastHourDTO, "Failed to retrieve DTO with id 1 from the database");
+        Assertions.assertEquals(answerDTO.latitude(), lastHourDTO.latitude(), "The saved DTO doesn't have the correct latitude being saved");
+        Assertions.assertEquals(answerDTO.longitude(), lastHourDTO.longitude(), "The saved DTO doesn't have the correct longitude being saved");
+        Assertions.assertEquals(answerDTO.timezone(), lastHourDTO.timezone(), "The saved DTO doesn't have the correct timezone being saved");
+        Assertions.assertEquals(answerDTO.timezoneOffset(), lastHourDTO.timezoneOffset(), "The saved DTO doesn't have the correct timezoneOffset being saved");
+        Assertions.assertEquals(answerDTO.currentWeather(), lastHourDTO.currentWeather(), "The saved DTO doesn't have the correct currentWeather being saved");
+        Assertions.assertEquals(answerDTO.minutelyPrecipitation(), lastHourDTO.minutelyPrecipitation(), "The saved DTO doesn't have the correct minutelyPrecipitation being saved");
+        Assertions.assertEquals(answerDTO.hourlyWeather(), lastHourDTO.hourlyWeather(), "The saved DTO doesn't have the correct hourlyWeather being saved");
+        Assertions.assertEquals(answerDTO.dailyWeather(), lastHourDTO.dailyWeather(), "The saved DTO doesn't have the correct dailyWeather being saved");
+        Assertions.assertEquals(answerDTO.alerts(), lastHourDTO.alerts(), "The saved DTO doesn't have the correct alerts being saved");
+    }
 }
