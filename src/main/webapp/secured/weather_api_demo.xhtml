@@ -33,18 +33,19 @@
             </p:panel>
             <p:commandButton value="CommitSearchRequest"
                              action="#{weatherApiDemoBean.performLocationSearchAndWeatherRequest}"
-                             update=":weatherForm:Request, :weatherForm:Response"/>
+                             update=":weatherForm:Response"/>
             <p:panel header="Request" id="Request">
             </p:panel>
             <p:panel header="Response" id="Response">
                 <div>
-                    <h:dataTable value="#{weatherApiDemoBean.locationNameWeatherMap}" var="locationName"/>
+                    <h:dataTable value="#{weatherApiDemoBean.locationNameWeatherMapEntryList}" var="locationWeatherEntry">
                     <h:column>
-                        <h:outputText value="#{locationName}"/>
+                        <h:outputText value="#{locationWeatherEntry.key}"/>
                     </h:column>
                     <h:column>
-                        <h:outputText value="#{weatherApiDemoBean.locationNameWeatherMap[locationName]}" />
+                        <h:outputText value="#{locationWeatherEntry.value}"/>
                     </h:column>
+                    </h:dataTable>
                 </div>
             </p:panel>
         </h:form>

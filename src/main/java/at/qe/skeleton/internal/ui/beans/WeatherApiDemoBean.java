@@ -7,16 +7,13 @@ import at.qe.skeleton.external.services.WeatherApiRequestService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.text.StringEscapeUtils;
-import org.primefaces.component.sticky.Sticky;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
@@ -34,11 +31,10 @@ public class WeatherApiDemoBean {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
-  private List<String> currentWeathers;
-
   private List<LocationAnswerDTO> locationAnswerDTOS;
 
-  private Map<String, String> locationNameWeatherMap;
+
+  private final Map<String, String> locationNameWeatherMap = new HashMap<>();
 
   private String locationSearchInput;
 
@@ -92,8 +88,10 @@ public class WeatherApiDemoBean {
     this.locationNameWeatherMap.put(locationName, currentWeather);
   }
 
-  public Map<String, String> getLocationNameWeatherMap() {
-    return this.locationNameWeatherMap;
+  // need to convert the map to List of Entries in order to display it with primefaces ui.
+  // as soon as Leo is ready with location & weatherResponse Entities we can use a list of those instead of a map in the Bean.
+  public List<Map.Entry<String, String>> getLocationNameWeatherMapEntryList() {
+    return new ArrayList<>(locationNameWeatherMap.entrySet());
   }
 
 }
