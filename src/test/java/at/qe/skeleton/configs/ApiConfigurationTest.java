@@ -77,11 +77,11 @@ class ApiConfigurationTest {
     mockWebServer.enqueue(new MockResponse().setBody(apiResponseForInnsbruck)
             .addHeader("Content-Type", "application/json"));
 
-    geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
+    geocodingApiRequestService.retrieveLocationsLonLat("Innsbruck");
 
     RecordedRequest request= mockWebServer.takeRequest();
     String actualRequestPath = request.getPath();
-    String expectedRequestPath = "/geo/1.0/direct?q=Innsbruck&limit=1&units=metric&appid=%s".formatted(mockPasswort);
+    String expectedRequestPath = "/geo/1.0/direct?q=Innsbruck&limit=5&units=metric&appid=%s".formatted(mockPasswort);
 
     assertEquals(expectedRequestPath, actualRequestPath);
   }
@@ -96,12 +96,12 @@ class ApiConfigurationTest {
 
     String Location = "Wörgl";
 
-    geocodingApiRequestService.retrieveLocationLonLat(Location);
+    geocodingApiRequestService.retrieveLocationsLonLat(Location);
 
     String encodedLocation = URLEncoder.encode(Location, StandardCharsets.UTF_8);
     RecordedRequest request= mockWebServer.takeRequest();
     String actualRequestPath = request.getPath();
-    String expectedRequestPath = "/geo/1.0/direct?q=" + encodedLocation + "&limit=1&units=metric&appid=" + mockPasswort;
+    String expectedRequestPath = "/geo/1.0/direct?q=" + encodedLocation + "&limit=5&units=metric&appid=" + mockPasswort;
 
     assertEquals(expectedRequestPath, actualRequestPath);
   }

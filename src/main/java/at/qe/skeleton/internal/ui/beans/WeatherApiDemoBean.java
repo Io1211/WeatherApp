@@ -7,11 +7,16 @@ import at.qe.skeleton.external.services.WeatherApiRequestService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.text.StringEscapeUtils;
+import org.primefaces.component.sticky.Sticky;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
@@ -29,12 +34,12 @@ public class WeatherApiDemoBean {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
-  private String currentWeather;
+  private List<String> currentWeathers;
 
-  // these were hard coded coordinates of innsbruck - i want to fill them now from the
-  // weather_api_demo.xhtml
-  private double latitude;
-  private double longitude;
+  private List<LocationAnswerDTO> locationAnswerDTOS;
+
+  private Map<String, String> locationNameWeatherMap;
+
   private String locationSearchInput;
 
   // hardcoded limit - i.e. the number of locations in the API response
@@ -54,57 +59,43 @@ public class WeatherApiDemoBean {
 
   public void performLocationSearch() {
     String input = this.locationSearchInput;
-    //            .toLowerCase()
-    //            .replace("ä", "ae")
-    //            .replace("ö", "oe")
-    //            .replace("ü", "ue");
-    //input = URLEncoder.encode(input, StandardCharsets.UTF_8);
-    LocationAnswerDTO locationAnswerDTO =
-        this.geocodingApiRequestService.retrieveLocationLonLat(input);
-    this.longitude = locationAnswerDTO.longitude();
-    this.latitude = locationAnswerDTO.latitude();
+     this.locationAnswerDTOS = this.geocodingApiRequestService.retrieveLocationsLonLat(input);
   }
 
-  public void performWeatherApiRequest() {
+  public void performLocationSearchAndWeatherRequest() {
+    this.performLocationSearch();
+    this.locationAnswerDTOS.forEach(this::performWeatherApiRequest);
+  }
+
+  public void performWeatherApiRequest(LocationAnswerDTO locationAnswerDTO) {
     try {
       CurrentAndForecastAnswerDTO answer =
           this.weatherApiRequestService.retrieveCurrentAndForecastWeather(
-              getLatitude(), getLongitude());
+              locationAnswerDTO.latitude(), locationAnswerDTO.longitude());
       ObjectMapper mapper =
           new ObjectMapper().findAndRegisterModules().enable(SerializationFeature.INDENT_OUTPUT);
       String plainTextAnswer = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(answer);
       String escapedHtmlAnswer = StringEscapeUtils.escapeHtml4(plainTextAnswer);
       String escapedHtmlAnswerWithLineBreaks =
           escapedHtmlAnswer.replace("\n", "<br>").replace(" ", "&nbsp;");
-      this.setCurrentWeather(escapedHtmlAnswerWithLineBreaks);
+
+      this.setLocationAnswerWithCurrentWeather(locationAnswerDTO, escapedHtmlAnswerWithLineBreaks);
 
     } catch (final Exception e) {
       LOGGER.error("error in request", e);
     }
   }
 
-  public void performLocationSearchAndWeatherRequest() {
 
-    this.performLocationSearch();
-    this.performWeatherApiRequest();
+  private void setLocationAnswerWithCurrentWeather(LocationAnswerDTO locationAnswer, String currentWeather) {
+    String locationName = locationAnswer.name();
+    this.locationNameWeatherMap.put(locationName, currentWeather);
   }
 
-  public String getCurrentWeather() {
-    return currentWeather;
+  public Map<String, String> getLocationNameWeatherMap() {
+    return this.locationNameWeatherMap;
   }
 
-  public void setCurrentWeather(String currentWeather) {
-    this.currentWeather = currentWeather;
-  }
-
-  public double getLatitude() {
-    return latitude;
-  }
-
-  public double getLongitude() {
-    return longitude;
-  }
 }
 
-// todo: introduce error handling
-// todo: write tests
+

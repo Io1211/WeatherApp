@@ -64,11 +64,11 @@ class GeocodingApiLocationDtoTest {
   public void GeocodingApiServiceBuildsAndCallsCorrectURI() {
     // setting which call should be expected by Mockserver and how he responds.
     mockServer
-        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
+        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=5"))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
     // naking the api-request
-    geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
+    geocodingApiRequestService.retrieveLocationsLonLat("Innsbruck");
 
     // the actual test: verifying if request reached the expected URI
     mockServer.verify();
@@ -77,14 +77,14 @@ class GeocodingApiLocationDtoTest {
   @Test
   public void geocodingApiServiceBuildsCorrectDtoObjectFromApiResponse() {
     mockServer
-        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
+        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=5"))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
 
     GeocodingApiRequestService geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
 
     LocationAnswerDTO actualLocationAnswerDTO =
-        geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
+        geocodingApiRequestService.retrieveLocationsLonLat("Innsbruck").get(0);
 
     mockServer.verify();
     Assertions.assertEquals("Innsbruck", actualLocationAnswerDTO.name());
@@ -104,7 +104,7 @@ class GeocodingApiLocationDtoTest {
     String locationName = "Wörgl";
     String locationNameEncoded = URLEncoder.encode(locationName, StandardCharsets.UTF_8);
     mockServer
-        .expect(requestTo("/geo/1.0/direct?q="+ locationNameEncoded +"&limit=1"))
+        .expect(requestTo("/geo/1.0/direct?q="+ locationNameEncoded +"&limit=5"))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringWoergl, MediaType.APPLICATION_JSON));
 
@@ -112,7 +112,7 @@ class GeocodingApiLocationDtoTest {
     GeocodingApiRequestService geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
 
     LocationAnswerDTO actualLocationAnswerDTO =
-        geocodingApiRequestService.retrieveLocationLonLat(locationName);
+        geocodingApiRequestService.retrieveLocationsLonLat(locationName).get(0);
 
     mockServer.verify();
     Assertions.assertEquals("Stadt Wörgl", actualLocationAnswerDTO.name());

@@ -35,14 +35,16 @@
                              action="#{weatherApiDemoBean.performLocationSearchAndWeatherRequest}"
                              update=":weatherForm:Request, :weatherForm:Response"/>
             <p:panel header="Request" id="Request">
-                <div style="height: 50px">
-                    Location searched for: #{weatherApiDemoBean.locationSearchInput}. <br/>
-                    resulting api call to weatherApi:
-                    https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value</div>
             </p:panel>
             <p:panel header="Response" id="Response">
                 <div>
-                    <h:outputText escape="false" value="#{weatherApiDemoBean.currentWeather}"/>
+                    <h:dataTable value="#{weatherApiDemoBean.locationNameWeatherMap}" var="locationName"/>
+                    <h:column>
+                        <h:outputText value="#{locationName}"/>
+                    </h:column>
+                    <h:column>
+                        <h:outputText value="#{weatherApiDemoBean.locationNameWeatherMap[locationName]}" />
+                    </h:column>
                 </div>
             </p:panel>
         </h:form>

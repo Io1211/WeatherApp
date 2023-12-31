@@ -32,7 +32,7 @@ public class GeocodingApiRequestService {
 
   private static final String LOCATION_NAME = "q";
   private static final String LIMIT_OF_RESULTS = "limit";
-  private static final int LIMIT_VALUE = 1;
+  private static final int LIMIT_VALUE = 5;
 
   private final RestClient restClient;
 
@@ -41,13 +41,6 @@ public class GeocodingApiRequestService {
     this.restClient = restClient;
   }
 
-  // Umlaut-Locations werden hier doppelt kodiert vom uricomponentsbuilder... Warum? keine ahnung...
-  // siehe hier:
-  // https://stackoverflow.com/questions/34321361/avoid-double-encoding-of-url-query-param-with-springs-resttemplate
-  // https://stackoverflow.com/questions/60835309/how-to-avoid-double-encoding-of-when-using-spring-resttemplate
-  // URLs werden mithilfe von %... codiert.
-  // komisch ist dass der test eine richtige kodierung vorgibt. aber der test verwendet auch einen
-  // fake restClient, vllt liegt da das problem?
 
   /**
    * Makes an API call to get the exact geographical coordinates to the given name of a location or
@@ -57,7 +50,7 @@ public class GeocodingApiRequestService {
    * @param locationName that is coming from UI
    * @return langitude & latitude of the location
    */
-  public LocationAnswerDTO retrieveLocationLonLat(String locationName) throws RuntimeException {
+  public List<LocationAnswerDTO> retrieveLocationsLonLat(String locationName) throws RuntimeException {
 
     // todo: should we include country code or something in that method?
     ResponseEntity<List<LocationAnswerDTO>> responseEntity =
@@ -91,7 +84,7 @@ public class GeocodingApiRequestService {
     // the DTO
     List<LocationAnswerDTO> locationAnswerList = responseEntity.getBody();
     if (locationAnswerList != null && !locationAnswerList.isEmpty()) {
-      return locationAnswerList.get(0);
+      return locationAnswerList;
     } else {
       // man könnte in UI dann an den user ein fenster öffnen mit
       // "we couldnt find any Locations with the name "#{WeatherApiDemoBean.locationSearchInput}""

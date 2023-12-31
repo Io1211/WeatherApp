@@ -74,7 +74,7 @@ class WeatherApiRequestServiceTest {
   public void WeatherApiRequestServiceCallsCorrectUrl() {
     double latitude = 42.0;
     double longitude = -42.0;
-    String expectedUri = "/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude;
+    String expectedUri = "/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude + "&limit=5";
 
     // Set up expectations for the MockRestServiceServer
     mockRestServiceServer
@@ -88,7 +88,7 @@ class WeatherApiRequestServiceTest {
   @Test
   public void testDtoCreationFromApiResponse() {
     mockRestServiceServer
-        .expect(requestTo("/data/3.0/onecall?lat=37.7749&lon=-122.4194"))
+        .expect(requestTo("/data/3.0/onecall?lat=37.7749&lon=-122.4194&limit=5"))
         .andRespond(withSuccess(weatherApiResponseString, MediaType.APPLICATION_JSON));
 
     CurrentAndForecastAnswerDTO actualDTOCreationResult =

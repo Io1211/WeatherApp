@@ -12,7 +12,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
 /**
  * This class is part of the skeleton project provided for students of the course "Software
  * Architecture" offered by Innsbruck University.
@@ -29,6 +28,9 @@ public class WeatherApiRequestService {
   private static final String LONGITUDE_PARAMETER = "lon";
 
   private static final String LATITUDE_PARAMETER = "lat";
+
+  private static final String LIMIT_PARAMETER = "limit";
+  private static final String LIMIT_VALUE = "5";
 
   private final RestClient restClient;
 
@@ -62,6 +64,7 @@ public class WeatherApiRequestService {
                 UriComponentsBuilder.fromPath(CURRENT_AND_FORECAST_URI)
                     .queryParam(LATITUDE_PARAMETER, String.valueOf(latitude))
                     .queryParam(LONGITUDE_PARAMETER, String.valueOf(longitude))
+                    .queryParam(LIMIT_PARAMETER, LIMIT_VALUE)
                     .build()
                     .toUriString())
             .retrieve()
