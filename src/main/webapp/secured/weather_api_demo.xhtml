@@ -28,8 +28,8 @@
     <ui:define name="content">
         <h:form id="weatherForm">
             <p:panel header="Location Search">
-                <!-- find out what happens with this input value -> it gets converted twice somehow..-->
-                <p:inputText value="#{weatherApiDemoBean.locationSearchInput}"/>
+                <p:autoComplete id="LocationAutoComplete" value="#{weatherApiDemoBean.locationSearchInput}"
+                                completeMethod="#{autoCompleteController.autoCompleteLocation}"/>
             </p:panel>
             <p:commandButton value="CommitSearchRequest"
                              action="#{weatherApiDemoBean.performLocationSearchAndWeatherRequest}"

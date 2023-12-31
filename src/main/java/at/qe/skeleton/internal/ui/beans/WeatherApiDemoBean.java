@@ -30,7 +30,6 @@ public class WeatherApiDemoBean {
 
   private List<LocationAnswerDTO> locationAnswerDTOS;
 
-
   private final Map<String, CurrentAndForecastAnswerDTO> locationNameWeatherMap = new HashMap<>();
 
   private String locationSearchInput;
