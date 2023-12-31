@@ -41,11 +41,6 @@ public class CurrentAndForecastAnswer implements Persistable<String>, Serializab
         this.timestampLastCall = ZonedDateTime.now();
     }
 
-    @PreUpdate
-    public void onUpdate() {
-        this.timestampLastCall = ZonedDateTime.now();
-    }
-
     @Override
     public String getId() {
         return String.valueOf(this.id);

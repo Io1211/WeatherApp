@@ -2,6 +2,7 @@ package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.internal.model.CurrentAndForecastAnswer;
+import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.util.IOUtils;
 import org.junit.jupiter.api.Assertions;
@@ -13,6 +14,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,9 @@ class CurrentAndForecastAnswerServiceTest {
 
     @Autowired
     CurrentAndForecastAnswerService currentAndForecastAnswerService;
+
+    @Autowired
+    CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
     private final String dataFilePath = "src/test/resources/MockCurrentAndForecastAnswers.json";
 
@@ -98,5 +103,48 @@ class CurrentAndForecastAnswerServiceTest {
             Assertions.assertEquals(controlDTO.dailyWeather(), justCreatedDTO.dailyWeather(), "The " + i + "th saved DTO doesn't have the correct dailyWeather being saved");
             Assertions.assertEquals(controlDTO.alerts(), justCreatedDTO.alerts(), "The " + i + "th saved DTO doesn't have the correct alerts being saved");
         }
+    }
+
+    @Test
+    void testGetLastHourCurrentAndForecastWeather() {
+        CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
+
+        // Create and persist the Entities to be used (to trigger the on-create setting of the timestampLastCall)
+        CurrentAndForecastAnswer answerNew = new CurrentAndForecastAnswer();
+        CurrentAndForecastAnswer answerOld = new CurrentAndForecastAnswer();
+        currentAndForecastAnswerRepository.save(answerNew);
+        currentAndForecastAnswerRepository.save(answerOld);
+
+        // Set the desired Entity attributes (i.e., change the timestampLastCall to mimic an old api call)
+        // and persist again for the changes to take effect
+        answerOld.setTimestampLastCall(ZonedDateTime.now().minusHours(5));
+        try {
+            answerNew.setWeatherData(currentAndForecastAnswerService.serializeDTO(answerDTO));
+            answerOld.setWeatherData(currentAndForecastAnswerService.serializeDTO(answerDTO));
+            currentAndForecastAnswerRepository.save(answerNew);
+            currentAndForecastAnswerRepository.save(answerOld);
+        } catch (FailedToSerializeDTOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        List<CurrentAndForecastAnswerDTO> lastHourDTOs = null;
+        try {
+            // minusMinutes(1) is used to ensure that the timestampLastCall of the query is after the one of the saved Entity previously declared in this test
+            Assertions.assertEquals(answerNew.getId(), currentAndForecastAnswerRepository.findByTimestampLastCallIsAfter(ZonedDateTime.now().minusMinutes(1)).get(0).getId(), "Id of the saved DTO doesn't match the id of the newly retrieved one");
+            lastHourDTOs = currentAndForecastAnswerService.getLastHourCurrentAndForecastWeather();
+        } catch (FailedJsonToDtoMappingException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        Assertions.assertNotNull(lastHourDTOs, "Failed to retrieve DTOs from database");
+        Assertions.assertEquals(1, lastHourDTOs.size(), "Expected DTO count = 1 but " + lastHourDTOs.size() + " was found instead");
+        CurrentAndForecastAnswerDTO lastHourDTO = lastHourDTOs.get(0);
+        Assertions.assertEquals(answerDTO.latitude(), lastHourDTO.latitude(), "The saved DTO doesn't have the correct latitude being saved");
+        Assertions.assertEquals(answerDTO.longitude(), lastHourDTO.longitude(), "The saved DTO doesn't have the correct longitude being saved");
+        Assertions.assertEquals(answerDTO.timezone(), lastHourDTO.timezone(), "The saved DTO doesn't have the correct timezone being saved");
+        Assertions.assertEquals(answerDTO.timezoneOffset(), lastHourDTO.timezoneOffset(), "The saved DTO doesn't have the correct timezoneOffset being saved");
+        Assertions.assertEquals(answerDTO.currentWeather(), lastHourDTO.currentWeather(), "The saved DTO doesn't have the correct currentWeather being saved");
+        Assertions.assertEquals(answerDTO.minutelyPrecipitation(), lastHourDTO.minutelyPrecipitation(), "The saved DTO doesn't have the correct minutelyPrecipitation being saved");
+        Assertions.assertEquals(answerDTO.hourlyWeather(), lastHourDTO.hourlyWeather(), "The saved DTO doesn't have the correct hourlyWeather being saved");
+        Assertions.assertEquals(answerDTO.dailyWeather(), lastHourDTO.dailyWeather(), "The saved DTO doesn't have the correct dailyWeather being saved");
+        Assertions.assertEquals(answerDTO.alerts(), lastHourDTO.alerts(), "The saved DTO doesn't have the correct alerts being saved");
     }
 }
