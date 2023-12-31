@@ -62,8 +62,6 @@ class GeocodingApiLocationDtoTest {
 
   @Test
   public void GeocodingApiServiceBuildsAndCallsCorrectURI() {
-
-
     // setting which call should be expected by Mockserver and how he responds.
     mockServer
         .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
@@ -78,7 +76,6 @@ class GeocodingApiLocationDtoTest {
 
   @Test
   public void geocodingApiServiceBuildsCorrectDtoObjectFromApiResponse() {
-
     mockServer
         .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
         .andExpect(method(HttpMethod.GET))

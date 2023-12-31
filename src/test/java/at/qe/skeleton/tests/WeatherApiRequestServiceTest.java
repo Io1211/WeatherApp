@@ -71,7 +71,7 @@ class WeatherApiRequestServiceTest {
   }
 
   @Test
-  public void correctUrlOfWeatherApiCall() {
+  public void WeatherApiRequestServiceCallsCorrectUrl() {
     double latitude = 42.0;
     double longitude = -42.0;
     String expectedUri = "/data/3.0/onecall?lat=" + latitude + "&lon=" + longitude;
@@ -101,6 +101,8 @@ class WeatherApiRequestServiceTest {
         "Rain", actualDTOCreationResult.hourlyWeather().get(0).weather().title());
   }
 
+
+  // todo: hier vllt eher noch überlegen was bei einem timeout passiert?
   @Test
   public void simulateConnectionError() {
     RestClient mockedRestClient = Mockito.mock(RestClient.class);
@@ -141,7 +143,7 @@ class WeatherApiRequestServiceTest {
 
   // tests if error 504 is recognized by call-Method
   @Test
-  public void apiRequestShouldThrowError5xx() {
+  public void apiRequestServiceShouldThrowErrorBecause5xx() {
     mockBackEnd.enqueue(new MockResponse().setResponseCode(504));
     assertThrows(
         HttpStatusCodeException.class,
@@ -149,7 +151,7 @@ class WeatherApiRequestServiceTest {
   }
 
   @Test
-  public void apiRequestShouldThrowError4xx() {
+  public void apiRequestServiceShouldThrowErrorBecause4xx() {
     mockBackEnd.enqueue(new MockResponse().setResponseCode(404));
     assertThrows(
         HttpStatusCodeException.class,
