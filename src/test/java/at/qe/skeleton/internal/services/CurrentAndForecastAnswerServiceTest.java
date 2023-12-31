@@ -30,6 +30,11 @@ class CurrentAndForecastAnswerServiceTest {
 
     private final String dataFilePath = "src/test/resources/MockCurrentAndForecastAnswers.json";
 
+    private void cleanDatabase() {
+        List<CurrentAndForecastAnswer> entities = currentAndForecastAnswerRepository.findAll();
+        entities.forEach(currentAndForecastAnswerRepository::delete);
+    }
+
     private CurrentAndForecastAnswerDTO loadMockResponseFromFile(String filePath) {
         ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
         try {
@@ -53,6 +58,7 @@ class CurrentAndForecastAnswerServiceTest {
         CurrentAndForecastAnswerDTO justCreatedDTO = null;
         try {
             justCreatedDTO = currentAndForecastAnswerService.findCurrentAndForecastWeatherById(Long.valueOf(savedAnswer.getId()));
+            cleanDatabase(); // Otherwise other tests will fail because of entities already saved here
         } catch (FailedJsonToDtoMappingException e) {
             e.getStackTrace();
         }
@@ -85,6 +91,7 @@ class CurrentAndForecastAnswerServiceTest {
         List<CurrentAndForecastAnswerDTO> justCreatedDTOs = null;
         try {
             justCreatedDTOs = currentAndForecastAnswerService.getAllCurrentAndForecastWeather();
+            cleanDatabase(); // Otherwise other tests will fail because of entities already saved here
         } catch (FailedJsonToDtoMappingException e) {
             e.getStackTrace();
         }
@@ -131,6 +138,7 @@ class CurrentAndForecastAnswerServiceTest {
             // minusMinutes(1) is used to ensure that the timestampLastCall of the query is after the one of the saved Entity previously declared in this test
             Assertions.assertEquals(answerNew.getId(), currentAndForecastAnswerRepository.findByTimestampLastCallIsAfter(ZonedDateTime.now().minusMinutes(1)).get(0).getId(), "Id of the saved DTO doesn't match the id of the newly retrieved one");
             lastHourDTOs = currentAndForecastAnswerService.getLastHourCurrentAndForecastWeather();
+            cleanDatabase(); // Otherwise other tests will fail because of entities already saved here
         } catch (FailedJsonToDtoMappingException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -153,15 +161,17 @@ class CurrentAndForecastAnswerServiceTest {
         CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
 
         CurrentAndForecastAnswer answer = new CurrentAndForecastAnswer();
+        CurrentAndForecastAnswer savedAnswer = null;
         try {
             answer.setWeatherData(currentAndForecastAnswerService.serializeDTO(answerDTO));
-            currentAndForecastAnswerRepository.save(answer);
+            savedAnswer = currentAndForecastAnswerRepository.save(answer);
         } catch (FailedToSerializeDTOException e) {
             throw new RuntimeException(e.getMessage());
         }
         CurrentAndForecastAnswerDTO lastHourDTO = null;
         try {
-            lastHourDTO = currentAndForecastAnswerService.findCurrentAndForecastWeatherById(1L);
+            lastHourDTO = currentAndForecastAnswerService.findCurrentAndForecastWeatherById(Long.valueOf(savedAnswer.getId()));
+            cleanDatabase();
         } catch (FailedJsonToDtoMappingException e) {
             throw new RuntimeException(e.getMessage());
         }
