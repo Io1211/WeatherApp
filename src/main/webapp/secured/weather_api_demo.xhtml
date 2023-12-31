@@ -43,7 +43,7 @@
                         <h:outputText value="#{locationWeatherEntry.key}"/>
                     </h:column>
                     <h:column>
-                        <h:outputText value="#{locationWeatherEntry.value}"/>
+                        <h:outputText value="#{locationWeatherEntry.value.currentWeather().weather().title()}" escape="false"/>
                     </h:column>
                     </h:dataTable>
                 </div>

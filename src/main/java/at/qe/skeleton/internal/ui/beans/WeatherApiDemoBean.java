@@ -34,7 +34,7 @@ public class WeatherApiDemoBean {
   private List<LocationAnswerDTO> locationAnswerDTOS;
 
 
-  private final Map<String, String> locationNameWeatherMap = new HashMap<>();
+  private final Map<String, CurrentAndForecastAnswerDTO> locationNameWeatherMap = new HashMap<>();
 
   private String locationSearchInput;
 
@@ -50,7 +50,6 @@ public class WeatherApiDemoBean {
   // an dieser Stelle sind umlaute noch umlaute (= unkodiert)
   public void setLocationSearchInput(String locationSearchInput) {
     this.locationSearchInput = locationSearchInput;
-
   }
 
   public void performLocationSearch() {
@@ -59,7 +58,9 @@ public class WeatherApiDemoBean {
   }
 
   public void performLocationSearchAndWeatherRequest() {
+    LOGGER.debug("Performing location search and weather request");
     this.performLocationSearch();
+    LOGGER.debug("Number of location answers: {}", locationAnswerDTOS.size());
     this.locationAnswerDTOS.forEach(this::performWeatherApiRequest);
   }
 
@@ -68,14 +69,9 @@ public class WeatherApiDemoBean {
       CurrentAndForecastAnswerDTO answer =
           this.weatherApiRequestService.retrieveCurrentAndForecastWeather(
               locationAnswerDTO.latitude(), locationAnswerDTO.longitude());
-      ObjectMapper mapper =
-          new ObjectMapper().findAndRegisterModules().enable(SerializationFeature.INDENT_OUTPUT);
-      String plainTextAnswer = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(answer);
-      String escapedHtmlAnswer = StringEscapeUtils.escapeHtml4(plainTextAnswer);
-      String escapedHtmlAnswerWithLineBreaks =
-          escapedHtmlAnswer.replace("\n", "<br>").replace(" ", "&nbsp;");
 
-      this.setLocationAnswerWithCurrentWeather(locationAnswerDTO, escapedHtmlAnswerWithLineBreaks);
+      this.setLocationAnswerWithCurrentWeather(locationAnswerDTO, answer);
+      LOGGER.debug("Added entry to locationNameWeatherMap. Map size: {}", locationNameWeatherMap.size());
 
     } catch (final Exception e) {
       LOGGER.error("error in request", e);
@@ -83,14 +79,19 @@ public class WeatherApiDemoBean {
   }
 
 
-  private void setLocationAnswerWithCurrentWeather(LocationAnswerDTO locationAnswer, String currentWeather) {
-    String locationName = locationAnswer.name();
-    this.locationNameWeatherMap.put(locationName, currentWeather);
+  private void setLocationAnswerWithCurrentWeather(LocationAnswerDTO locationAnswer, CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO) {
+    // need name and country, otherwise it will only update the single entry in the set,
+    // because all the names are "berlin", wherefore no new entry is added.
+
+    //todo: if state is null we dont want to display it.
+    String locationName = "%s, %s, %s".formatted(locationAnswer.name(), locationAnswer.country(), locationAnswer.state());
+    this.locationNameWeatherMap.put(locationName, currentAndForecastAnswerDTO);
   }
 
   // need to convert the map to List of Entries in order to display it with primefaces ui.
   // as soon as Leo is ready with location & weatherResponse Entities we can use a list of those instead of a map in the Bean.
-  public List<Map.Entry<String, String>> getLocationNameWeatherMapEntryList() {
+  public List<Map.Entry<String, CurrentAndForecastAnswerDTO>> getLocationNameWeatherMapEntryList() {
+    //todo: somehow the entries of the table now add up, we only want the current ones..
     return new ArrayList<>(locationNameWeatherMap.entrySet());
   }
 
