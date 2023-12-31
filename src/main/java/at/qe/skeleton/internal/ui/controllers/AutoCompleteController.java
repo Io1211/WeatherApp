@@ -21,31 +21,25 @@ public class AutoCompleteController {
   GeocodingApiRequestService geocodingApiRequestService;
   WeatherApiRequestService weatherApiRequestService;
 
-  //todo: it should only depict one value now, since we pick from autocomplete now.
-  //todo: dont store the responses
-  //todo: refactor WeatherApiDemoBean so that it fits the purpose
-  //todo: if state is null it should not show that.
+  // todo: it should only depict one value now, since we pick from autocomplete now.
+  // todo: dont store the responses
+  // todo: refactor WeatherApiDemoBean so that it fits the purpose
+  // todo: if state is null it should not show that.
   public AutoCompleteController(
       GeocodingApiRequestService geocodingApiRequestService,
       WeatherApiRequestService weatherApiRequestService) {
     this.geocodingApiRequestService = geocodingApiRequestService;
     this.weatherApiRequestService = weatherApiRequestService;
   }
-  ;
 
   public List<String> autoCompleteLocation(String query) {
     String queryLowerCase = query.toLowerCase();
-    List<String> locationList = new ArrayList<>();
     List<LocationAnswerDTO> locationAnswerDTOList =
-        geocodingApiRequestService.retrieveLocationsLonLat(query);
-    // todo: fertig schreiben
-    List<String> locationNames =
-        locationAnswerDTOList.stream()
-            .map(
-                location ->
-                    String.format(
-                        "%s, %s, %s", location.name(), location.country(), location.state()))
-            .toList();
-    return locationNames;
+        geocodingApiRequestService.retrieveLocationsLonLat(queryLowerCase);
+    return locationAnswerDTOList.stream()
+        .map(
+            location ->
+                String.format("%s, %s, %s", location.name(), location.country(), location.state()))
+        .toList();
   }
 }

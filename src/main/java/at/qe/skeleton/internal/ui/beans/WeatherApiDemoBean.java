@@ -75,6 +75,9 @@ public class WeatherApiDemoBean {
     // because all the names are "berlin", wherefore no new entry is added.
 
     //todo: if state is null we dont want to display it.
+    //todo: iso Länder codes ausschreiben..
+    //todo: states evtl übersetzen wenn deutschsprachig?
+
     String locationName = "%s, %s, %s".formatted(locationAnswer.name(), locationAnswer.country(), locationAnswer.state());
     this.locationNameWeatherMap.put(locationName, currentAndForecastAnswerDTO);
   }
