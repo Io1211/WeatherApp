@@ -1,5 +1,8 @@
 package at.qe.skeleton.tests;
 
+import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.model.UserxRole;
+import at.qe.skeleton.internal.services.UserxService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Sets;
@@ -9,13 +12,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import at.qe.skeleton.internal.model.Userx;
-import at.qe.skeleton.internal.model.UserxRole;
-import at.qe.skeleton.internal.services.UserxService;
-
 /**
  * Some very basic tests for {@link UserxService}.
- *
+ * <p>
  * This class is part of the skeleton project provided for students of the
  * courses "Software Architecture" and "Software Engineering" offered by the
  * University of Innsbruck.
@@ -43,14 +42,14 @@ public class UserServiceTest {
                 Assertions.assertNotNull(user.getCreateUser(), "User \"" + user + "\" does not have a createUser defined");
                 Assertions.assertNotNull(user.getCreateDate(), "User \"" + user + "\" does not have a createDate defined");
                 Assertions.assertNull(user.getUpdateUser(), "User \"" + user + "\" has a updateUser defined");
-                Assertions.assertNull(user.getUpdateDate(), "User \"" + user +"\" has a updateDate defined");
+                Assertions.assertNull(user.getUpdateDate(), "User \"" + user + "\" has a updateDate defined");
             } else if ("user2".equals(user.getUsername())) {
                 Assertions.assertTrue(user.getRoles().contains(UserxRole.EMPLOYEE), "User \"" + user + "\" does not have role EMPLOYEE");
                 Assertions.assertNotNull(user.getCreateUser(), "User \"" + user + "\" does not have a createUser defined");
                 Assertions.assertNotNull(user.getCreateDate(), "User \"" + user + "\" does not have a createDate defined");
                 Assertions.assertNull(user.getUpdateUser(), "User \"" + user + "\" has a updateUser defined");
                 Assertions.assertNull(user.getUpdateDate(), "User \"" + user + "\" has a updateDate defined");
-            } else  if ("elvis".equals(user.getUsername())) {
+            } else if ("elvis".equals(user.getUsername())) {
                 Assertions.assertTrue(user.getRoles().contains(UserxRole.ADMIN), "User \"" + user + "\" does not have role ADMIN");
                 Assertions.assertNotNull(user.getCreateUser(), "User \"" + user + "\" does not have a createUser defined");
                 Assertions.assertNotNull(user.getCreateDate(), "User \"" + user + "\" does not have a createDate defined");
@@ -134,7 +133,8 @@ public class UserServiceTest {
         Userx freshlyCreatedUser = userService.loadUser(username);
         Assertions.assertNotNull(freshlyCreatedUser, "New user could not be loaded from test data source after being saved");
         Assertions.assertEquals(username, freshlyCreatedUser.getUsername(), "New user could not be loaded from test data source after being saved");
-        Assertions.assertEquals(password, freshlyCreatedUser.getPassword(), "User \"" + username + "\" does not have a the correct password attribute stored being saved");
+        // compare the saved password (encrypted), not the password field (plain text) with the user service retrieved (also encrypted) password
+        Assertions.assertEquals(toBeCreatedUser.getPassword(), freshlyCreatedUser.getPassword(), "User \"" + username + "\" does not have a the correct password attribute stored being saved");
         Assertions.assertEquals(fName, freshlyCreatedUser.getFirstName(), "User \"" + username + "\" does not have a the correct firstName attribute stored being saved");
         Assertions.assertEquals(lName, freshlyCreatedUser.getLastName(), "User \"" + username + "\" does not have a the correct lastName attribute stored being saved");
         Assertions.assertEquals(email, freshlyCreatedUser.getEmail(), "User \"" + username + "\" does not have a the correct email attribute stored being saved");

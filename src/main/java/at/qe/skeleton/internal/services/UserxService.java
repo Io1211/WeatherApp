@@ -1,17 +1,17 @@
 package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
-
-import java.util.Collection;
-
+import at.qe.skeleton.internal.repositories.UserxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import at.qe.skeleton.internal.repositories.UserxRepository;
+
+import java.util.Collection;
 
 /**
  * Service for accessing and manipulating user data.
@@ -59,10 +59,16 @@ public class UserxService {
      * @return the updated user
      */
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Userx saveUser(Userx user) {
+    public Userx saveUser(Userx user) throws JpaSystemException {
         if (user.isNew()) {
             user.setCreateUser(getAuthenticatedUser());
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            String password = user.getPassword();
+            // Passing null as an argument to the encoder throws IllegalArgumentException,
+            // but we want JpaSystemException
+            if (password == null) {
+                throw new JpaSystemException(new RuntimeException("Password can't be empty"));
+            }
+            user.setPassword(passwordEncoder.encode(password));
         } else {
             user.setUpdateUser(getAuthenticatedUser());
         }
@@ -84,5 +90,4 @@ public class UserxService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userRepository.findFirstByUsername(auth.getName());
     }
-
 }
