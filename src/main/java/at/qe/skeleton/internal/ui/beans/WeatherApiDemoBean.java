@@ -38,16 +38,11 @@ public class WeatherApiDemoBean {
 
   private String locationSearchInput;
 
-  // hardcoded limit - i.e. the number of locations in the API response
-  // TODO: Maybe make it possible to show more than one result from the api
-  //          -> in that case the result should not be stored in single LocationAnswerDTO but
-  // multiple LocationAnswerDTOs
 
   public String getLocationSearchInput() {
     return locationSearchInput;
   }
 
-  // an dieser Stelle sind umlaute noch umlaute (= unkodiert)
   public void setLocationSearchInput(String locationSearchInput) {
     this.locationSearchInput = locationSearchInput;
   }
