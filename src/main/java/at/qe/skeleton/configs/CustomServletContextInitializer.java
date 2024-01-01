@@ -8,18 +8,18 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Spring configuration for servlet context.
- * <p>
- * This class is part of the skeleton project provided for students of the
- * course "Software Architecture" offered by Innsbruck University.
+ *
+ * <p>This class is part of the skeleton project provided for students of the course "Software
+ * Architecture" offered by Innsbruck University.
  */
 @Configuration
 public class CustomServletContextInitializer implements ServletContextInitializer {
 
-    @Override
-    public void onStartup(ServletContext sc) throws ServletException {
-        sc.setInitParameter("jakarta.faces.PROJECT_STAGE", "Development");
-        sc.setInitParameter("jakarta.faces.STATE_SAVING_METHOD", "server");
-        sc.setInitParameter("jakarta.faces.FACELETS_SKIP_COMMENTS", "true");
-        sc.setInitParameter("jakarta.faces.DEFAULT_SUFFIX", ".xhtml");
-    }
+  @Override
+  public void onStartup(ServletContext sc) throws ServletException {
+    sc.setInitParameter("jakarta.faces.PROJECT_STAGE", "Development");
+    sc.setInitParameter("jakarta.faces.STATE_SAVING_METHOD", "server");
+    sc.setInitParameter("jakarta.faces.FACELETS_SKIP_COMMENTS", "true");
+    sc.setInitParameter("jakarta.faces.DEFAULT_SUFFIX", ".xhtml");
+  }
 }
