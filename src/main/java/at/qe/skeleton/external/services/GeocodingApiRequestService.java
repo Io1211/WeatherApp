@@ -16,7 +16,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
-
 @Scope("application")
 @Component
 @Validated // makes sure the parameter validation annotations are checked during runtime
@@ -41,14 +40,6 @@ public class GeocodingApiRequestService {
     this.restClient = restClient;
   }
 
-  // Umlaut-Locations werden hier doppelt kodiert vom uricomponentsbuilder... Warum? keine ahnung...
-  // siehe hier:
-  // https://stackoverflow.com/questions/34321361/avoid-double-encoding-of-url-query-param-with-springs-resttemplate
-  // https://stackoverflow.com/questions/60835309/how-to-avoid-double-encoding-of-when-using-spring-resttemplate
-  // URLs werden mithilfe von %... codiert.
-  // komisch ist dass der test eine richtige kodierung vorgibt. aber der test verwendet auch einen
-  // fake restClient, vllt liegt da das problem?
-
   /**
    * Makes an API call to get the exact geographical coordinates to the given name of a location or
    * zip/post code <br>
@@ -67,8 +58,6 @@ public class GeocodingApiRequestService {
                 UriComponentsBuilder.fromPath(GEOCODING_URI)
                     .queryParam(LOCATION_NAME, locationName)
                     .queryParam(LIMIT_OF_RESULTS, String.valueOf(LIMIT_VALUE))
-                    // if i set build(encoded: true) then it says: invalid character "ö" but if i
-                    // leave it false or default then it gets double encoded...?
                     .build()
                     .toUriString())
             .retrieve()
@@ -93,11 +82,9 @@ public class GeocodingApiRequestService {
     if (locationAnswerList != null && !locationAnswerList.isEmpty()) {
       return locationAnswerList.get(0);
     } else {
-      // man könnte in UI dann an den user ein fenster öffnen mit
-      // "we couldnt find any Locations with the name "#{WeatherApiDemoBean.locationSearchInput}""
+      // todo: think about error handling...
+      //  what if no search results from api? show error in frontend...
       throw new RuntimeException("GeocodingApiRequest returned no LocationAnswerDTO");
     }
-
-    // todo introduce error handling using responseEntity.getStatusCode.isXXXError
   }
 }

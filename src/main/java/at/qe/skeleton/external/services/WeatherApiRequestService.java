@@ -12,7 +12,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
 /**
  * This class is part of the skeleton project provided for students of the course "Software
  * Architecture" offered by Innsbruck University.
@@ -50,7 +49,6 @@ public class WeatherApiRequestService {
    */
 
   // todo: decide what happens when 4xx or 5xx status code is retrieved from API.
-  //  We might set the limit to 5 and make user choose exact location.
   // HttpStatusCodeException?
   public CurrentAndForecastAnswerDTO retrieveCurrentAndForecastWeather(
       @Min(-90) @Max(90) double latitude, @Min(-180) @Max(180) double longitude) {
