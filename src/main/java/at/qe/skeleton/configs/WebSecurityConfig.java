@@ -52,6 +52,9 @@ public class WebSecurityConfig {
                             .requestMatchers(new AntPathRequestMatcher("/error/**")).permitAll()
                             .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasAnyAuthority("ADMIN")
                             .requestMatchers(new AntPathRequestMatcher("/secured/**")).hasAnyAuthority(ADMIN, MANAGER, EMPLOYEE)
+                            .requestMatchers("/registration.xhtml").permitAll()
+                            .requestMatchers("/resetPassword.xhtml").permitAll()
+                            .requestMatchers("/requestNewPassword.xhtml").permitAll()
                             .anyRequest().authenticated()
                     )
                     .formLogin(form -> form
