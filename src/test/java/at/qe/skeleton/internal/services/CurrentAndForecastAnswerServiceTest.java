@@ -3,6 +3,7 @@ package at.qe.skeleton.internal.services;
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.internal.model.CurrentAndForecastAnswer;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.util.IOUtils;
 import org.junit.jupiter.api.Assertions;
@@ -17,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 @SpringBootTest
 @WebAppConfiguration
@@ -45,6 +48,18 @@ class CurrentAndForecastAnswerServiceTest {
         }
     }
 
+    private void checkDTO(CurrentAndForecastAnswerDTO referenceDTO, CurrentAndForecastAnswerDTO toTestDTO) {
+        Assertions.assertEquals(referenceDTO.latitude(), toTestDTO.latitude(), "The saved DTO doesn't have the correct latitude being saved");
+        Assertions.assertEquals(referenceDTO.longitude(), toTestDTO.longitude(), "The saved DTO doesn't have the correct longitude being saved");
+        Assertions.assertEquals(referenceDTO.timezone(), toTestDTO.timezone(), "The saved DTO doesn't have the correct timezone being saved");
+        Assertions.assertEquals(referenceDTO.timezoneOffset(), toTestDTO.timezoneOffset(), "The saved DTO doesn't have the correct timezoneOffset being saved");
+        Assertions.assertEquals(referenceDTO.currentWeather(), toTestDTO.currentWeather(), "The saved DTO doesn't have the correct currentWeather being saved");
+        Assertions.assertEquals(referenceDTO.minutelyPrecipitation(), toTestDTO.minutelyPrecipitation(), "The saved DTO doesn't have the correct minutelyPrecipitation being saved");
+        Assertions.assertEquals(referenceDTO.hourlyWeather(), toTestDTO.hourlyWeather(), "The saved DTO doesn't have the correct hourlyWeather being saved");
+        Assertions.assertEquals(referenceDTO.dailyWeather(), toTestDTO.dailyWeather(), "The saved DTO doesn't have the correct dailyWeather being saved");
+        Assertions.assertEquals(referenceDTO.alerts(), toTestDTO.alerts(), "The saved DTO doesn't have the correct alerts being saved");
+    }
+
     @Test
     void testSaveWeather() {
         CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
@@ -63,15 +78,7 @@ class CurrentAndForecastAnswerServiceTest {
             e.getStackTrace();
         }
         Assertions.assertNotNull(justCreatedDTO, "No weather DTO found in the database by the id " + savedAnswer.getId());
-        Assertions.assertEquals(answerDTO.latitude(), justCreatedDTO.latitude(), "The saved DTO doesn't have the correct latitude being saved");
-        Assertions.assertEquals(answerDTO.longitude(), justCreatedDTO.longitude(), "The saved DTO doesn't have the correct longitude being saved");
-        Assertions.assertEquals(answerDTO.timezone(), justCreatedDTO.timezone(), "The saved DTO doesn't have the correct timezone being saved");
-        Assertions.assertEquals(answerDTO.timezoneOffset(), justCreatedDTO.timezoneOffset(), "The saved DTO doesn't have the correct timezoneOffset being saved");
-        Assertions.assertEquals(answerDTO.currentWeather(), justCreatedDTO.currentWeather(), "The saved DTO doesn't have the correct currentWeather being saved");
-        Assertions.assertEquals(answerDTO.minutelyPrecipitation(), justCreatedDTO.minutelyPrecipitation(), "The saved DTO doesn't have the correct minutelyPrecipitation being saved");
-        Assertions.assertEquals(answerDTO.hourlyWeather(), justCreatedDTO.hourlyWeather(), "The saved DTO doesn't have the correct hourlyWeather being saved");
-        Assertions.assertEquals(answerDTO.dailyWeather(), justCreatedDTO.dailyWeather(), "The saved DTO doesn't have the correct dailyWeather being saved");
-        Assertions.assertEquals(answerDTO.alerts(), justCreatedDTO.alerts(), "The saved DTO doesn't have the correct alerts being saved");
+        checkDTO(answerDTO, justCreatedDTO);
     }
 
     @Test
@@ -97,19 +104,11 @@ class CurrentAndForecastAnswerServiceTest {
         }
         Assertions.assertNotNull(justCreatedDTOs, "Failed to retrieve saved DTOs from the database");
         Assertions.assertEquals(justCreatedDTOs.size(), answerDTOList.size(), "The count of retrieved DTOs doesn't match the count of initially stored ones");
-        for (int i = 0; i < answerDTOList.size(); i++) {
-            CurrentAndForecastAnswerDTO justCreatedDTO = justCreatedDTOs.get(i);
-            CurrentAndForecastAnswerDTO controlDTO = answerDTOList.get(i);
-            Assertions.assertEquals(controlDTO.latitude(), justCreatedDTO.latitude(), "The " + i + "th saved DTO doesn't have the correct latitude being saved");
-            Assertions.assertEquals(controlDTO.longitude(), justCreatedDTO.longitude(), "The " + i + "th saved DTO doesn't have the correct longitude being saved");
-            Assertions.assertEquals(controlDTO.timezone(), justCreatedDTO.timezone(), "The " + i + "th saved DTO doesn't have the correct timezone being saved");
-            Assertions.assertEquals(controlDTO.timezoneOffset(), justCreatedDTO.timezoneOffset(), "The " + i + "th saved DTO doesn't have the correct timezoneOffset being saved");
-            Assertions.assertEquals(controlDTO.currentWeather(), justCreatedDTO.currentWeather(), "The " + i + "th saved DTO doesn't have the correct currentWeather being saved");
-            Assertions.assertEquals(controlDTO.minutelyPrecipitation(), justCreatedDTO.minutelyPrecipitation(), "The " + i + "th saved DTO doesn't have the correct minutelyPrecipitation being saved");
-            Assertions.assertEquals(controlDTO.hourlyWeather(), justCreatedDTO.hourlyWeather(), "The " + i + "th saved DTO doesn't have the correct hourlyWeather being saved");
-            Assertions.assertEquals(controlDTO.dailyWeather(), justCreatedDTO.dailyWeather(), "The " + i + "th saved DTO doesn't have the correct dailyWeather being saved");
-            Assertions.assertEquals(controlDTO.alerts(), justCreatedDTO.alerts(), "The " + i + "th saved DTO doesn't have the correct alerts being saved");
-        }
+        List<CurrentAndForecastAnswerDTO> finalJustCreatedDTOs = justCreatedDTOs;
+        IntStream.range(0, justCreatedDTOs.size()).forEach(i -> {
+            Logger.getLogger(CurrentAndForecastAnswerServiceTest.class.getName()).info("Checking the " + i + "th DTO ");
+            checkDTO(answerDTOList.get(i), finalJustCreatedDTOs.get(i));
+        });
     }
 
     @Test
@@ -145,15 +144,7 @@ class CurrentAndForecastAnswerServiceTest {
         Assertions.assertNotNull(lastHourDTOs, "Failed to retrieve DTOs from database");
         Assertions.assertEquals(1, lastHourDTOs.size(), "Expected DTO count = 1 but " + lastHourDTOs.size() + " was found instead");
         CurrentAndForecastAnswerDTO lastHourDTO = lastHourDTOs.get(0);
-        Assertions.assertEquals(answerDTO.latitude(), lastHourDTO.latitude(), "The saved DTO doesn't have the correct latitude being saved");
-        Assertions.assertEquals(answerDTO.longitude(), lastHourDTO.longitude(), "The saved DTO doesn't have the correct longitude being saved");
-        Assertions.assertEquals(answerDTO.timezone(), lastHourDTO.timezone(), "The saved DTO doesn't have the correct timezone being saved");
-        Assertions.assertEquals(answerDTO.timezoneOffset(), lastHourDTO.timezoneOffset(), "The saved DTO doesn't have the correct timezoneOffset being saved");
-        Assertions.assertEquals(answerDTO.currentWeather(), lastHourDTO.currentWeather(), "The saved DTO doesn't have the correct currentWeather being saved");
-        Assertions.assertEquals(answerDTO.minutelyPrecipitation(), lastHourDTO.minutelyPrecipitation(), "The saved DTO doesn't have the correct minutelyPrecipitation being saved");
-        Assertions.assertEquals(answerDTO.hourlyWeather(), lastHourDTO.hourlyWeather(), "The saved DTO doesn't have the correct hourlyWeather being saved");
-        Assertions.assertEquals(answerDTO.dailyWeather(), lastHourDTO.dailyWeather(), "The saved DTO doesn't have the correct dailyWeather being saved");
-        Assertions.assertEquals(answerDTO.alerts(), lastHourDTO.alerts(), "The saved DTO doesn't have the correct alerts being saved");
+        checkDTO(answerDTO, lastHourDTO);
     }
 
     @Test
@@ -176,14 +167,54 @@ class CurrentAndForecastAnswerServiceTest {
             throw new RuntimeException(e.getMessage());
         }
         Assertions.assertNotNull(lastHourDTO, "Failed to retrieve DTO with id 1 from the database");
-        Assertions.assertEquals(answerDTO.latitude(), lastHourDTO.latitude(), "The saved DTO doesn't have the correct latitude being saved");
-        Assertions.assertEquals(answerDTO.longitude(), lastHourDTO.longitude(), "The saved DTO doesn't have the correct longitude being saved");
-        Assertions.assertEquals(answerDTO.timezone(), lastHourDTO.timezone(), "The saved DTO doesn't have the correct timezone being saved");
-        Assertions.assertEquals(answerDTO.timezoneOffset(), lastHourDTO.timezoneOffset(), "The saved DTO doesn't have the correct timezoneOffset being saved");
-        Assertions.assertEquals(answerDTO.currentWeather(), lastHourDTO.currentWeather(), "The saved DTO doesn't have the correct currentWeather being saved");
-        Assertions.assertEquals(answerDTO.minutelyPrecipitation(), lastHourDTO.minutelyPrecipitation(), "The saved DTO doesn't have the correct minutelyPrecipitation being saved");
-        Assertions.assertEquals(answerDTO.hourlyWeather(), lastHourDTO.hourlyWeather(), "The saved DTO doesn't have the correct hourlyWeather being saved");
-        Assertions.assertEquals(answerDTO.dailyWeather(), lastHourDTO.dailyWeather(), "The saved DTO doesn't have the correct dailyWeather being saved");
-        Assertions.assertEquals(answerDTO.alerts(), lastHourDTO.alerts(), "The saved DTO doesn't have the correct alerts being saved");
+        checkDTO(answerDTO, lastHourDTO);
+    }
+
+    @Test
+    void testDeserializeDTO() {
+        CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
+        ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+        byte[] serializedDTO = null;
+        try {
+            serializedDTO = mapper.writeValueAsBytes(answerDTO);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        Assertions.assertNotNull(serializedDTO, "Failed to serialize the DTO");
+        CurrentAndForecastAnswerDTO deserializedDTO = null;
+        try {
+            deserializedDTO = currentAndForecastAnswerService.deserializeDTO(serializedDTO);
+        } catch (FailedJsonToDtoMappingException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        Assertions.assertNotNull(deserializedDTO, "Failed to deserialize the DTO");
+        checkDTO(answerDTO, deserializedDTO);
+        Assertions.assertThrows(FailedJsonToDtoMappingException.class, () -> {
+            // Appending random strings AFTER the DTO string doesn't cause issues as the mapping can be done as planed
+            // and the rest is just discarded I guess
+            String faultyStringDTO = "[This should mess up the mapping to DTO]," + mapper.writeValueAsString(answerDTO);
+            System.out.println(faultyStringDTO);
+            CurrentAndForecastAnswerDTO mappedDTO = currentAndForecastAnswerService.deserializeDTO(faultyStringDTO.getBytes());
+        });
+    }
+
+    @Test
+    void testSerializeDTO() {
+        CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
+        byte[] serializedDTO = null;
+        try {
+            serializedDTO = currentAndForecastAnswerService.serializeDTO(answerDTO);
+        } catch (FailedToSerializeDTOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        Assertions.assertNotNull(serializedDTO, "Failed to serialize the DTO");
+        CurrentAndForecastAnswerDTO retrievedDTO = null;
+        try {
+            retrievedDTO = currentAndForecastAnswerService.deserializeDTO(serializedDTO);
+        } catch (FailedJsonToDtoMappingException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        Assertions.assertNotNull(retrievedDTO, "Failed to deserialize serialized DTO");
+        Assertions.assertEquals(answerDTO, retrievedDTO, "DTO doesn't match initial state after serialization and deserialization cycle");
     }
 }
