@@ -1,7 +1,7 @@
-package at.qe.skeleton.ui.controllers;
+package at.qe.skeleton.internal.ui.controllers;
 
-import at.qe.skeleton.model.AuditLog;
-import at.qe.skeleton.services.AuditLogService;
+import at.qe.skeleton.internal.model.AuditLog;
+import at.qe.skeleton.internal.services.AuditLogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

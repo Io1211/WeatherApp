@@ -1,4 +1,4 @@
-package at.qe.skeleton.model;
+package at.qe.skeleton.internal.model;
 
 import jakarta.persistence.*;
 import org.springframework.data.domain.Persistable;

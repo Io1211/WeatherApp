@@ -1,8 +1,8 @@
-package at.qe.skeleton.services;
+package at.qe.skeleton.internal.services;
 
-import at.qe.skeleton.model.AuditLog;
-import at.qe.skeleton.repositories.AuditLogRepository;
-import at.qe.skeleton.model.Userx;
+import at.qe.skeleton.internal.model.AuditLog;
+import at.qe.skeleton.internal.repositories.AuditLogRepository;
+import at.qe.skeleton.internal.model.Userx;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

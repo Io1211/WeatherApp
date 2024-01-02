@@ -1,7 +1,7 @@
-package at.qe.skeleton.repositories;
+package at.qe.skeleton.internal.repositories;
 
-import at.qe.skeleton.model.AuditLog;
-import at.qe.skeleton.model.Userx;
+import at.qe.skeleton.internal.model.AuditLog;
+import at.qe.skeleton.internal.model.Userx;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
