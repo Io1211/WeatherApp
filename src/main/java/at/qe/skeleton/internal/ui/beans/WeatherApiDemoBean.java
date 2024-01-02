@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.time.ZonedDateTime;
 import java.util.*;
 
 /**
@@ -64,7 +65,7 @@ public class WeatherApiDemoBean {
     return (tempInFahrenheit - 30) * 5 / 9;
   }
 
-  public
+  public ZonedDateTime getSunsetDateTime() {}
 
   public LocationAnswerDTO getLocationAnswerDTO() {
     return locationAnswerDTO;
