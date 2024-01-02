@@ -33,8 +33,8 @@ public class AutoCompleteController {
   }
 
   // todo: still not sure if this is the right way... is it meant to do that? but how could we
-  // search for
-  //  cities otherwise?
+  // search for cities otherwise? maybe like this:
+  // https://www.youtube.com/watch?v=xBqEWbirtvA
   public List<String> autoCompleteLocation(String query) {
     String queryLowerCase = query.toLowerCase();
     List<LocationAnswerDTO> locationAnswerDTOList =
