@@ -32,6 +32,15 @@ public class WeatherApiDemoBean {
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
   private LocationAnswerDTO locationAnswerDTO;
+
+  // this definitely gets checked by jsf after it is set to true. still the component with the
+  // weather ist not loading...
+  private boolean isLocationAnswerDTOReady = false;
+
+  public boolean getIsLocationAnswerDTOReady() {
+    return isLocationAnswerDTOReady;
+  }
+
   private CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO;
 
   public void performLocationSearchAndWeatherRequest() {
@@ -45,6 +54,7 @@ public class WeatherApiDemoBean {
       List<LocationAnswerDTO> locationAnswerDTOList =
           this.geocodingApiRequestService.retrieveLocationsLonLat(input, 1);
       this.locationAnswerDTO = locationAnswerDTOList.get(0);
+      isLocationAnswerDTOReady = true;
     } catch (final Exception e) {
       // todo: add real logic for handling errors in ui
       LOGGER.error("error in GeocodingAPI request");

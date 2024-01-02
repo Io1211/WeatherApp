@@ -30,7 +30,6 @@ public class WeatherApiRequestService {
   private static final String LATITUDE_PARAMETER = "lat";
 
   private static final String LIMIT_PARAMETER = "limit";
-  private static final String LIMIT_VALUE = "5";
 
   private final RestClient restClient;
 
@@ -64,7 +63,6 @@ public class WeatherApiRequestService {
                 UriComponentsBuilder.fromPath(CURRENT_AND_FORECAST_URI)
                     .queryParam(LATITUDE_PARAMETER, String.valueOf(latitude))
                     .queryParam(LONGITUDE_PARAMETER, String.valueOf(longitude))
-                    .queryParam(LIMIT_PARAMETER, LIMIT_VALUE)
                     .build()
                     .toUriString())
             .retrieve()

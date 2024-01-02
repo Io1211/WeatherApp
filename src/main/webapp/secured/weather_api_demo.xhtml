@@ -34,10 +34,15 @@
             </p:panel>
             <p:commandButton value="CommitSearchRequest"
                              action="#{weatherApiDemoBean.performLocationSearchAndWeatherRequest}"
-                             update=":weatherForm:Response">
-                <p:ajax update="Response"/>
+                             update="Response"
+                             oncomplete="console.log('Ajax request complete!')">
             </p:commandButton>
-            <p:panel header="Response" id="Response">
+
+            <p:panel rendered="#{! weatherApiDemoBean.isLocationAnswerDTOReady}">
+                <h:outputText>Sorry, your Weather has not been loaded yet</h:outputText>
+            </p:panel>
+            <p:panel header="Response" id="Response"
+                     rendered="#{weatherApiDemoBean.isLocationAnswerDTOReady}">
                 <div>
                     <h5 style="margin-top:0">Current Weather</h5>
                     <h:panelGrid columns="2">
@@ -51,10 +56,7 @@
                         <h:outputText value="Sunrise"/>
                         <h:outputText
                                 value="#{weatherApiDemoBean.currentAndForecastAnswerDTO.currentWeather().sunrise()}"/>
-
-
                     </h:panelGrid>
-
                 </div>
             </p:panel>
         </h:form>
