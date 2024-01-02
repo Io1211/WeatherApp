@@ -55,6 +55,7 @@ public class WeatherApiDemoBean {
           this.geocodingApiRequestService.retrieveLocationsLonLat(input, 1);
       this.locationAnswerDTO = locationAnswerDTOList.get(0);
       isLocationAnswerDTOReady = true;
+      LOGGER.info("performLocationSearch completed. isLocationAnswerDTOReady set to true.");
     } catch (final Exception e) {
       // todo: add real logic for handling errors in ui
       LOGGER.error("error in GeocodingAPI request");

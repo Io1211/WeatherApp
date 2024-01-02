@@ -32,24 +32,18 @@
                 <p:autoComplete id="LocationAutoComplete" value="#{weatherApiDemoBean.locationSearchInput}"
                                 completeMethod="#{autoCompleteController.autoCompleteLocation}"/>
             </p:panel>
-            <p:commandButton value="CommitSearchRequest"
+            <p:commandButton value="CommitSearchRequest" id="commitSearchRequest"
                              action="#{weatherApiDemoBean.performLocationSearchAndWeatherRequest}"
-                             update="Response"
-                             oncomplete="console.log('Ajax request complete!')">
+                             update="weatherForm">
             </p:commandButton>
 
-            <p:panel rendered="#{! weatherApiDemoBean.isLocationAnswerDTOReady}">
-                <h:outputText>Sorry, your Weather has not been loaded yet</h:outputText>
-            </p:panel>
-            <p:panel header="Response" id="Response"
-                     rendered="#{weatherApiDemoBean.isLocationAnswerDTOReady}">
+            <p:panel header="Response" id="Response" rendered="#{weatherApiDemoBean.isLocationAnswerDTOReady}">
                 <div>
                     <h5 style="margin-top:0">Current Weather</h5>
                     <h:panelGrid columns="2">
                         <h:outputText value="Weather Description"/>
                         <h:outputText
                                 value="#{weatherApiDemoBean.currentAndForecastAnswerDTO.currentWeather().weather().description()}"/>
-
                         <h:outputText value="Temperature"/>
                         <h:outputText value="#{weatherApiDemoBean.temperatureInCelsius}"/>
 
