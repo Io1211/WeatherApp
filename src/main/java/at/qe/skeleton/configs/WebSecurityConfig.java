@@ -29,7 +29,7 @@ public class WebSecurityConfig
 
     private static final String ADMIN = UserxRole.ADMIN.name();
     private static final String MANAGER = UserxRole.MANAGER.name();
-    private static final String EMPLOYEE = UserxRole.EMPLOYEE.name();
+    // private static final String EMPLOYEE = UserxRole.EMPLOYEE.name();
     private static final String LOGIN = "/login.xhtml";
     private static final String ACCESSDENIED = "/error/access_denied.xhtml";
 
@@ -54,7 +54,7 @@ public class WebSecurityConfig
                             .requestMatchers(new AntPathRequestMatcher("/jakarta.faces.resource/**")).permitAll()
                             .requestMatchers(new AntPathRequestMatcher("/error/**")).permitAll()
                             .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasAnyAuthority("ADMIN")
-                            .requestMatchers(new AntPathRequestMatcher("/secured/**")).hasAnyAuthority(ADMIN, MANAGER, EMPLOYEE)
+                            //.requestMatchers(new AntPathRequestMatcher("/secured/**")).hasAnyAuthority(ADMIN, MANAGER, EMPLOYEE)
                             .anyRequest().authenticated()
                     )
                     // :TODO: use failureUrl(/login.xhtml?error) and make sure that a corresponding message is displayed
