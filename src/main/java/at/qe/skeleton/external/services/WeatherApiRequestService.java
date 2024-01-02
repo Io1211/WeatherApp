@@ -16,8 +16,6 @@ import org.springframework.web.util.UriComponentsBuilder;
  * This class is part of the skeleton project provided for students of the course "Software
  * Architecture" offered by Innsbruck University.
  */
-
-// The "application" scope creates the bean instance for the lifecycle of a ServletContext.
 @Scope("application")
 @Component
 @Validated // makes sure the parameter validation annotations are checked during runtime
