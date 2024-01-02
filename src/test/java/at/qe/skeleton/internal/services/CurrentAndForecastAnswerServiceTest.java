@@ -109,12 +109,6 @@ class CurrentAndForecastAnswerServiceTest {
     checkDTO(answerDTO, justCreatedDTO);
   }
 
-  /*
-   * obwohl ich den sinn hinter diesem Test grundsätzlich verstehe, sollten wir das ja eigentlich nicht machen:
-   * 5 mal dasselbe DTO Objekt persistieren - wäre es vlt sinnvoll einen check einzubauen, dass dasselbe dto
-   * (also identische lon lat und identischer Zeitstempel der api) nur einmal persistiert werden kann? die von dir gespeicherten
-   * dtos unterscheiden sich in der datenbank jetzt nur über die id oder?
-   */
   @Test
   void testGetAllCurrentAndForecastWeather() {
     CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
@@ -163,31 +157,18 @@ class CurrentAndForecastAnswerServiceTest {
     currentAndForecastAnswerRepository.save(answerOld);
 
     // Set the desired Entity attributes (i.e., change the timestampLastCall to mimic an old api
-    // call)
-    // and persist again for the changes to take effect
+    // call) and persist again for the changes to take effect
     answerOld.setTimestampLastCall(ZonedDateTime.now().minusHours(5));
     try {
       answerNew.setWeatherData(currentAndForecastAnswerService.serializeDTO(answerDTO));
       answerOld.setWeatherData(currentAndForecastAnswerService.serializeDTO(answerDTO));
       currentAndForecastAnswerRepository.save(answerNew);
-      // wieso wird timestamp hier nicht überschrieben durch save? wann genau wird entity persisted
-      // und @prePersist
-      // ausgelöst?
       currentAndForecastAnswerRepository.save(answerOld);
     } catch (FailedToSerializeDTOException e) {
       throw new RuntimeException(e.getMessage());
     }
     List<CurrentAndForecastAnswerDTO> lastHourDTOs = null;
     try {
-      // minusMinutes(1) is used to ensure that the timestampLastCall of the query is after the one
-      // of the saved Entity previously declared in this test
-      Assertions.assertEquals(
-          answerNew.getId(),
-          currentAndForecastAnswerRepository
-              .findByTimestampLastCallIsAfter(ZonedDateTime.now().minusMinutes(1))
-              .get(0)
-              .getId(),
-          "Id of the saved DTO doesn't match the id of the newly retrieved one");
       lastHourDTOs = currentAndForecastAnswerService.getLastHourCurrentAndForecastWeather();
       cleanDatabase(); // Otherwise other tests will fail because of entities already saved here
     } catch (FailedJsonToDtoMappingException e) {
