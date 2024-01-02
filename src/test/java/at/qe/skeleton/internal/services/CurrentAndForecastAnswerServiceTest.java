@@ -109,6 +109,12 @@ class CurrentAndForecastAnswerServiceTest {
     checkDTO(answerDTO, justCreatedDTO);
   }
 
+  /*
+   * obwohl ich den sinn hinter diesem Test grundsätzlich verstehe, sollten wir das ja eigentlich nicht machen:
+   * 5 mal dasselbe DTO Objekt persistieren - wäre es vlt sinnvoll einen check einzubauen, dass dasselbe dto
+   * (also identische lon lat und identischer Zeitstempel der api) nur einmal persistiert werden kann? die von dir gespeicherten
+   * dtos unterscheiden sich in der datenbank jetzt nur über die id oder?
+   */
   @Test
   void testGetAllCurrentAndForecastWeather() {
     CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
@@ -164,6 +170,9 @@ class CurrentAndForecastAnswerServiceTest {
       answerNew.setWeatherData(currentAndForecastAnswerService.serializeDTO(answerDTO));
       answerOld.setWeatherData(currentAndForecastAnswerService.serializeDTO(answerDTO));
       currentAndForecastAnswerRepository.save(answerNew);
+      // wieso wird timestamp hier nicht überschrieben durch save? wann genau wird entity persisted
+      // und @prePersist
+      // ausgelöst?
       currentAndForecastAnswerRepository.save(answerOld);
     } catch (FailedToSerializeDTOException e) {
       throw new RuntimeException(e.getMessage());

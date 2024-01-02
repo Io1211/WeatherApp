@@ -24,9 +24,12 @@ public class CurrentAndForecastAnswerService {
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
   /**
-   * Takes the API call that has been serialized to a Json string and serializes it to a byte array.
-   * This is then set as a field of a CurrentAndForecastWeather (the entity) object and persisted
-   * via the repository.
+   * sollte es nicht heißen: Takes the WeatherApi Response that has been mapped to a
+   * CurrentAndForeCastAnswerDTO ...?
+   *
+   * <p>Takes the API call that has been serialized to a Json string and serializes it to a byte
+   * array. This is then set as a field of a CurrentAndForecastWeather (the entity) object and
+   * persisted via the repository.
    *
    * @param answerDTO the API call that has been mapped to a CurrentAndForecastAnswerDTO
    * @return the saved CurrentAndForecastWeather object
@@ -54,7 +57,19 @@ public class CurrentAndForecastAnswerService {
   }
 
   /**
-   * Returns the api calls made in the last hour
+   * 1. brauchen wir diese Methode wirklich? wäre es nicht einfacher bereits entweder in
+   * CurrentAndForecastAnswer Entity oder in der LocationEntity, welche die CurrentAndForeCastAnswer
+   * Entity enthält die Lon/Lat daten zu speichern und mithilfe derer zu schauen ob es einen
+   * entsprechenden Eintrag in der Datenbank innerhalb der letzten Stunde gibt? also eine methode,
+   * die die lon & lat daten nimmt und gleichzeitig nach timestamp aussortiert.
+   *
+   * <p>2. die Berechnung der Zeit ((ZonedDateTime.now().minusHours(1)) entspricht nicht den Angaben
+   * in der Projekt-Aufgabenstellung. Dort steht: "API Calls sind teuer. Bis zur NÄCHSTEN VOLLEN
+   * STUNDE wird derselbe Bericht pro Ort ange zeigt." Es müsste so ungefähr sein: ZonedDateTime now
+   * = ZonedDateTime.now(); int currentHour = now.getHour(); ZonedDateTime lastFullHourDateTime =
+   * now.minusMinutes(now.getMinute()).minusSeconds(now.getSecond()).minusNanos(now.getNano());
+   *
+   * <p>Returns the api calls made in the last hour
    *
    * @return the api calls made in the last hour as DTOs
    * @throws FailedJsonToDtoMappingException if the retrieved data fails to map back to DTO

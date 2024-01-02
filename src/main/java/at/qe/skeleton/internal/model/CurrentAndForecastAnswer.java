@@ -22,6 +22,8 @@ public class CurrentAndForecastAnswer implements Persistable<String>, Serializab
     return weatherData;
   }
 
+  // kann man speichern wenn weatherData null ist (also setWeatherData nicht aufgerufen wurde)?
+  // sollte man das verhindern?
   public void setWeatherData(byte[] weatherData) {
     this.weatherData = weatherData;
   }
