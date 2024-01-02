@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -65,7 +67,12 @@ public class WeatherApiDemoBean {
     return (tempInFahrenheit - 30) * 5 / 9;
   }
 
-  public ZonedDateTime getSunsetDateTime() {}
+  public ZonedDateTime getSunsetDateTime() {
+    Instant sunsetInstant = this.currentAndForecastAnswerDTO.currentWeather().sunset();
+    // todo: do we need to adapt timezone for each user?
+    ZoneId berlin = ZoneId.of("Europe/Berlin");
+    return ZonedDateTime.ofInstant(sunsetInstant, berlin);
+  }
 
   public LocationAnswerDTO getLocationAnswerDTO() {
     return locationAnswerDTO;
