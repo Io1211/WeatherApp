@@ -18,6 +18,8 @@
                     <span class="ui-button-text">Login</span>
                 </button>
             </h:panelGrid>
+            <p:outputPanel rendered="#{param['error'] != null}"
+                           style="color: red;">Username and/or password wrong!</p:outputPanel>
         </form>
     </ui:define>
 </ui:composition>

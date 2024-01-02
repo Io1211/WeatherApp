@@ -6,6 +6,7 @@ import at.qe.skeleton.external.services.GeocodingApiRequestService;
 import at.qe.skeleton.external.services.WeatherApiRequestService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,27 +38,18 @@ public class WeatherApiDemoBean {
   private double longitude;
   private String locationSearchInput;
 
-  // hardcoded limit - i.e. the number of locations in the API response
-  // TODO: Maybe make it possible to show more than one result from the api
-  //          -> in that case the result should not be stored in single LocationAnswerDTO but
-  // multiple LocationAnswerDTOs
+
 
   public String getLocationSearchInput() {
     return locationSearchInput;
   }
 
-  // an dieser Stelle sind umlaute noch umlaute (= unkodiert)
   public void setLocationSearchInput(String locationSearchInput) {
     this.locationSearchInput = locationSearchInput;
   }
 
   public void performLocationSearch() {
     String input = this.locationSearchInput;
-    //            .toLowerCase()
-    //            .replace("ä", "ae")
-    //            .replace("ö", "oe")
-    //            .replace("ü", "ue");
-    // input = URLEncoder.encode(input, StandardCharsets.UTF_8);
     LocationAnswerDTO locationAnswerDTO =
         this.geocodingApiRequestService.retrieveLocationLonLat(input);
     this.longitude = locationAnswerDTO.longitude();

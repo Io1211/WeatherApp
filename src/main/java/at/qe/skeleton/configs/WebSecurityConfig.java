@@ -11,7 +11,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -63,15 +63,14 @@ public class WebSecurityConfig {
                       .hasAnyAuthority(ADMIN, MANAGER, EMPLOYEE)
                       .anyRequest()
                       .authenticated())
-          // :TODO: use failureUrl(/login.xhtml?error) and make sure that a corresponding message is
-          // displayed
           .formLogin(
               form ->
                   form.loginPage(LOGIN)
                       .permitAll()
                       .defaultSuccessUrl("/secured/welcome.xhtml")
                       .loginProcessingUrl("/login")
-                      .successForwardUrl("/secured/welcome.xhtml"))
+                      .successForwardUrl("/secured/welcome.xhtml")
+                      .failureUrl("/login.xhtml?error"))
           .logout(
               logout ->
                   logout
@@ -89,17 +88,16 @@ public class WebSecurityConfig {
 
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    // Configure roles and passwords via datasource
     auth.jdbcAuthentication()
         .dataSource(dataSource)
         .usersByUsernameQuery("select username, password, enabled from userx where username=?")
         .authoritiesByUsernameQuery(
-            "select userx_username, roles from userx_userx_role where userx_username=?");
+            "select userx_username, roles from userx_userx_role where userx_username=?")
+        .passwordEncoder(passwordEncoder());
   }
 
   @Bean
   public static PasswordEncoder passwordEncoder() {
-    // :TODO: use proper passwordEncoder and do not store passwords in plain text
-    return NoOpPasswordEncoder.getInstance();
+    return new BCryptPasswordEncoder();
   }
 }

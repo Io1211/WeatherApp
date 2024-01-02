@@ -41,7 +41,7 @@ public class WeatherApiRequestService {
    * parameters
    *
    * @param latitude of the location
-   * @param longitude of the locationx
+   * @param longitude of the location
    * @return the current and forecast weather
    * @throws HttpStatusCodeException when 4xx or 5xx Status Code is returned
    */
