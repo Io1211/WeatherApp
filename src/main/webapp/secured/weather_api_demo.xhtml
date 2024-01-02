@@ -9,15 +9,10 @@
 
     <ui:define name="content">
         <h:form>
-            <p:panel header="Search">
-                <h:commandButton value="Find last hour calls" action="#{weatherApiDemoBean.findLastHour()}"/>
-                <br/>
-                <h:commandButton value="Find all" action="#{weatherApiDemoBean.findAll()}"/>
-                <br/>
-                <h:outputText escape="false" value="#{weatherApiDemoBean.searchedWeather}"/>
-            </p:panel>
             <p:panel header="Request">
-                <h:commandButton value="Call API" action="#{weatherApiDemoBean.callApi()}"/>
+                <div style="height: 50px">
+                    https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value
+                </div>
             </p:panel>
             <p:panel header="Response">
                 <div>
