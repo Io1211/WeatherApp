@@ -20,7 +20,6 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import java.io.*;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -101,7 +100,6 @@ class WeatherApiRequestServiceTest {
         "Rain", actualDTOCreationResult.hourlyWeather().get(0).weather().title());
   }
 
-
   // todo: hier vllt eher noch überlegen was bei einem timeout passiert?
   @Test
   public void simulateConnectionError() {
@@ -114,8 +112,6 @@ class WeatherApiRequestServiceTest {
         Exception.class,
         () -> disconnectedApiRequestService.retrieveCurrentAndForecastWeather(0, 0));
   }
-
-
 
   // the following represents another approach for testing api calls with a MockWebServer from
   // okhttp3 library.
@@ -135,10 +131,12 @@ class WeatherApiRequestServiceTest {
 
   // Der Mock-Server wird tatsächlich angesteuert. Library ist: okhttp3
   public static MockWebServer mockBackEnd;
+
   @AfterEach
   void tearDownWebServer() throws IOException {
     mockBackEnd.shutdown();
   }
+
   private WeatherApiRequestService modifiedWeatherAPIRequestService;
 
   // tests if error 504 is recognized by call-Method
@@ -168,6 +166,8 @@ class WeatherApiRequestServiceTest {
     double outOfBoundsLon = -91.0;
     double lat = 0.0;
 
-    Assertions.assertThrows(AssertionError.class, () -> weatherApiRequestService.retrieveCurrentAndForecastWeather(outOfBoundsLon, lat));
+    Assertions.assertThrows(
+        AssertionError.class,
+        () -> weatherApiRequestService.retrieveCurrentAndForecastWeather(outOfBoundsLon, lat));
   }
 }

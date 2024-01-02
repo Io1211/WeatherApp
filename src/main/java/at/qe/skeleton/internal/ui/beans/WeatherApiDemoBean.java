@@ -49,7 +49,6 @@ public class WeatherApiDemoBean {
   // an dieser Stelle sind umlaute noch umlaute (= unkodiert)
   public void setLocationSearchInput(String locationSearchInput) {
     this.locationSearchInput = locationSearchInput;
-
   }
 
   public void performLocationSearch() {
@@ -58,7 +57,7 @@ public class WeatherApiDemoBean {
     //            .replace("ä", "ae")
     //            .replace("ö", "oe")
     //            .replace("ü", "ue");
-    //input = URLEncoder.encode(input, StandardCharsets.UTF_8);
+    // input = URLEncoder.encode(input, StandardCharsets.UTF_8);
     LocationAnswerDTO locationAnswerDTO =
         this.geocodingApiRequestService.retrieveLocationLonLat(input);
     this.longitude = locationAnswerDTO.longitude();

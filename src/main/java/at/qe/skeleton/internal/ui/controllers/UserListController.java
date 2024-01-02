@@ -11,23 +11,21 @@ import org.springframework.stereotype.Component;
 /**
  * Controller for the user list view.
  *
- * This class is part of the skeleton project provided for students of the
- * course "Software Architecture" offered by Innsbruck University.
-*/
+ * <p>This class is part of the skeleton project provided for students of the course "Software
+ * Architecture" offered by Innsbruck University.
+ */
 @Component
 @Scope("view")
 public class UserListController implements Serializable {
 
-    @Autowired
-    private UserxService userService;
+  @Autowired private UserxService userService;
 
-    /**
-     * Returns a list of all users.
-     *
-     * @return
-     */
-    public Collection<Userx> getUsers() {
-        return userService.getAllUsers();
-    }
-
+  /**
+   * Returns a list of all users.
+   *
+   * @return a list of all users
+   */
+  public Collection<Userx> getUsers() {
+    return userService.getAllUsers();
+  }
 }

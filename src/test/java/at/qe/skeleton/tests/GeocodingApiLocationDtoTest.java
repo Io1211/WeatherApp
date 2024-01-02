@@ -22,13 +22,13 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 class GeocodingApiLocationDtoTest {
 
-
   private static RestClient testRestClient;
   private static MockRestServiceServer mockServer;
   private static final ObjectMapper mapper = new ObjectMapper();
   private static String apiResponseStringWoergl;
   private static String apiResponseStringIbk;
   private static GeocodingApiRequestService geocodingApiRequestService;
+
   @BeforeAll
   static void prepareApiTestEnvironment() throws Exception {
 
@@ -52,7 +52,6 @@ class GeocodingApiLocationDtoTest {
     // need to initialize the geocodingApiRequestService with the testRestClient
     // testRestClient is bound to the mock Server so calls dont really go out to the web.
     geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
-
   }
 
   @BeforeEach
@@ -81,7 +80,8 @@ class GeocodingApiLocationDtoTest {
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
 
-    GeocodingApiRequestService geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
+    GeocodingApiRequestService geocodingApiRequestService =
+        new GeocodingApiRequestService(testRestClient);
 
     LocationAnswerDTO actualLocationAnswerDTO =
         geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
@@ -92,11 +92,12 @@ class GeocodingApiLocationDtoTest {
     Assertions.assertEquals(11.3927685, actualLocationAnswerDTO.longitude());
     Assertions.assertEquals("AT", actualLocationAnswerDTO.country());
     Assertions.assertEquals("Tyrol", actualLocationAnswerDTO.state());
-
   }
 
-  // Durch den RequestInterceptor wurden special Characters doppelt enkodiert. Den Request Interceptor testen wir hier
-  // allerdings nicht, weil wir unseren eigenen RestTemplate einfügen und nicht den restClient aus der apiConfiguration
+  // Durch den RequestInterceptor wurden special Characters doppelt enkodiert. Den Request
+  // Interceptor testen wir hier
+  // allerdings nicht, weil wir unseren eigenen RestTemplate einfügen und nicht den restClient aus
+  // der apiConfiguration
   // verwenden.
   @Test
   public void geocodingApiServiceBuildsCorrectUrlAndDtoWithEncoding() {
@@ -104,12 +105,13 @@ class GeocodingApiLocationDtoTest {
     String locationName = "Wörgl";
     String locationNameEncoded = URLEncoder.encode(locationName, StandardCharsets.UTF_8);
     mockServer
-        .expect(requestTo("/geo/1.0/direct?q="+ locationNameEncoded +"&limit=1"))
+        .expect(requestTo("/geo/1.0/direct?q=" + locationNameEncoded + "&limit=1"))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringWoergl, MediaType.APPLICATION_JSON));
 
     // need to initialize the geocodingApiRequestService with the testRestClient
-    GeocodingApiRequestService geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
+    GeocodingApiRequestService geocodingApiRequestService =
+        new GeocodingApiRequestService(testRestClient);
 
     LocationAnswerDTO actualLocationAnswerDTO =
         geocodingApiRequestService.retrieveLocationLonLat(locationName);
@@ -120,6 +122,5 @@ class GeocodingApiLocationDtoTest {
     Assertions.assertEquals(12.07928067668956, actualLocationAnswerDTO.longitude());
     Assertions.assertEquals("AT", actualLocationAnswerDTO.country());
     Assertions.assertEquals("Tyrol", actualLocationAnswerDTO.state());
-
   }
 }
