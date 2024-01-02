@@ -45,11 +45,12 @@
                         <h:outputText
                                 value="#{weatherApiDemoBean.currentAndForecastAnswerDTO.currentWeather().weather().description()}"/>
                         <h:outputText value="Temperature"/>
-                        <h:outputText value="#{weatherApiDemoBean.temperatureInCelsius}"/>
-
-                        <h:outputText value="Sunrise"/>
                         <h:outputText
-                                value="#{weatherApiDemoBean.currentAndForecastAnswerDTO.currentWeather().sunrise()}"/>
+                                value="#{weatherApiDemoBean.currentAndForecastAnswerDTO.currentWeather().temperature()}"/>
+
+                        <h:outputText value="Sunset"/>
+                        <h:outputText
+                                value="#{weatherApiDemoBean.sunsetDateTime}"/>
                     </h:panelGrid>
                 </div>
             </p:panel>

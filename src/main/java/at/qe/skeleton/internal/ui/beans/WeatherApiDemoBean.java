@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -73,16 +74,13 @@ public class WeatherApiDemoBean {
     }
   }
 
-  public double getTemperatureInCelsius() {
-    double tempInFahrenheit = this.currentAndForecastAnswerDTO.currentWeather().temperature();
-    return (tempInFahrenheit - 30) * 5 / 9;
-  }
-
-  public ZonedDateTime getSunsetDateTime() {
+  public String getSunsetDateTime() {
     Instant sunsetInstant = this.currentAndForecastAnswerDTO.currentWeather().sunset();
-    // todo: do we need to adapt timezone for each user?
-    ZoneId berlin = ZoneId.of("Europe/Berlin");
-    return ZonedDateTime.ofInstant(sunsetInstant, berlin);
+    String apiResponseTimezone = this.currentAndForecastAnswerDTO.timezone();
+    ZoneId utcZoneId = ZoneId.of(apiResponseTimezone);
+    ZonedDateTime sunsetInDesiredZone = sunsetInstant.atZone(utcZoneId);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    return sunsetInDesiredZone.format(formatter);
   }
 
   public LocationAnswerDTO getLocationAnswerDTO() {
