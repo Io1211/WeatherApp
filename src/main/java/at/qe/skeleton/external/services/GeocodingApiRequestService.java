@@ -45,7 +45,7 @@ public class GeocodingApiRequestService {
    * zip/post code <br>
    * <br>
    *
-   * @param locationName that is coming from UI
+   * @param locationName that is coming from UI. Can include country code and state after comma.
    * @return langitude & latitude of the location
    */
   public LocationAnswerDTO retrieveLocationLonLat(String locationName) throws RuntimeException {
