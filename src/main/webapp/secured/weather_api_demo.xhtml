@@ -4,6 +4,7 @@
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
@@ -33,19 +34,27 @@
             </p:panel>
             <p:commandButton value="CommitSearchRequest"
                              action="#{weatherApiDemoBean.performLocationSearchAndWeatherRequest}"
-                             update=":weatherForm:Response"/>
-            <p:panel header="Request" id="Request">
-            </p:panel>
+                             update=":weatherForm:Response">
+                <p:ajax update="Response"/>
+            </p:commandButton>
             <p:panel header="Response" id="Response">
                 <div>
-                    <h:dataTable value="#{weatherApiDemoBean.locationNameWeatherMapEntryList}" var="locationWeatherEntry">
-                    <h:column>
-                        <h:outputText value="#{locationWeatherEntry.key}"/>
-                    </h:column>
-                    <h:column>
-                        <h:outputText value="#{locationWeatherEntry.value.currentWeather().weather().title()}" escape="false"/>
-                    </h:column>
-                    </h:dataTable>
+                    <h5 style="margin-top:0">Current Weather</h5>
+                    <h:panelGrid columns="2">
+                        <h:outputText value="Weather Description"/>
+                        <h:outputText
+                                value="#{weatherApiDemoBean.currentAndForecastAnswerDTO.currentWeather().weather().description()}"/>
+
+                        <h:outputText value="Temperature"/>
+                        <h:outputText value="#{weatherApiDemoBean.temperatureInCelsius}"/>
+
+                        <h:outputText value="Sunrise"/>
+                        <h:outputText
+                                value="#{weatherApiDemoBean.currentAndForecastAnswerDTO.currentWeather().sunrise()}"/>
+
+
+                    </h:panelGrid>
+
                 </div>
             </p:panel>
         </h:form>

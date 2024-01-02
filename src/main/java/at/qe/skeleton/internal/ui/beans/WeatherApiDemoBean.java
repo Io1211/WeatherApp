@@ -25,15 +25,54 @@ public class WeatherApiDemoBean {
   @Autowired private WeatherApiRequestService weatherApiRequestService;
 
   @Autowired private GeocodingApiRequestService geocodingApiRequestService;
-
+  private String locationSearchInput;
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
-  private List<LocationAnswerDTO> locationAnswerDTOS;
+  private LocationAnswerDTO locationAnswerDTO;
+  private CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO;
 
-  private final Map<String, CurrentAndForecastAnswerDTO> locationNameWeatherMap = new HashMap<>();
+  public void performLocationSearchAndWeatherRequest() {
+    performLocationSearch();
+    performWeatherApiRequest(this.locationAnswerDTO);
+  }
 
-  private String locationSearchInput;
+  public void performLocationSearch() {
+    try {
+      String input = this.locationSearchInput;
+      List<LocationAnswerDTO> locationAnswerDTOList =
+          this.geocodingApiRequestService.retrieveLocationsLonLat(input, 1);
+      this.locationAnswerDTO = locationAnswerDTOList.get(0);
+    } catch (final Exception e) {
+      // todo: add real logic for handling errors in ui
+      LOGGER.error("error in GeocodingAPI request");
+    }
+  }
 
+  public void performWeatherApiRequest(LocationAnswerDTO locationAnswerDTO) {
+    try {
+      this.currentAndForecastAnswerDTO =
+          this.weatherApiRequestService.retrieveCurrentAndForecastWeather(
+              locationAnswerDTO.latitude(), locationAnswerDTO.longitude());
+    } catch (final Exception e) {
+      // todo: add real logic for handling errors in ui
+      LOGGER.error("error in WeatherAPI request", e);
+    }
+  }
+
+  public double getTemperatureInCelsius() {
+    double tempInFahrenheit = this.currentAndForecastAnswerDTO.currentWeather().temperature();
+    return (tempInFahrenheit - 30) * 5 / 9;
+  }
+
+  public
+
+  public LocationAnswerDTO getLocationAnswerDTO() {
+    return locationAnswerDTO;
+  }
+
+  public CurrentAndForecastAnswerDTO getCurrentAndForecastAnswerDTO() {
+    return currentAndForecastAnswerDTO;
+  }
 
   public String getLocationSearchInput() {
     return locationSearchInput;
@@ -42,53 +81,4 @@ public class WeatherApiDemoBean {
   public void setLocationSearchInput(String locationSearchInput) {
     this.locationSearchInput = locationSearchInput;
   }
-
-  public void performLocationSearch() {
-    String input = this.locationSearchInput;
-     this.locationAnswerDTOS = this.geocodingApiRequestService.retrieveLocationsLonLat(input);
-  }
-
-  public void performLocationSearchAndWeatherRequest() {
-    LOGGER.debug("Performing location search and weather request");
-    this.performLocationSearch();
-    LOGGER.debug("Number of location answers: {}", locationAnswerDTOS.size());
-    this.locationAnswerDTOS.forEach(this::performWeatherApiRequest);
-  }
-
-  public void performWeatherApiRequest(LocationAnswerDTO locationAnswerDTO) {
-    try {
-      CurrentAndForecastAnswerDTO answer =
-          this.weatherApiRequestService.retrieveCurrentAndForecastWeather(
-              locationAnswerDTO.latitude(), locationAnswerDTO.longitude());
-
-      this.setLocationAnswerWithCurrentWeather(locationAnswerDTO, answer);
-      LOGGER.debug("Added entry to locationNameWeatherMap. Map size: {}", locationNameWeatherMap.size());
-
-    } catch (final Exception e) {
-      LOGGER.error("error in request", e);
-    }
-  }
-
-
-  private void setLocationAnswerWithCurrentWeather(LocationAnswerDTO locationAnswer, CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO) {
-    // need name and country, otherwise it will only update the single entry in the set,
-    // because all the names are "berlin", wherefore no new entry is added.
-
-    //todo: if state is null we dont want to display it.
-    //todo: iso Länder codes ausschreiben..
-    //todo: states evtl übersetzen wenn deutschsprachig?
-
-    String locationName = "%s, %s, %s".formatted(locationAnswer.name(), locationAnswer.country(), locationAnswer.state());
-    this.locationNameWeatherMap.put(locationName, currentAndForecastAnswerDTO);
-  }
-
-  // need to convert the map to List of Entries in order to display it with primefaces ui.
-  // as soon as Leo is ready with location & weatherResponse Entities we can use a list of those instead of a map in the Bean.
-  public List<Map.Entry<String, CurrentAndForecastAnswerDTO>> getLocationNameWeatherMapEntryList() {
-    //todo: somehow the entries of the table now add up, we only want the current ones..
-    return new ArrayList<>(locationNameWeatherMap.entrySet());
-  }
-
 }
-
-

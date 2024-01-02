@@ -35,7 +35,7 @@ public class AutoCompleteController {
   public List<String> autoCompleteLocation(String query) {
     String queryLowerCase = query.toLowerCase();
     List<LocationAnswerDTO> locationAnswerDTOList =
-        geocodingApiRequestService.retrieveLocationsLonLat(queryLowerCase);
+        geocodingApiRequestService.retrieveLocationsLonLat(queryLowerCase, 5);
     return locationAnswerDTOList.stream()
         .map(
             location ->

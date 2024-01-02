@@ -22,13 +22,13 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 class GeocodingApiLocationDtoTest {
 
-
   private static RestClient testRestClient;
   private static MockRestServiceServer mockServer;
   private static final ObjectMapper mapper = new ObjectMapper();
   private static String apiResponseStringWoergl;
   private static String apiResponseStringIbk;
   private static GeocodingApiRequestService geocodingApiRequestService;
+
   @BeforeAll
   static void prepareApiTestEnvironment() throws Exception {
 
@@ -52,7 +52,6 @@ class GeocodingApiLocationDtoTest {
     // need to initialize the geocodingApiRequestService with the testRestClient
     // testRestClient is bound to the mock Server so calls dont really go out to the web.
     geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
-
   }
 
   @BeforeEach
@@ -68,7 +67,7 @@ class GeocodingApiLocationDtoTest {
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
     // naking the api-request
-    geocodingApiRequestService.retrieveLocationsLonLat("Innsbruck");
+    geocodingApiRequestService.retrieveLocationsLonLat("Innsbruck", 1);
 
     // the actual test: verifying if request reached the expected URI
     mockServer.verify();
@@ -81,10 +80,11 @@ class GeocodingApiLocationDtoTest {
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
 
-    GeocodingApiRequestService geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
+    GeocodingApiRequestService geocodingApiRequestService =
+        new GeocodingApiRequestService(testRestClient);
 
     LocationAnswerDTO actualLocationAnswerDTO =
-        geocodingApiRequestService.retrieveLocationsLonLat("Innsbruck").get(0);
+        geocodingApiRequestService.retrieveLocationsLonLat("Innsbruck", 1).get(0);
 
     mockServer.verify();
     Assertions.assertEquals("Innsbruck", actualLocationAnswerDTO.name());
@@ -92,11 +92,12 @@ class GeocodingApiLocationDtoTest {
     Assertions.assertEquals(11.3927685, actualLocationAnswerDTO.longitude());
     Assertions.assertEquals("AT", actualLocationAnswerDTO.country());
     Assertions.assertEquals("Tyrol", actualLocationAnswerDTO.state());
-
   }
 
-  // Durch den RequestInterceptor wurden special Characters doppelt enkodiert. Den Request Interceptor testen wir hier
-  // allerdings nicht, weil wir unseren eigenen RestTemplate einfügen und nicht den restClient aus der apiConfiguration
+  // Durch den RequestInterceptor wurden special Characters doppelt enkodiert. Den Request
+  // Interceptor testen wir hier
+  // allerdings nicht, weil wir unseren eigenen RestTemplate einfügen und nicht den restClient aus
+  // der apiConfiguration
   // verwenden.
   @Test
   public void geocodingApiServiceBuildsCorrectUrlAndDtoWithEncoding() {
@@ -104,15 +105,16 @@ class GeocodingApiLocationDtoTest {
     String locationName = "Wörgl";
     String locationNameEncoded = URLEncoder.encode(locationName, StandardCharsets.UTF_8);
     mockServer
-        .expect(requestTo("/geo/1.0/direct?q="+ locationNameEncoded +"&limit=5"))
+        .expect(requestTo("/geo/1.0/direct?q=" + locationNameEncoded + "&limit=5"))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringWoergl, MediaType.APPLICATION_JSON));
 
     // need to initialize the geocodingApiRequestService with the testRestClient
-    GeocodingApiRequestService geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
+    GeocodingApiRequestService geocodingApiRequestService =
+        new GeocodingApiRequestService(testRestClient);
 
     LocationAnswerDTO actualLocationAnswerDTO =
-        geocodingApiRequestService.retrieveLocationsLonLat(locationName).get(0);
+        geocodingApiRequestService.retrieveLocationsLonLat(locationName, 1).get(0);
 
     mockServer.verify();
     Assertions.assertEquals("Stadt Wörgl", actualLocationAnswerDTO.name());
@@ -120,6 +122,5 @@ class GeocodingApiLocationDtoTest {
     Assertions.assertEquals(12.07928067668956, actualLocationAnswerDTO.longitude());
     Assertions.assertEquals("AT", actualLocationAnswerDTO.country());
     Assertions.assertEquals("Tyrol", actualLocationAnswerDTO.state());
-
   }
 }

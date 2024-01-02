@@ -16,7 +16,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
-
 @Scope("application")
 @Component
 @Validated // makes sure the parameter validation annotations are checked during runtime
@@ -41,16 +40,18 @@ public class GeocodingApiRequestService {
     this.restClient = restClient;
   }
 
-
   /**
    * Makes an API call to get the exact geographical coordinates to the given name of a location or
    * zip/post code <br>
    * <br>
    *
-   * @param locationName that is coming from UI
-   * @return langitude & latitude of the location
+   * @param locationName to search for - it is coming from UI
+   * @param limit limit of locations that should be returned from ui
+   * @return A list of LocationAnswerDTO objects containing the longitude and latitude, as well as
+   *     name, country code and state(maybe null) of the location.
    */
-  public List<LocationAnswerDTO> retrieveLocationsLonLat(String locationName) throws RuntimeException {
+  public List<LocationAnswerDTO> retrieveLocationsLonLat(String locationName, int limit)
+      throws RuntimeException {
 
     // todo: should we include country code or something in that method?
     ResponseEntity<List<LocationAnswerDTO>> responseEntity =
@@ -59,9 +60,7 @@ public class GeocodingApiRequestService {
             .uri(
                 UriComponentsBuilder.fromPath(GEOCODING_URI)
                     .queryParam(LOCATION_NAME, locationName)
-                    .queryParam(LIMIT_OF_RESULTS, String.valueOf(LIMIT_VALUE))
-                    // if i set build(encoded: true) then it says: invalid character "ö" but if i
-                    // leave it false or default then it gets double encoded...?
+                    .queryParam(LIMIT_OF_RESULTS, String.valueOf(limit))
                     .build()
                     .toUriString())
             .retrieve()
