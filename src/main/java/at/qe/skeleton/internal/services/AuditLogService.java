@@ -1,11 +1,10 @@
 package at.qe.skeleton.internal.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import at.qe.skeleton.internal.model.AuditLog;
 import at.qe.skeleton.internal.repositories.AuditLogRepository;
 import at.qe.skeleton.internal.model.Userx;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,23 +21,26 @@ public class AuditLogService {
         auditLogRepository.save(al);
     }
 
-    public String convertRolesToString(Userx userx) {
-        return String.join(", ", userx.getRoles());
-    }
-
     public void saveDeletedUserEntry(Userx userx) {
-        saveEntry("User with username " + userx.getUsername() + "and role(s) " + convertRolesToString(userx) + " has been deleted!");
+        saveEntry("User with username " + userx.getUsername() + "and role(s) " + " has been deleted!");
+        // + String.join(", ", userx.getRoles())
     }
 
-    public void saveCreatedUserEntry(Userx userx) {
-        saveEntry("User with username " + userx.getUsername() + "and role(s) " + convertRolesToString(userx) + " has been saved!");
-    }
+    //public void saveCreatedUserEntry(Userx userx) {
+    //    saveEntry("User with username " + userx.getUsername() + "and role(s) " + String.join(", ", userx.getRoles()) + " has been saved!");
+    //}
 
-    public void saveModifiedUserEntry(Userx userx) {
-        saveEntry("User with username " + userx.getUsername() + "has changed to the role(s) " + convertRolesToString(userx) + ".");
-    }
+    //public void saveModifiedUserEntry(Userx userx) {
+    //    saveEntry("User with username " + userx.getUsername() + "has changed to the role(s) " + String.join(", ", userx.getRoles()) + ".");
+    //}
 
-    public List<AuditLog> findAll(String username) {
-        return auditLogRepository.findAll(username);
+    //public List<AuditLog> findAll(String username) {
+    //    return auditLogRepository.findAll(username);
+    //}
+
+    //@PreAuthorize("hasAuthority('ADMIN')")
+    
+    public List<AuditLog> findAll() {
+        return auditLogRepository.findAll();
     }
 }

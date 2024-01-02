@@ -63,7 +63,7 @@ public class UserxService {
         } else {
             user.setUpdateUser(getAuthenticatedUser());
         }
-        auditLogService.saveCreatedUserEntry(user);
+        //auditLogService.saveCreatedUserEntry(user);
         return userRepository.save(user);
     }
 

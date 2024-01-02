@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
-import at.qe.skeleton.internal.services.AuditLogService;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -59,9 +58,6 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
     @CollectionTable(name = "Userx_UserxRole")
     @Enumerated(EnumType.STRING)
     private Set<UserxRole> roles;
-
-    @Autowired
-    private AuditLogService auditLogService;
 
     public String getUsername() {
         return username;
@@ -125,7 +121,6 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
     public void setRoles(Set<UserxRole> roles) {
         this.roles = roles;
-        auditLogService.saveModifiedUserEntry(user);
     }
 
     public Userx getCreateUser() {
@@ -202,5 +197,4 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
     public int compareTo(Userx o) {
         return this.username.compareTo(o.getUsername());
     }
-
 }
