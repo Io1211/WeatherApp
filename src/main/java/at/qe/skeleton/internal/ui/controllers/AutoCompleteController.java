@@ -32,6 +32,9 @@ public class AutoCompleteController {
     this.weatherApiRequestService = weatherApiRequestService;
   }
 
+  // todo: still not sure if this is the right way... is it meant to do that? but how could we
+  // search for
+  //  cities otherwise?
   public List<String> autoCompleteLocation(String query) {
     String queryLowerCase = query.toLowerCase();
     List<LocationAnswerDTO> locationAnswerDTOList =
