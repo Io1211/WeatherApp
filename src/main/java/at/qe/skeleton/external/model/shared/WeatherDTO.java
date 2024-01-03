@@ -8,12 +8,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <br>
  * This class is used to model the answer to an api call
  *
+ * @see <a href="https://openweathermap.org/weather-conditions">Weather conditions | API
+ *     Documentation</a>
  * @param id the id of the weather
  * @param title the title of the weather
  * @param description of the weather
  * @param icon of the weather (can be used to retrieve images)
- * @see <a href="https://openweathermap.org/weather-conditions">Weather conditions | API
- *     Documentation</a>
  */
 public record WeatherDTO(
     long id, @JsonProperty("main") String title, String description, String icon) {}

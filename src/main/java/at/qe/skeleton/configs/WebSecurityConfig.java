@@ -1,8 +1,7 @@
 package at.qe.skeleton.configs;
 
-import javax.sql.DataSource;
-
 import at.qe.skeleton.internal.model.UserxRole;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +27,8 @@ public class WebSecurityConfig {
 
   private static final String ADMIN = UserxRole.ADMIN.name();
   private static final String MANAGER = UserxRole.MANAGER.name();
-  private static final String EMPLOYEE = UserxRole.EMPLOYEE.name();
+  private static final String PREMIUM_USER = UserxRole.PREMIUM_USER.name();
+  private static final String REGISTERED_USER = UserxRole.REGISTERED_USER.name();
   private static final String LOGIN = "/login.xhtml";
   private static final String ACCESSDENIED = "/error/access_denied.xhtml";
 
@@ -60,7 +60,7 @@ public class WebSecurityConfig {
                       .requestMatchers(new AntPathRequestMatcher("/admin/**"))
                       .hasAnyAuthority("ADMIN")
                       .requestMatchers(new AntPathRequestMatcher("/secured/**"))
-                      .hasAnyAuthority(ADMIN, MANAGER, EMPLOYEE)
+                      .hasAnyAuthority(ADMIN, MANAGER, PREMIUM_USER, REGISTERED_USER)
                       .anyRequest()
                       .authenticated())
           .formLogin(

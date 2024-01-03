@@ -9,5 +9,6 @@ package at.qe.skeleton.internal.model;
 public enum UserxRole {
   ADMIN,
   MANAGER,
-  EMPLOYEE
+  PREMIUM_USER,
+  REGISTERED_USER
 }
