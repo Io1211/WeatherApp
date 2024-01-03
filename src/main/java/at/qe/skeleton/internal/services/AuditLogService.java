@@ -1,12 +1,15 @@
 package at.qe.skeleton.internal.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import at.qe.skeleton.internal.model.AuditLog;
 import at.qe.skeleton.internal.repositories.AuditLogRepository;
 import at.qe.skeleton.internal.model.Userx;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 @Service
 public class AuditLogService {
@@ -21,9 +24,9 @@ public class AuditLogService {
         auditLogRepository.save(al);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void saveDeletedUserEntry(Userx userx) {
-        saveEntry("User with username " + userx.getUsername() + "and role(s) " + " has been deleted!");
-        // + String.join(", ", userx.getRoles())
+        saveEntry("User " + userx.getUsername() + "with role(s) " + " has been deleted.");
     }
 
     //public void saveCreatedUserEntry(Userx userx) {
@@ -38,8 +41,7 @@ public class AuditLogService {
     //    return auditLogRepository.findAll(username);
     //}
 
-    //@PreAuthorize("hasAuthority('ADMIN')")
-    
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<AuditLog> findAll() {
         return auditLogRepository.findAll();
     }
