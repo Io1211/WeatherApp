@@ -25,7 +25,7 @@ public class UserListController implements Serializable {
   /**
    * Returns a list of all users.
    *
-   * @return
+   * @return a list of all users
    */
   public Collection<Userx> getUsers() {
     return userService.getAllUsers();

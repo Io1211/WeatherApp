@@ -19,13 +19,14 @@ import org.springframework.stereotype.Component;
 @Scope("view")
 public class UserDetailController implements Serializable {
 
-  @Autowired private UserxService userService;
+    @Autowired
+    private UserxService userService;
 
   /** Attribute to cache the currently displayed user */
   private Userx user;
 
   /**
-   * Sets the currently displayed user and reloads it form db. This user is targeted by any further
+   * Sets the currently displayed user and reloads it from db. This user is targeted by any further
    * calls of {@link #doReloadUser()}, {@link #doSaveUser()} and {@link #doDeleteUser()}.
    *
    * @param user

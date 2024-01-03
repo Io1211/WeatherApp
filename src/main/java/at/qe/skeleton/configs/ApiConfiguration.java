@@ -1,5 +1,6 @@
 package at.qe.skeleton.configs;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,9 +11,11 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
-
+import org.slf4j.Logger;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Configuration for the weather api used in this years software architecture course.
@@ -36,15 +39,26 @@ public class ApiConfiguration {
   private String baseUrl;
 
   private class QueryAddingRequestInterceptor implements ClientHttpRequestInterceptor {
+
+    private final Logger logger = LoggerFactory.getLogger(QueryAddingRequestInterceptor.class);
+
+    // since the URI from request.getURI is already encoded it is vital that we dont encode here
+    // again
+    // thats why -> (build(true)).
+    // That means queryParam that get added here are not encoded automatically with .build
+    // I think encoding the apiKey is not a good practice, since the api key should be exactly that
+    // api key, right?
     @Override
     public ClientHttpResponse intercept(
         HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
       URI uri =
           UriComponentsBuilder.fromUri(request.getURI())
-              .queryParam(UNITS_PARAMETER, DEFAULT_UNITS)
+              .queryParam(UNITS_PARAMETER, URLEncoder.encode(DEFAULT_UNITS, StandardCharsets.UTF_8))
               .queryParam(APIKEY_PARAMETER, apiKey)
-              .build()
+              .build(true)
               .toUri();
+
+      logger.info("Sending request to: {}", uri);
 
       HttpRequest modifiedRequest =
           new HttpRequestWrapper(request) {
