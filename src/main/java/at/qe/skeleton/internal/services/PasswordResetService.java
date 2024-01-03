@@ -12,6 +12,7 @@ public class PasswordResetService {
 
     @Autowired
     private EmailService emailService;
+
     public void sendPasswordResetEmail(String email) {
         emailService.sendEmail(email, "Reset your password", "Please click on the following link to reset your password: http://localhost:8080/resetPassword.xhtml" + "\nYour token: " + generatePasswordResetToken() + "\n\nIf you did not request a password reset, please ignore this email.");
     }
@@ -22,9 +23,11 @@ public class PasswordResetService {
         System.out.println(fourDigit);
         return Integer.toString(fourDigit);
     }
+
     public boolean validatePasswordResetToken(String token, String insertedToken) {
         return token.equals(insertedToken);
     }
+
     public void resetPassword(String email, String newPassword) {
         System.out.println("Resetting password for " + email + " to " + newPassword);
     }

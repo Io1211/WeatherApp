@@ -32,37 +32,37 @@ public class PasswordResetBean {
         this.email = email;
     }
 
-        public String getToken() {
-            return token;
-        }
+    public String getToken() {
+        return token;
+    }
 
-        public void setToken(String token) {
-            this.token = token;
-        }
+    public void setToken(String token) {
+        this.token = token;
+    }
 
-        public String getInsertedToken() {
-            return insertedToken;
-        }
+    public String getInsertedToken() {
+        return insertedToken;
+    }
 
-        public void setInsertedToken(String insertedToken) {
-            this.insertedToken = insertedToken;
-        }
+    public void setInsertedToken(String insertedToken) {
+        this.insertedToken = insertedToken;
+    }
 
-        public String getNewPassword() {
-            return newPassword;
-        }
+    public String getNewPassword() {
+        return newPassword;
+    }
 
-        public void setNewPassword(String newPassword) {
-            this.newPassword = newPassword;
-        }
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
 
-        public String getNewPasswordRepeat() {
-            return newPasswordRepeat;
-        }
+    public String getNewPasswordRepeat() {
+        return newPasswordRepeat;
+    }
 
-        public void setNewPasswordRepeat(String newPasswordRepeat) {
-            this.newPasswordRepeat = newPasswordRepeat;
-        }
+    public void setNewPasswordRepeat(String newPasswordRepeat) {
+        this.newPasswordRepeat = newPasswordRepeat;
+    }
 
 
     public void sendPasswordResetEmail() {
@@ -81,7 +81,7 @@ public class PasswordResetBean {
     }
 
     public String resetPassword() {
-        if(insertedToken == null || insertedToken.isEmpty()) {
+        if (insertedToken == null || insertedToken.isEmpty()) {
             addMessage("Please enter your token", FacesMessage.SEVERITY_ERROR);
             return null;
         }

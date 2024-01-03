@@ -12,6 +12,7 @@ public class EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
+
     public void sendEmail(String email, String subject, String message) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom("group8weatherapp@gmail.com");
