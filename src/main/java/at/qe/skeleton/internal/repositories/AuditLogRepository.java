@@ -11,6 +11,6 @@ import java.util.List;
 public interface AuditLogRepository extends AbstractRepository<AuditLog, Long> {
 
     @Query("SELECT al FROM AuditLog al WHERE al.message LIKE %:username%")
-    List<AuditLog> findRoleChangesByName(@Param("username") String username);
+    List<AuditLog> findRoleChangesByUserName(@Param("username") String username);
 
 }

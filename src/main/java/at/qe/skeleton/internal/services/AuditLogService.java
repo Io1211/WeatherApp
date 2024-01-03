@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import at.qe.skeleton.internal.model.AuditLog;
 import at.qe.skeleton.internal.repositories.AuditLogRepository;
+import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.model.Userx;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,22 +25,28 @@ public class AuditLogService {
         auditLogRepository.save(al);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public void saveDeletedUserEntry(Userx userx) {
-        saveEntry("User " + userx.getUsername() + "with role(s) " + " has been deleted.");
+    // concatenates all roles from the set into a string
+    public String convertRolesToString(Userx userx) {
+        StringBuilder rolesAsString = new StringBuilder();
+        for (UserxRole userxrole : userx.getRoles()) {
+            rolesAsString.append(userxrole.name()).append(", ");
+        }
+        // removes the last "," at the end
+        if (rolesAsString.length() > 0) {
+            rolesAsString.setLength(rolesAsString.length() - 2);
+        }
+        return rolesAsString.toString();
     }
 
-    //public void saveCreatedUserEntry(Userx userx) {
-    //    saveEntry("User with username " + userx.getUsername() + "and role(s) " + String.join(", ", userx.getRoles()) + " has been saved!");
-    //}
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void saveDeletedUserEntry(Userx userx) {
+        saveEntry("User " + userx.getUsername() + "with role(s) " + convertRolesToString(userx) +" has been deleted.");
+    }
 
-    //public void saveModifiedUserEntry(Userx userx) {
-    //    saveEntry("User with username " + userx.getUsername() + "has changed to the role(s) " + String.join(", ", userx.getRoles()) + ".");
-    //}
-
-    //public List<AuditLog> findAll(String username) {
-    //    return auditLogRepository.findAll(username);
-    //}
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void saveCreatedUserEntry(Userx userx) {
+        saveEntry("User " + userx.getUsername() + "with role(s) " + convertRolesToString(userx) + " has been saved.");
+    }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<AuditLog> findAll() {
