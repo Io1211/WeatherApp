@@ -1,13 +1,9 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
-import at.qe.skeleton.external.services.WeatherApiRequestService;
 import at.qe.skeleton.internal.services.CurrentAndForecastAnswerService;
 import at.qe.skeleton.internal.services.FailedJsonToDtoMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import java.util.Collection;
-import org.apache.commons.text.StringEscapeUtils;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +20,6 @@ import org.springframework.stereotype.Component;
 @Scope("view")
 public class WeatherApiDemoBean {
 
-  @Autowired private WeatherApiRequestService weatherApiRequestService;
-
   @Autowired private CurrentAndForecastAnswerService currentAndForecastAnswerService;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
@@ -40,25 +34,11 @@ public class WeatherApiDemoBean {
   private double longitude = 11.4041;
 
   public void callApi() {
-    try {
-      CurrentAndForecastAnswerDTO answer =
-          this.weatherApiRequestService.retrieveCurrentAndForecastWeather(
-              getLatitude(), getLongitude());
-      currentAndForecastAnswerService.saveWeather(answer);
-      ObjectMapper mapper =
-          new ObjectMapper().findAndRegisterModules().enable(SerializationFeature.INDENT_OUTPUT);
-      String plainTextAnswer = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(answer);
-      String escapedHtmlAnswer = StringEscapeUtils.escapeHtml4(plainTextAnswer);
-      String escapedHtmlAnswerWithLineBreaks =
-          escapedHtmlAnswer.replace("\n", "<br>").replace(" ", "&nbsp;");
-      this.setCurrentWeather(escapedHtmlAnswerWithLineBreaks);
-    } catch (final Exception e) {
-      LOGGER.error("error in request", e);
-    }
+    currentAndForecastAnswerService.callApi(longitude, latitude);
   }
 
   public void findAll() throws FailedJsonToDtoMappingException {
-    Collection<CurrentAndForecastAnswerDTO> currentAndForecastAnswerDTOS =
+    List<CurrentAndForecastAnswerDTO> currentAndForecastAnswerDTOS =
         currentAndForecastAnswerService.getAllCurrentAndForecastWeather();
     if (currentAndForecastAnswerDTOS.isEmpty()) {
       this.searchedWeather = "There are no weather entries present in the database at this moment";
@@ -80,7 +60,7 @@ public class WeatherApiDemoBean {
   }
 
   public void findLastHour() throws FailedJsonToDtoMappingException {
-    Collection<CurrentAndForecastAnswerDTO> weather =
+    List<CurrentAndForecastAnswerDTO> weather =
         currentAndForecastAnswerService.getLastHourCurrentAndForecastWeather();
     if (weather == null) {
       this.searchedWeather = "No weather entry was found by that id";
