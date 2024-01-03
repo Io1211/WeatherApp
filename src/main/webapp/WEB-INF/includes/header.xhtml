@@ -36,7 +36,7 @@
 
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
-            <p:menuitem value="Registration" url="/registration.xhtml"/>
+            <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
 
         </p:menubar>
     </h:form>
