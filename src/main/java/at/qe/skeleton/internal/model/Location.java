@@ -3,18 +3,27 @@ package at.qe.skeleton.internal.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import org.springframework.data.domain.Persistable;
 
 @Entity
+@IdClass(LocationId.class) // necessary for entities with composite primary keys
 public class Location implements Persistable<String>, Serializable {
 
-  @Id private double lat;
+  @Id private double latitude;
 
-  @Id private double lon;
+  @Id private double longitude;
 
   private ZonedDateTime creationTimestamp;
 
   private String city;
+
+  private String country;
+
+  private String state;
+
+  @OneToOne(optional = false)
+  private CurrentAndForecastAnswer weather;
 
   public String getCity() {
     return city;
@@ -24,20 +33,12 @@ public class Location implements Persistable<String>, Serializable {
     this.city = city;
   }
 
-  public double getLat() {
-    return lat;
+  public double getLatitude() {
+    return latitude;
   }
 
-  public void setLat(double lat) {
-    this.lat = lat;
-  }
-
-  public double getLon() {
-    return lon;
-  }
-
-  public void setLon(double lon) {
-    this.lon = lon;
+  public double getLongitude() {
+    return longitude;
   }
 
   public String getCountry() {
@@ -64,16 +65,9 @@ public class Location implements Persistable<String>, Serializable {
     this.weather = weather;
   }
 
-  private String country;
-
-  private String state;
-
-  @OneToOne(optional = false)
-  private CurrentAndForecastAnswer weather;
-
   public void setId(double lat, double lon) {
-    this.lat = lat;
-    this.lon = lon;
+    this.latitude = lat;
+    this.longitude = lon;
   }
 
   public void setCreationTimestamp(ZonedDateTime creationTimestamp) {
@@ -81,7 +75,7 @@ public class Location implements Persistable<String>, Serializable {
   }
 
   public String getId() {
-    return "lat %s, lon %s".formatted(lat, lon);
+    return "lat %s, lon %s".formatted(latitude, longitude);
   }
 
   public ZonedDateTime getCreationTimestamp() {
@@ -96,5 +90,32 @@ public class Location implements Persistable<String>, Serializable {
   @Override
   public boolean isNew() {
     return (null == creationTimestamp);
+  }
+}
+
+// necessary for entities with composite primary keys
+// see https://www.baeldung.com/jpa-composite-primary-keys
+class LocationId implements Serializable {
+  private double latitude;
+
+  private double longitude;
+
+  public LocationId(double latitude, double longitude) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    LocationId that = (LocationId) o;
+    return Double.compare(latitude, that.latitude) == 0
+        && Double.compare(longitude, that.longitude) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(latitude, longitude);
   }
 }
