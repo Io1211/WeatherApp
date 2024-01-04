@@ -44,11 +44,14 @@ public class UserxService {
      * @param username the username to search for
      * @return the user with the given username
      */
-    @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #username")
     public Userx loadUser(String username) {
+
         return userRepository.findFirstByUsername(username);
     }
 
+    public Userx loadUserByEmail(String email) {
+        return userRepository.findFirstByEmail(email);
+    }
     /**
      * Saves the user. This method will also set {@link Userx#createDate} for new
      * entities or {@link Userx#updateDate} for updated entities. The user
@@ -58,13 +61,19 @@ public class UserxService {
      * @param user the user to save
      * @return the updated user
      */
-    @PreAuthorize("hasAuthority('ADMIN')")
     public Userx saveUser(Userx user) throws JpaSystemException {
         if (user.isNew()) {
-            user.setCreateUser(getAuthenticatedUser());
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && !auth.getName().equals("anonymousUser")) {
+                Userx authenticatedUser = userRepository.findFirstByUsername(auth.getName());
+                user.setCreateUser(authenticatedUser);
+            } else {
+                // Handle the scenario when there's no authenticated user (e.g., default admin or null)
+                // user.setCreateUser(defaultAdminUser); // Example: Set a default admin user
+                user.setCreateUser(null); // Or allow null if the schema permits
+            }
+
             String password = user.getPassword();
-            // Passing null as an argument to the encoder throws IllegalArgumentException,
-            // but we want JpaSystemException
             if (password == null) {
                 throw new JpaSystemException(new RuntimeException("Password can't be empty"));
             }
@@ -74,6 +83,7 @@ public class UserxService {
         }
         return userRepository.save(user);
     }
+
 
     /**
      * Deletes the user.

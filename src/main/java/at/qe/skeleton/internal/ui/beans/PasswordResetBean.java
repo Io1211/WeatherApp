@@ -2,6 +2,7 @@ package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.PasswordResetService;
+import at.qe.skeleton.internal.services.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,9 @@ public class PasswordResetBean {
 
     @Autowired
     private PasswordResetService passwordResetService;
+
+    @Autowired
+    private TokenService tokenService;
 
     private String email;
     private String token;
@@ -66,13 +70,13 @@ public class PasswordResetBean {
 
 
     public void sendPasswordResetEmail() {
-        String token = passwordResetService.generatePasswordResetToken();
+        String token = passwordResetService.tokenService.generateToken();
         setToken(token);
-        emailService.sendEmail(email, "Reset your password", "Please click on the following link to reset your password: http://localhost:8080/resetPassword.xhtml" + "\nYour token: " + token + "\n\nIf you did not request a password reset, please ignore this email.");
+        passwordResetService.sendPasswordResetEmailAndToken(getEmail(), token);
     }
 
     public boolean validatePasswordResetToken() {
-        return passwordResetService.validatePasswordResetToken(token, insertedToken);
+        return tokenService.validateToken(getToken(), getInsertedToken());
     }
 
     private void addMessage(String summary, FacesMessage.Severity severity) {

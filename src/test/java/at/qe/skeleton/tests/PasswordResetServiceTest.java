@@ -29,7 +29,7 @@ class PasswordResetServiceTest {
     @Test
     void testSendPasswordResetEmail() {
         String email = "test@example.com";
-        passwordResetService.sendPasswordResetEmail(email);
+        passwordResetService.sendPasswordResetEmailAndToken(email, "1234");
         verify(emailService).sendEmail(
                 eq(email),
                 eq("Reset your password"),
@@ -37,16 +37,4 @@ class PasswordResetServiceTest {
         );
     }
 
-    @Test
-    void testGeneratePasswordResetToken() {
-        String token = passwordResetService.generatePasswordResetToken();
-        assertNotNull(token);
-    }
-
-    @Test
-    void testValidatePasswordResetToken() {
-        String token = "1234";
-        assertTrue(passwordResetService.validatePasswordResetToken(token, token));
-        assertFalse(passwordResetService.validatePasswordResetToken(token, "0000"));
-    }
 }

@@ -8,24 +8,24 @@
         <h:form id="registration_form">
             <h:panelGrid columns="2">
                 <p:outputLabel for="username" value="Username:"/>
-                <p:inputText id="username" value="#{userBean.user.username}" required="true"/>
+                <p:inputText id="username" value="#{userRegistrationBean.user.username}" required="true"/>
 
                 <p:outputLabel for="password" value="Password:"/>
-                <p:password id="password" value="#{userBean.user.password}" required="true"/>
+                <p:password id="password" value="#{userRegistrationBean.user.password}" required="true"/>
 
                 <p:outputLabel for="firstname" value="Firstname:"/>
-                <p:inputText id="firstname" value="#{userBean.user.firstName}" required="true"/>
+                <p:inputText id="firstname" value="#{userRegistrationBean.user.firstName}" required="true"/>
 
                 <p:outputLabel for="lastname" value="Lastname:"/>
-                <p:inputText id="lastname" value="#{userBean.user.lastName}" required="true"/>
+                <p:inputText id="lastname" value="#{userRegistrationBean.user.lastName}" required="true"/>
 
                 <p:outputLabel for="email" value="Email:"/>
-                <p:inputText id="email" value="#{userBean.user.email}" required="true"/>
+                <p:inputText id="email" value="#{userRegistrationBean.user.email}" required="true"/>
 
                 <p:outputLabel for="phone" value="Phone:"/>
-                <p:inputText id="phone" value="#{userBean.user.phone}" required="true"/>
+                <p:inputText id="phone" value="#{userRegistrationBean.user.phone}" required="true"/>
 
-                <p:commandButton value="Register" action="#{userBean.register}"/>
+                <p:commandButton value="Register" action="#{userRegistrationBean.register}"/>
             </h:panelGrid>
         </h:form>
     </ui:define>

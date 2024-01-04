@@ -66,6 +66,7 @@ public class WebSecurityConfig {
                                             .requestMatchers("/registration.xhtml").permitAll()
                                             .requestMatchers("/resetPassword.xhtml").permitAll()
                                             .requestMatchers("/requestNewPassword.xhtml").permitAll()
+                                            .requestMatchers("/confirmRegistration.xhtml").permitAll()
                                             .anyRequest()
                                             .authenticated())
                     .formLogin(

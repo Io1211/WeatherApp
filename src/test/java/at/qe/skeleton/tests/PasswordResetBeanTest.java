@@ -2,6 +2,7 @@ package at.qe.skeleton.tests;
 
 import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.PasswordResetService;
+import at.qe.skeleton.internal.services.TokenService;
 import at.qe.skeleton.internal.ui.beans.PasswordResetBean;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,9 @@ public class PasswordResetBeanTest {
     @Mock
     private PasswordResetService passwordResetService;
 
+    @Mock
+    private TokenService tokenService;
+
     @InjectMocks
     private PasswordResetBean passwordResetBean;
 
@@ -35,11 +39,11 @@ public class PasswordResetBeanTest {
         String token = "12345";
 
         passwordResetBean.setEmail(email);
-        when(passwordResetService.generatePasswordResetToken()).thenReturn(token);
+        when(tokenService.generateToken()).thenReturn(token);
 
         passwordResetBean.sendPasswordResetEmail();
 
-        verify(passwordResetService, times(1)).generatePasswordResetToken();
+        verify(tokenService, times(1)).generateToken();
         verify(emailService, times(1)).sendEmail(eq(email), anyString(), anyString());
 
     }
@@ -52,7 +56,7 @@ public class PasswordResetBeanTest {
         passwordResetBean.setNewPassword("12345");
         passwordResetBean.setNewPasswordRepeat("12345");
 
-        when(passwordResetService.validatePasswordResetToken("12345", "12345")).thenReturn(true);
+        when(passwordResetBean.validatePasswordResetToken()).thenReturn(true);
 
         String result = passwordResetBean.resetPassword();
 
