@@ -3,6 +3,7 @@ package at.qe.skeleton.internal.services;
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
 import at.qe.skeleton.external.services.GeocodingApiRequestService;
 import at.qe.skeleton.internal.model.Location;
+import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.LocationRepository;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,8 @@ public class LocationService {
     location.setWeather(
         currentAndForecastAnswerService.saveWeather(
             currentAndForecastAnswerService.callApi(
-                locationAnswerDTO.latitude(), locationAnswerDTO.longitude())));
-    return location;
+                locationAnswerDTO.longitude(), locationAnswerDTO.latitude())));
+    return locationRepository.save(location);
   }
 
   public Location getLocation(@NotNull String locationName)
@@ -44,13 +45,14 @@ public class LocationService {
     LocationAnswerDTO searchedLocationDTO = callApi(locationName);
     double searchedLatitude = searchedLocationDTO.latitude();
     double searchedLongitude = searchedLocationDTO.longitude();
-    Location searchedLocation = findLocationById(searchedLatitude, searchedLongitude);
+    Location searchedLocation =
+        locationRepository.findLocationById(new LocationId(searchedLatitude, searchedLongitude));
     if (searchedLocation == null) {
       return saveLocation(searchedLocationDTO);
     } else if (!locationHasUpToDateWeatherData(searchedLocation)) {
       searchedLocation.setWeather(
           currentAndForecastAnswerService.saveWeather(
-              currentAndForecastAnswerService.callApi(searchedLatitude, searchedLongitude)));
+              currentAndForecastAnswerService.callApi(searchedLongitude, searchedLatitude)));
       return searchedLocation;
     } else {
       return searchedLocation;
@@ -63,11 +65,5 @@ public class LocationService {
         .getLastHourCurrentAndForecastWeather()
         .contains(
             currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData()));
-  }
-
-  public Location findLocationById(@NotNull double latitude, @NotNull double longitude) {
-    return locationRepository
-        .findById("lat %s, lon %s".formatted(latitude, longitude))
-        .orElse(null);
   }
 }
