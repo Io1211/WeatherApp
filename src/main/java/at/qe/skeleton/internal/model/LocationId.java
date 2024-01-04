@@ -19,6 +19,7 @@ public class LocationId implements Serializable {
     this.longitude = longitude;
   }
 
+  // REQUIRED by JPA (Embeddable decorator), don't delete!
   public LocationId() {}
 
   public double getLatitude() {
