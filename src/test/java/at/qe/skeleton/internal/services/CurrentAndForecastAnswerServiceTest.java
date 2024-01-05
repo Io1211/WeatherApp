@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,8 @@ class CurrentAndForecastAnswerServiceTest {
 
   private final String dataFilePath = "src/test/resources/MockCurrentAndForecastAnswers.json";
 
-  private void cleanDatabase() {
+  @AfterEach
+  public void cleanDatabase() {
     List<CurrentAndForecastAnswer> entities = currentAndForecastAnswerRepository.findAll();
     entities.forEach(currentAndForecastAnswerRepository::delete);
   }
@@ -100,7 +102,6 @@ class CurrentAndForecastAnswerServiceTest {
       justCreatedDTO =
           currentAndForecastAnswerService.findCurrentAndForecastWeatherById(
               Long.valueOf(savedAnswer.getId()));
-      cleanDatabase(); // Otherwise other tests will fail because of entities already saved here
     } catch (FailedJsonToDtoMappingException e) {
       e.getStackTrace();
     }
@@ -126,7 +127,6 @@ class CurrentAndForecastAnswerServiceTest {
     List<CurrentAndForecastAnswerDTO> justCreatedDTOs = null;
     try {
       justCreatedDTOs = currentAndForecastAnswerService.getAllCurrentAndForecastWeather();
-      cleanDatabase(); // Otherwise other tests will fail because of entities already saved here
     } catch (FailedJsonToDtoMappingException e) {
       e.getStackTrace();
     }
@@ -170,7 +170,6 @@ class CurrentAndForecastAnswerServiceTest {
     List<CurrentAndForecastAnswerDTO> lastHourDTOs = null;
     try {
       lastHourDTOs = currentAndForecastAnswerService.getLastHourCurrentAndForecastWeather();
-      cleanDatabase(); // Otherwise other tests will fail because of entities already saved here
     } catch (FailedJsonToDtoMappingException e) {
       throw new RuntimeException(e.getMessage());
     }
@@ -200,7 +199,6 @@ class CurrentAndForecastAnswerServiceTest {
       lastHourDTO =
           currentAndForecastAnswerService.findCurrentAndForecastWeatherById(
               Long.valueOf(savedAnswer.getId()));
-      cleanDatabase();
     } catch (FailedJsonToDtoMappingException e) {
       throw new RuntimeException(e.getMessage());
     }

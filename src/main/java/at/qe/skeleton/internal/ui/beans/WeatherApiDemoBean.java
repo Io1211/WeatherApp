@@ -42,27 +42,13 @@ public class WeatherApiDemoBean {
     this.locationSearchInput = locationSearchInput;
   }
 
-  public void performLocationSearch() {
-    Location location = null;
-    try {
-      location = locationService.getLocation(this.locationSearchInput);
-      this.setLatitude(location.getId().getLatitude());
-      this.setLongitude(location.getId().getLongitude());
-    } catch (FailedJsonToDtoMappingException e) {
-      throw new RuntimeException(e);
-    } catch (FailedToSerializeDTOException e) {
-      throw new RuntimeException(e);
-    }
-    CurrentAndForecastAnswerDTO weather = null;
-    try {
-      weather =
-          currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
-    } catch (FailedJsonToDtoMappingException e) {
-      throw new RuntimeException(e);
-    }
-    if (location == null || weather == null) {
-      this.searchedWeather = "Failed to fetch location and weather data";
-    }
+  public void performLocationSearch()
+      throws FailedToSerializeDTOException, FailedJsonToDtoMappingException {
+    Location location = locationService.handleLocationSearch(this.locationSearchInput, null, null);
+    CurrentAndForecastAnswerDTO weather =
+        currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
+    this.latitude = location.getId().getLatitude();
+    this.longitude = location.getId().getLongitude();
     StringBuilder body = new StringBuilder();
     body.append("City: %s<br>".formatted(location.getCity()));
     body.append(
