@@ -43,6 +43,10 @@ public class LocationServiceTest {
     Assertions.assertNotNull(location.getWeather());
     Assertions.assertEquals(
         new LocationId(answerDTO.latitude(), answerDTO.longitude()), location.getId());
+    Assertions.assertTrue(
+        location.getWeather().getTimestampLastCall().isAfter(ZonedDateTime.now().minusMinutes(1)));
+    // this also works for case 3, since after overwriting the old with the new weather, it must be
+    // up-to-date
   }
 
   @Test
@@ -52,7 +56,7 @@ public class LocationServiceTest {
     // 2. the location exists and the weather data is up-to-date
     // 3. the location exists but the weather data is not up-to-date
 
-    // Setup mock api responses
+    // Setup mock api responses and mock location search
     String resources = "src/test/resources/";
     ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
     List<LocationAnswerDTO> _api =
@@ -63,29 +67,31 @@ public class LocationServiceTest {
         mapper.readValue(
             new File(resources + "MockCurrentAndForecastAnswers.json"),
             CurrentAndForecastAnswerDTO.class);
+    LocationSearch mockLocationSearch =
+        new LocationSearchBuilder()
+            .setLocationName("Innsbruck")
+            .setLocationAnswerDTO(mockLocationApi)
+            .setCurrentAndForecastAnswerDTO(mockWeatherApi)
+            .build();
 
     // 1.
-    Location location =
-        locationService.handleLocationSearch("Innsbruck", mockLocationApi, mockWeatherApi);
+    Location location = locationService.handleLocationSearch(mockLocationSearch);
     locationAssertions(location, mockLocationApi);
-    Assertions.assertTrue(
-        location.getWeather().getTimestampLastCall().isAfter(ZonedDateTime.now().minusMinutes(1)));
 
     // 2.
-    location = locationService.handleLocationSearch("Innsbruck", mockLocationApi, mockWeatherApi);
+    location = locationService.handleLocationSearch(mockLocationSearch);
     locationAssertions(location, mockLocationApi);
     Assertions.assertEquals(1, locationRepository.findAll().size());
-    Assertions.assertTrue(
-        location.getWeather().getTimestampLastCall().isAfter(ZonedDateTime.now().minusMinutes(1)));
 
     // 3.
     CurrentAndForecastAnswer oldWeather = location.getWeather();
     oldWeather.setTimestampLastCall(ZonedDateTime.now().minusHours(2));
-    location = locationService.updateLocationWeather(location, oldWeather);
+    locationService.updateLocationWeather(location, oldWeather);
+    Assertions.assertTrue( // check that the weather has been back-set successfully
+        location.getWeather().getTimestampLastCall().isBefore(ZonedDateTime.now().minusMinutes(1)));
+    location = locationService.handleLocationSearch(mockLocationSearch);
     locationAssertions(location, mockLocationApi);
     Assertions.assertEquals(1, locationRepository.findAll().size());
-    Assertions.assertTrue(
-        location.getWeather().getTimestampLastCall().isBefore(ZonedDateTime.now().minusMinutes(1)));
   }
 
   @Test
