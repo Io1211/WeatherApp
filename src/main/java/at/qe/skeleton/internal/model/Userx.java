@@ -1,18 +1,10 @@
 package at.qe.skeleton.internal.model;
 
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.domain.Persistable;
@@ -43,6 +35,9 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   private Userx updateUser;
 
   @UpdateTimestamp private LocalDateTime updateDate;
+  @OneToMany private Set<Favorite> favorites;
+
+  // Todo: add Favorite Config Data
 
   private String password;
 
@@ -120,6 +115,14 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   public void setRoles(Set<UserxRole> roles) {
     this.roles = roles;
+  }
+
+  public Set<Favorite> getFavorites() {
+    return favorites;
+  }
+
+  public void setFavorites(Set<Favorite> favorites) {
+    this.favorites = favorites;
   }
 
   public Userx getCreateUser() {
