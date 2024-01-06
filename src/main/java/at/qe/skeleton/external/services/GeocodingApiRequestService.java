@@ -49,8 +49,6 @@ public class GeocodingApiRequestService {
    * @return langitude & latitude of the location
    */
   public LocationAnswerDTO retrieveLocationLonLat(String locationName) throws RuntimeException {
-
-    // todo: should we include country code or something in that method?
     ResponseEntity<List<LocationAnswerDTO>> responseEntity =
         this.restClient
             .get()

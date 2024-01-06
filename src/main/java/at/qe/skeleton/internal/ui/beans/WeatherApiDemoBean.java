@@ -4,13 +4,15 @@ import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswer
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
 import at.qe.skeleton.external.services.GeocodingApiRequestService;
 import at.qe.skeleton.external.services.WeatherApiRequestService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import jakarta.annotation.PostConstruct;
 import org.apache.commons.text.StringEscapeUtils;
 import at.qe.skeleton.internal.services.CurrentAndForecastAnswerService;
 import at.qe.skeleton.internal.services.FailedJsonToDtoMappingException;
 import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +33,17 @@ public class WeatherApiDemoBean {
 
   @Autowired private GeocodingApiRequestService geocodingApiRequestService;
 
+  @Autowired private WeatherApiRequestService weatherApiRequestService;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
-  private String currentWeather;
+  private String currentWeatherPrintable;
 
   // these were hard coded coordinates of innsbruck - i want to fill them now from the
   // weather_api_demo.xhtml
   private double latitude;
   private double longitude;
   private String locationSearchInput;
-
-
 
   public String getLocationSearchInput() {
     return locationSearchInput;
@@ -50,23 +52,17 @@ public class WeatherApiDemoBean {
   public void setLocationSearchInput(String locationSearchInput) {
     this.locationSearchInput = locationSearchInput;
   }
+
   private Long searchId;
 
-  private String searchedWeather;
-  // hard coded coordinates of innsbruck
-  private double latitude = 47.2692;
-  private double longitude = 11.4041;
+  private List<CurrentAndForecastAnswerDTO> currentAndForecastAnswerDTOsLastHour;
+
+  private CurrentAndForecastAnswerDTO weatherApiResponse;
 
   public void callApi() {
     currentAndForecastAnswerService.callApi(longitude, latitude);
   }
 
-  public void findAll() throws FailedJsonToDtoMappingException {
-    List<CurrentAndForecastAnswerDTO> currentAndForecastAnswerDTOS =
-        currentAndForecastAnswerService.getAllCurrentAndForecastWeather();
-    if (currentAndForecastAnswerDTOS.isEmpty()) {
-      this.searchedWeather = "There are no weather entries present in the database at this moment";
-      return;
   public void performLocationSearch() {
     String input = this.locationSearchInput;
     LocationAnswerDTO locationAnswerDTO =
@@ -77,44 +73,58 @@ public class WeatherApiDemoBean {
 
   public void performWeatherApiRequest() {
     try {
-      CurrentAndForecastAnswerDTO answer =
+      LOGGER.info(
+          "performing WeatherApiRequest for lon: %s, lat: %s"
+              .formatted(this.longitude, this.latitude));
+      weatherApiResponse =
           this.weatherApiRequestService.retrieveCurrentAndForecastWeather(
               getLatitude(), getLongitude());
-      ObjectMapper mapper =
-          new ObjectMapper().findAndRegisterModules().enable(SerializationFeature.INDENT_OUTPUT);
-      String plainTextAnswer = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(answer);
-      String escapedHtmlAnswer = StringEscapeUtils.escapeHtml4(plainTextAnswer);
-      String escapedHtmlAnswerWithLineBreaks =
-          escapedHtmlAnswer.replace("\n", "<br>").replace(" ", "&nbsp;");
-      this.setCurrentWeather(escapedHtmlAnswerWithLineBreaks);
-
     } catch (final Exception e) {
-      LOGGER.error("error in request", e);
+      // todo: add real error handling
+      LOGGER.error("error in WeatherApiRequest", e);
     }
-    StringBuilder renderedWeather = new StringBuilder();
-    for (CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO : currentAndForecastAnswerDTOS) {
-      renderedWeather.append(
-          "Weather id : %s<br>"
-              .formatted(currentAndForecastAnswerDTO.currentWeather().weather().id()));
-      renderedWeather.append(
-          "Description: %s<br>"
-              .formatted(currentAndForecastAnswerDTO.currentWeather().weather().description()));
-      renderedWeather.append(
-          "Title      : %s<br><br>"
-              .formatted(currentAndForecastAnswerDTO.currentWeather().weather().title()));
-    }
-    this.searchedWeather = renderedWeather.toString();
   }
 
-  public void findLastHour() throws FailedJsonToDtoMappingException {
-    List<CurrentAndForecastAnswerDTO> weather =
+  public void createPrintableWeatherApiResponse() throws JsonProcessingException {
+    ObjectMapper mapper =
+        new ObjectMapper().findAndRegisterModules().enable(SerializationFeature.INDENT_OUTPUT);
+    String plainTextAnswer =
+        mapper.writerWithDefaultPrettyPrinter().writeValueAsString(weatherApiResponse);
+    String escapedHtmlAnswer = StringEscapeUtils.escapeHtml4(plainTextAnswer);
+    String escapedHtmlAnswerWithLineBreaks =
+        escapedHtmlAnswer.replace("\n", "<br>").replace(" ", "&nbsp;");
+    this.setCurrentWeatherPrintable(escapedHtmlAnswerWithLineBreaks);
+  }
+
+  //    StringBuilder renderedWeather = new StringBuilder();
+  //    for (CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO : currentAndForecastAnswerDTOS)
+  // {
+  //      renderedWeather.append(
+  //          "Weather id : %s<br>"
+  //              .formatted(currentAndForecastAnswerDTO.currentWeather().weather().id()));
+  //      renderedWeather.append(
+  //          "Description: %s<br>"
+  //              .formatted(currentAndForecastAnswerDTO.currentWeather().weather().description()));
+  //      renderedWeather.append(
+  //          "Title      : %s<br><br>"
+  //              .formatted(currentAndForecastAnswerDTO.currentWeather().weather().title()));
+  //    }
+  //    this.searchedWeather = renderedWeather.toString();
+  //  }
+
+  public void findWeatherEntitiesStoredLastHour() throws FailedJsonToDtoMappingException {
+    currentAndForecastAnswerDTOsLastHour =
         currentAndForecastAnswerService.getLastHourCurrentAndForecastWeather();
-    if (weather == null) {
-      this.searchedWeather = "No weather entry was found by that id";
-      return;
+    if (currentAndForecastAnswerDTOsLastHour == null) {
+      LOGGER.warn("no weather Entry was found by 'findLastHour'");
     }
     StringBuilder renderedWeather = new StringBuilder();
-    for (CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO : weather) {
+    for (CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO :
+        currentAndForecastAnswerDTOsLastHour) {
+      renderedWeather.append(
+          "long: %s, lat: %s<br>"
+              .formatted(
+                  currentAndForecastAnswerDTO.longitude(), currentAndForecastAnswerDTO.latitude()));
       renderedWeather.append(
           "Weather id : %s<br>"
               .formatted(currentAndForecastAnswerDTO.currentWeather().weather().id()));
@@ -125,11 +135,7 @@ public class WeatherApiDemoBean {
           "Title      : %s<br><br>"
               .formatted(currentAndForecastAnswerDTO.currentWeather().weather().title()));
     }
-    this.searchedWeather = renderedWeather.toString();
-  }
-
-  public String getSearchedWeather() {
-    return searchedWeather;
+    LOGGER.info("findLastHour returned these weatherDtos: " + renderedWeather);
   }
 
   public Long getSearchID() {
@@ -140,22 +146,34 @@ public class WeatherApiDemoBean {
     this.searchId = searchID;
   }
 
-  public void setSearchedWeather(String searchedWeather) {
-    this.searchedWeather = searchedWeather;
+  public void performLocationSearchAndWeatherRequest()
+      throws FailedJsonToDtoMappingException, JsonProcessingException {
+    performLocationSearch();
+    // look if we have a recently stored CurrendAndForeCastAnswer Entity in the db
+    findWeatherEntitiesStoredLastHour();
+    Optional<CurrentAndForecastAnswerDTO> optionalWeatherAnswerDtoFromDb =
+        currentAndForecastAnswerDTOsLastHour.stream()
+            .filter(dto -> dto.latitude() == this.latitude && dto.longitude() == this.latitude)
+            .findAny();
+    if (optionalWeatherAnswerDtoFromDb.isPresent()) {
+      this.weatherApiResponse = optionalWeatherAnswerDtoFromDb.get();
+      LOGGER.info(
+          "found recently stored CurrentAndForeCastAnswer Object for lat: %s & long: %s."
+              .formatted(this.latitude, this.longitude));
+    }
+    // if we don´t have anything recently stored we make the api call for the current lat/long
+    else {
+      performWeatherApiRequest();
+    }
+    createPrintableWeatherApiResponse();
   }
 
-  public void performLocationSearchAndWeatherRequest() {
-
-    this.performLocationSearch();
-    this.performWeatherApiRequest();
+  public String getCurrentWeatherPrintable() {
+    return currentWeatherPrintable;
   }
 
-  public String getCurrentWeather() {
-    return currentWeather;
-  }
-
-  public void setCurrentWeather(String currentWeather) {
-    this.currentWeather = currentWeather;
+  public void setCurrentWeatherPrintable(String currentWeather) {
+    this.currentWeatherPrintable = currentWeather;
   }
 
   public double getLatitude() {
