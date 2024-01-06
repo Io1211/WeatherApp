@@ -37,7 +37,8 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   @UpdateTimestamp private LocalDateTime updateDate;
   @OneToMany private Set<Favorite> favorites;
 
-  // Todo: add Favorite Config Data
+  @OneToOne(optional = false)
+  private FavoriteDataConfig favoriteDataConfig;
 
   private String password;
 
@@ -52,6 +53,11 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   @CollectionTable(name = "Userx_UserxRole")
   @Enumerated(EnumType.STRING)
   private Set<UserxRole> roles;
+
+  @PrePersist
+  public void onCreate() {
+    this.favoriteDataConfig = new FavoriteDataConfig();
+  }
 
   public String getUsername() {
     return username;
@@ -123,6 +129,14 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   public void setFavorites(Set<Favorite> favorites) {
     this.favorites = favorites;
+  }
+
+  public FavoriteDataConfig getFavoriteDataConfig() {
+    return favoriteDataConfig;
+  }
+
+  public void setFavoriteDataConfig(FavoriteDataConfig favoriteDataConfig) {
+    this.favoriteDataConfig = favoriteDataConfig;
   }
 
   public Userx getCreateUser() {

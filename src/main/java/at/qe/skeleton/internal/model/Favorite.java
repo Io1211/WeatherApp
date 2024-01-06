@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.io.Serial;
 import java.io.Serializable;
 import org.springframework.data.domain.Persistable;
 
@@ -44,4 +45,6 @@ public class Favorite implements Persistable<String>, Serializable {
   public boolean isNew() {
     return (null == id);
   }
+
+  @Serial private static final long serialVersionUID = 1;
 }
