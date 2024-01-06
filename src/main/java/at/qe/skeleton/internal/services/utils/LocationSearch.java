@@ -1,42 +1,44 @@
-package at.qe.skeleton.internal.services;
+package at.qe.skeleton.internal.services.utils;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
 
-public class LocationSearchBuilder {
+public class LocationSearch {
   private String locationName;
-  private LocationAnswerDTO locationAnswerDTO = null;
-  private CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO = null;
+  private LocationAnswerDTO locationAnswerDTO;
+  private CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO;
+
+  public LocationSearch(
+      String locationName,
+      LocationAnswerDTO locationAnswerDTO,
+      CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO) {
+    this.locationName = locationName;
+    this.locationAnswerDTO = locationAnswerDTO;
+    this.currentAndForecastAnswerDTO = currentAndForecastAnswerDTO;
+  }
 
   public String getLocationName() {
     return locationName;
   }
 
-  public LocationSearchBuilder setLocationName(String locationName) {
+  public void setLocationName(String locationName) {
     this.locationName = locationName;
-    return this;
   }
 
   public LocationAnswerDTO getLocationAnswerDTO() {
     return locationAnswerDTO;
   }
 
-  public LocationSearchBuilder setLocationAnswerDTO(LocationAnswerDTO locationAnswerDTO) {
+  public void setLocationAnswerDTO(LocationAnswerDTO locationAnswerDTO) {
     this.locationAnswerDTO = locationAnswerDTO;
-    return this;
   }
 
   public CurrentAndForecastAnswerDTO getCurrentAndForecastAnswerDTO() {
     return currentAndForecastAnswerDTO;
   }
 
-  public LocationSearchBuilder setCurrentAndForecastAnswerDTO(
+  public void setCurrentAndForecastAnswerDTO(
       CurrentAndForecastAnswerDTO currentAndForecastAnswerDTO) {
     this.currentAndForecastAnswerDTO = currentAndForecastAnswerDTO;
-    return this;
-  }
-
-  public LocationSearch build() {
-    return new LocationSearch(locationName, locationAnswerDTO, currentAndForecastAnswerDTO);
   }
 }
