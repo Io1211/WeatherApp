@@ -11,7 +11,10 @@ import at.qe.skeleton.internal.repositories.LocationRepository;
 import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
 import at.qe.skeleton.internal.services.utils.LocationSearch;
 import jakarta.validation.constraints.NotNull;
+
+import java.io.IOException;
 import java.time.ZonedDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -32,42 +35,28 @@ public class LocationService {
     return geocodingApiRequestService.retrieveLocationLonLat(locationName);
   }
 
-  public Location handleLocationSearch(LocationSearch locationSearch)
-      throws FailedToSerializeDTOException {
-    String locationName = locationSearch.getLocationName();
-    LocationAnswerDTO locationAnswerDTO = locationSearch.getLocationAnswerDTO();
-    CurrentAndForecastAnswerDTO weatherDTO = locationSearch.getCurrentAndForecastAnswerDTO();
+  public Location handleLocationSearch(String locationSearchString)
+      throws FailedToSerializeDTOException, IOException {
     Location location = new Location();
-    if (locationAnswerDTO == null) {
-      locationAnswerDTO = callApi(locationName);
-    }
+    LocationAnswerDTO locationAnswerDTO = callApi(locationSearchString);
+    CurrentAndForecastAnswerDTO weatherDTO;
     if (locationAlreadyPersisted(locationAnswerDTO)) {
       location = getLocation(locationAnswerDTO);
       if (locationHasUpToDateWeatherData(location)) {
-        return locationRepository.save(location);
-      } else {
-        if (weatherDTO == null) {
-          weatherDTO =
-              currentAndForecastAnswerService.callApi(
-                  locationAnswerDTO.longitude(), locationAnswerDTO.latitude());
-        }
-        return locationRepository.save(
-            updateLocationWeather(
-                location, currentAndForecastAnswerService.saveWeather(weatherDTO)));
+        return location;
       }
-    } else {
-      location.setId(locationAnswerDTO.latitude(), locationAnswerDTO.longitude());
-      location.setCity(locationAnswerDTO.name());
-      location.setState(locationAnswerDTO.state());
-      location.setCountry(locationAnswerDTO.country());
-      if (weatherDTO == null) {
-        weatherDTO =
-            currentAndForecastAnswerService.callApi(
-                locationAnswerDTO.longitude(), locationAnswerDTO.latitude());
-      }
-      location.setWeather(currentAndForecastAnswerService.saveWeather(weatherDTO));
-      return locationRepository.save(location);
     }
+    // problematic if we store same id twice? will it just be updated?
+    location.setId(locationAnswerDTO.latitude(), locationAnswerDTO.longitude());
+    location.setCity(locationAnswerDTO.name());
+    location.setState(locationAnswerDTO.state());
+    location.setCountry(locationAnswerDTO.country());
+    weatherDTO =
+        currentAndForecastAnswerService.callApi(
+            locationAnswerDTO.longitude(), locationAnswerDTO.latitude());
+    location.setWeather(currentAndForecastAnswerService.saveWeather(weatherDTO));
+
+    return locationRepository.save(location);
   }
 
   public Location updateLocationWeather(
