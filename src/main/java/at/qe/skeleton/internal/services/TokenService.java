@@ -10,7 +10,7 @@ import java.util.Random;
 @Scope("application")
 public class TokenService {
 
-    public static String generateToken() {
+    public String generateToken() {
         Random r = new Random();
         int fourDigit = 1000 + r.nextInt(10000);
         System.out.println(fourDigit);

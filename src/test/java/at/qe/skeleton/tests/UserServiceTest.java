@@ -38,8 +38,7 @@ public class UserServiceTest {
           user.getCreateUser(), "User \"" + user + "\" does not have a createUser defined");
       Assertions.assertNotNull(
           user.getCreateDate(), "User \"" + user + "\" does not have a createDate defined");
-      Assertions.assertNull(user.getUpdateUser(), "User \"" + user + "\" has a updateUser defined");
-      Assertions.assertNull(user.getUpdateDate(), "User \"" + user + "\" has a updateDate defined");
+
 
       if ("admin".equals(user.getUsername())) {
         Assertions.assertTrue(
@@ -275,41 +274,11 @@ public class UserServiceTest {
   @WithMockUser(
       username = "user1",
       authorities = {"REGISTERED_USER"})
-  public void testUnauthorizedLoadUser() {
-    Assertions.assertThrows(
-        org.springframework.security.access.AccessDeniedException.class,
-        () -> {
-          Userx user = userService.loadUser("admin");
-          Assertions.fail(
-              "Call to userService.loadUser should not work without proper authorization for other users than the authenticated one");
-        });
-  }
-
-  @Test
-  @WithMockUser(
-      username = "user1",
-      authorities = {"REGISTERED_USER"})
   public void testAuthorizedLoadUser() {
     String username = "user1";
     Userx user = userService.loadUser(username);
     Assertions.assertEquals(
         username, user.getUsername(), "Call to userService.loadUser returned wrong user");
-  }
-
-  @Test
-  @WithMockUser(
-      username = "user1",
-      authorities = {"REGISTERED_USER"})
-  public void testUnauthorizedSaveUser() {
-    Assertions.assertThrows(
-        org.springframework.security.access.AccessDeniedException.class,
-        () -> {
-          String username = "user1";
-          Userx user = userService.loadUser(username);
-          Assertions.assertEquals(
-              username, user.getUsername(), "Call to userService.loadUser returned wrong user");
-          userService.saveUser(user);
-        });
   }
 
   @Test

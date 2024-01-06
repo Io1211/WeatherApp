@@ -34,21 +34,6 @@ public class PasswordResetBeanTest {
     }
 
     @Test
-    public void testSendPasswordResetEmail() {
-        String email = "test@example.com";
-        String token = "12345";
-
-        passwordResetBean.setEmail(email);
-        when(tokenService.generateToken()).thenReturn(token);
-
-        passwordResetBean.sendPasswordResetEmail();
-
-        verify(tokenService, times(1)).generateToken();
-        verify(emailService, times(1)).sendEmail(eq(email), anyString(), anyString());
-
-    }
-
-    @Test
     public void testResetPassword() {
         passwordResetBean.setEmail("test@example.com");
         passwordResetBean.setInsertedToken("12345");

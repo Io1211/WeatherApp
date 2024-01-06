@@ -21,6 +21,9 @@ public class UserRegistrationBean {
     @Autowired
     private RegistrationService registrationService;
 
+    @Autowired
+    TokenService tokenService;
+
     private String token;
 
     private String insertedToken;
@@ -54,7 +57,7 @@ public class UserRegistrationBean {
     }
 
     public String register() {
-        String token = TokenService.generateToken();
+        String token = tokenService.generateToken();
         setToken(token);
         registrationService.registerUser(user, token);
         return "confirmRegistration";
