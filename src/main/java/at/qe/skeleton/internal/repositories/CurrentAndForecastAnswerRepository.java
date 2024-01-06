@@ -1,10 +1,11 @@
 package at.qe.skeleton.internal.repositories;
 
 import at.qe.skeleton.internal.model.CurrentAndForecastAnswer;
-import java.time.ZonedDateTime;
-import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.time.ZonedDateTime;
+import java.util.List;
 
 /** Repository for managing {@link CurrentAndForecastAnswer} entities. */
 public interface CurrentAndForecastAnswerRepository

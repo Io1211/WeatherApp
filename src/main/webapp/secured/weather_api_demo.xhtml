@@ -32,8 +32,7 @@
                 <p:inputText value="#{weatherApiDemoBean.locationSearchInput}"/>
             </p:panel>
             <p:commandButton value="CommitSearchRequest"
-                             action="#{weatherApiDemoBean.performLocationSearch()}"
-                             update=":weatherForm:Request, :weatherForm:Response"/>
+                             action="#{weatherApiDemoBean.performLocationSearch()}" update=":weatherForm:Request, :weatherForm:Response"/>
             <p:panel header="Request" id="Request">
                 <div style="height: 50px">
                     Location searched for: #{weatherApiDemoBean.locationSearchInput}. <br/>

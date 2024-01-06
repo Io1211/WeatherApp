@@ -1,14 +1,15 @@
 package at.qe.skeleton.tests;
 
-import at.qe.skeleton.internal.model.UserxRole;
-import at.qe.skeleton.internal.services.UserxService;
-import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.web.WebAppConfiguration;
+
+import at.qe.skeleton.internal.model.UserxRole;
+import at.qe.skeleton.internal.services.UserxService;
+import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 
 /**
  * Some very basic tests for {@link UserxService}.

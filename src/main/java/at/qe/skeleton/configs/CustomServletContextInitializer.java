@@ -2,6 +2,7 @@ package at.qe.skeleton.configs;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
+
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.context.annotation.Configuration;
 

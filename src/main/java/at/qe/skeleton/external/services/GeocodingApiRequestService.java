@@ -1,7 +1,7 @@
 package at.qe.skeleton.external.services;
 
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
-import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,6 +13,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
 
 @Scope("application")
 @Component

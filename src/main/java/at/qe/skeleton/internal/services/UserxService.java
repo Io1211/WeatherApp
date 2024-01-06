@@ -2,7 +2,6 @@ package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.UserxRepository;
-import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -11,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.Collection;
 
 /**
  * Service for accessing and manipulating user data.
