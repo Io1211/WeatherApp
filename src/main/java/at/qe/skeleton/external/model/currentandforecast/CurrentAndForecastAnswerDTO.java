@@ -3,10 +3,9 @@ package at.qe.skeleton.external.model.currentandforecast;
 import at.qe.skeleton.external.model.currentandforecast.misc.AlertDTO;
 import at.qe.skeleton.external.model.currentandforecast.misc.CurrentWeatherDTO;
 import at.qe.skeleton.external.model.currentandforecast.misc.DailyWeatherDTO;
-import at.qe.skeleton.external.model.currentandforecast.misc.PrecipitationByTimestampDTO;
 import at.qe.skeleton.external.model.currentandforecast.misc.HourlyWeatherDTO;
+import at.qe.skeleton.external.model.currentandforecast.misc.PrecipitationByTimestampDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;

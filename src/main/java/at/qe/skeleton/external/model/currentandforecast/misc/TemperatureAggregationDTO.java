@@ -1,7 +1,6 @@
 package at.qe.skeleton.external.model.currentandforecast.misc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.io.Serial;
 import java.io.Serializable;
 
