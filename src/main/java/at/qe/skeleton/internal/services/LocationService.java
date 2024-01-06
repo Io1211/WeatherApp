@@ -30,11 +30,11 @@ public class LocationService {
     return geocodingApiRequestService.retrieveLocationLonLat(locationName);
   }
 
-  public Location handleLocationSearch(
-      String locationName,
-      LocationAnswerDTO locationAnswerDTO,
-      CurrentAndForecastAnswerDTO weatherDTO)
+  public Location handleLocationSearch(LocationSearch locationSearch)
       throws FailedToSerializeDTOException {
+    String locationName = locationSearch.getLocationName();
+    LocationAnswerDTO locationAnswerDTO = locationSearch.getLocationAnswerDTO();
+    CurrentAndForecastAnswerDTO weatherDTO = locationSearch.getCurrentAndForecastAnswerDTO();
     Location location = new Location();
     if (locationAnswerDTO == null) {
       locationAnswerDTO = callApi(locationName);

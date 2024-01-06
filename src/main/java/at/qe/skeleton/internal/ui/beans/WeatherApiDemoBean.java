@@ -2,10 +2,7 @@ package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.internal.model.Location;
-import at.qe.skeleton.internal.services.CurrentAndForecastAnswerService;
-import at.qe.skeleton.internal.services.FailedJsonToDtoMappingException;
-import at.qe.skeleton.internal.services.FailedToSerializeDTOException;
-import at.qe.skeleton.internal.services.LocationService;
+import at.qe.skeleton.internal.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -44,7 +41,9 @@ public class WeatherApiDemoBean {
 
   public void performLocationSearch()
       throws FailedToSerializeDTOException, FailedJsonToDtoMappingException {
-    Location location = locationService.handleLocationSearch(this.locationSearchInput, null, null);
+    LocationSearch locationSearch =
+        new LocationSearchBuilder().setLocationName(this.locationSearchInput).build();
+    Location location = locationService.handleLocationSearch(locationSearch);
     CurrentAndForecastAnswerDTO weather =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
     this.latitude = location.getId().getLatitude();
