@@ -3,6 +3,8 @@ package at.qe.skeleton.internal.services;
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.internal.model.CurrentAndForecastAnswer;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
+import at.qe.skeleton.internal.services.utils.FailedJsonToDtoMappingException;
+import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.util.IOUtils;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +33,8 @@ class CurrentAndForecastAnswerServiceTest {
 
   private final String dataFilePath = "src/test/resources/MockCurrentAndForecastAnswers.json";
 
-  private void cleanDatabase() {
+  @AfterEach
+  public void cleanDatabase() {
     List<CurrentAndForecastAnswer> entities = currentAndForecastAnswerRepository.findAll();
     entities.forEach(currentAndForecastAnswerRepository::delete);
   }
@@ -100,7 +104,6 @@ class CurrentAndForecastAnswerServiceTest {
       justCreatedDTO =
           currentAndForecastAnswerService.findCurrentAndForecastWeatherById(
               Long.valueOf(savedAnswer.getId()));
-      cleanDatabase(); // Otherwise other tests will fail because of entities already saved here
     } catch (FailedJsonToDtoMappingException e) {
       e.getStackTrace();
     }
@@ -126,7 +129,6 @@ class CurrentAndForecastAnswerServiceTest {
     List<CurrentAndForecastAnswerDTO> justCreatedDTOs = null;
     try {
       justCreatedDTOs = currentAndForecastAnswerService.getAllCurrentAndForecastWeather();
-      cleanDatabase(); // Otherwise other tests will fail because of entities already saved here
     } catch (FailedJsonToDtoMappingException e) {
       e.getStackTrace();
     }
@@ -170,7 +172,6 @@ class CurrentAndForecastAnswerServiceTest {
     List<CurrentAndForecastAnswerDTO> lastHourDTOs = null;
     try {
       lastHourDTOs = currentAndForecastAnswerService.getLastHourCurrentAndForecastWeather();
-      cleanDatabase(); // Otherwise other tests will fail because of entities already saved here
     } catch (FailedJsonToDtoMappingException e) {
       throw new RuntimeException(e.getMessage());
     }
@@ -200,7 +201,6 @@ class CurrentAndForecastAnswerServiceTest {
       lastHourDTO =
           currentAndForecastAnswerService.findCurrentAndForecastWeatherById(
               Long.valueOf(savedAnswer.getId()));
-      cleanDatabase();
     } catch (FailedJsonToDtoMappingException e) {
       throw new RuntimeException(e.getMessage());
     }

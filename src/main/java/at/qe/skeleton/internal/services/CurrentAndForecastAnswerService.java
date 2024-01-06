@@ -4,6 +4,8 @@ import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswer
 import at.qe.skeleton.external.services.WeatherApiRequestService;
 import at.qe.skeleton.internal.model.CurrentAndForecastAnswer;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
+import at.qe.skeleton.internal.services.utils.FailedJsonToDtoMappingException;
+import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -31,20 +33,14 @@ public class CurrentAndForecastAnswerService {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(CurrentAndForecastAnswerService.class);
 
-  // Eventually, lon & lat will be replaced by a Location entity with lon, lat & currentWaather.
-  // This method shall only be called by the Location service and be given a Location if
-  // there is one in the db becaus the search was already stored before or null if not.
-  // The method shall check if the DTO is null and if so call the api and persist the weather
-  // and call the Location service to persist the location.
-  // Else it will check if for the provided Location's weather the timestamp is to old and
-  // if so make a new call and persist it, else just return the weather.
-  public void callApi(double lon, double lat) {
+  public CurrentAndForecastAnswerDTO callApi(double lon, double lat) {
     try {
-      saveWeather(this.weatherApiRequestService.retrieveCurrentAndForecastWeather(lat, lon));
+      return this.weatherApiRequestService.retrieveCurrentAndForecastWeather(lat, lon);
     } catch (final Exception e) {
       // TODO: Better error handling
       LOGGER.error("error in request", e);
     }
+    return null;
   }
 
   /**
