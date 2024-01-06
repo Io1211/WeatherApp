@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @see <a href="https://openweathermap.org/weather-conditions">Weather conditions | API
  *     Documentation</a>
- *
  * @param id the id of the weather
  * @param title the title of the weather
  * @param description of the weather

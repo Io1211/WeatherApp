@@ -28,7 +28,7 @@ public class SessionInfoBeanTest {
   @Test
   @WithMockUser(
       username = "user1",
-      authorities = {"EMPLOYEE"})
+      authorities = {"REGISTERED_USER"})
   public void testLoggedIn() {
     Assertions.assertTrue(
         sessionInfoBean.isLoggedIn(),
@@ -42,11 +42,11 @@ public class SessionInfoBeanTest {
         sessionInfoBean.getCurrentUser().getUsername(),
         "sessionInfoBean.getCurrentUser does not return authenticated user");
     Assertions.assertEquals(
-        "EMPLOYEE",
+        "REGISTERED_USER",
         sessionInfoBean.getCurrentUserRoles(),
         "sessionInfoBean.getCurrentUserRoles does not return authenticated user's roles");
     Assertions.assertTrue(
-        sessionInfoBean.hasRole("EMPLOYEE"),
+        sessionInfoBean.hasRole("REGISTERED_USER"),
         "sessionInfoBean.hasRole does not return true for a role the authenticated user has");
     Assertions.assertFalse(
         sessionInfoBean.hasRole("ADMIN"),
