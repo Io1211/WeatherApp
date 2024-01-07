@@ -5,10 +5,11 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.client.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -26,7 +27,12 @@ public class WeatherApiRequestService {
 
   private static final String LATITUDE_PARAMETER = "lat";
 
-  @Autowired private RestClient restClient;
+  private final RestClient restClient;
+
+  @Autowired
+  public WeatherApiRequestService(RestClient restClient) {
+    this.restClient = restClient;
+  }
 
   /**
    * Makes an API call to get the current and a weather forecast for a specified location <br>
@@ -37,7 +43,11 @@ public class WeatherApiRequestService {
    * @param latitude of the location
    * @param longitude of the location
    * @return the current and forecast weather
+   * @throws HttpStatusCodeException when 4xx or 5xx Status Code is returned
    */
+
+  // todo: decide what happens when 4xx or 5xx status code is retrieved from API.
+  // HttpStatusCodeException?
   public CurrentAndForecastAnswerDTO retrieveCurrentAndForecastWeather(
       @Min(-90) @Max(90) double latitude, @Min(-180) @Max(180) double longitude) {
 
@@ -53,7 +63,19 @@ public class WeatherApiRequestService {
             .retrieve()
             .toEntity(CurrentAndForecastAnswerDTO.class);
 
-    // todo introduce error handling using responseEntity.getStatusCode.isXXXError
+    HttpStatusCode statusCode = responseEntity.getStatusCode();
+
+    if (statusCode.is4xxClientError()) {
+      throw new HttpClientErrorException(
+          responseEntity.getStatusCode(),
+          "Client error for values: lat=%f, lon=%f".formatted(latitude, longitude));
+    }
+    if (statusCode.is5xxServerError()) {
+      throw new HttpServerErrorException(
+          responseEntity.getStatusCode(),
+          "Server error for values: lat=%f, lon=%f".formatted(latitude, longitude));
+    }
+
     return responseEntity.getBody();
   }
 }
