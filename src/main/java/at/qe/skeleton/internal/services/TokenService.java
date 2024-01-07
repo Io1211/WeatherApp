@@ -12,8 +12,7 @@ public class TokenService {
 
   public String generateToken() {
     Random r = new Random();
-    int fourDigit = 1000 + r.nextInt(10000);
-    System.out.println(fourDigit);
+    int fourDigit = 1000 + r.nextInt(1000);
     return Integer.toString(fourDigit);
   }
 
