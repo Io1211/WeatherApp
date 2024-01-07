@@ -35,9 +35,11 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   private Userx updateUser;
 
   @UpdateTimestamp private LocalDateTime updateDate;
-  @OneToMany private Set<Favorite> favorites;
 
-  @OneToOne(optional = false)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<Favorite> favorites;
+
+  @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
   private FavoriteDataConfig favoriteDataConfig;
 
   private String password;
@@ -56,7 +58,7 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   @PrePersist
   public void onCreate() {
-    this.favoriteDataConfig = new FavoriteDataConfig();
+    this.setFavoriteDataConfig(new FavoriteDataConfig());
   }
 
   public String getUsername() {
