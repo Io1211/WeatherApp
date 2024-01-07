@@ -30,6 +30,9 @@ public class CurrentAndForecastAnswerService {
 
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
+  private ObjectMapper mapper =
+      new ObjectMapper().findAndRegisterModules().enable(SerializationFeature.INDENT_OUTPUT);
+
   private static final Logger LOGGER =
       LoggerFactory.getLogger(CurrentAndForecastAnswerService.class);
 
@@ -117,9 +120,8 @@ public class CurrentAndForecastAnswerService {
    */
   public CurrentAndForecastAnswerDTO deserializeDTO(@NotNull byte[] serializedDTO)
       throws FailedJsonToDtoMappingException {
-    ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
     try {
-      return mapper.readValue(serializedDTO, CurrentAndForecastAnswerDTO.class);
+      return this.mapper.readValue(serializedDTO, CurrentAndForecastAnswerDTO.class);
     } catch (IOException e) {
       throw new FailedJsonToDtoMappingException();
     }
@@ -134,10 +136,8 @@ public class CurrentAndForecastAnswerService {
    */
   public byte[] serializeDTO(@NotNull CurrentAndForecastAnswerDTO answerDTO)
       throws FailedToSerializeDTOException {
-    ObjectMapper mapper =
-        new ObjectMapper().findAndRegisterModules().enable(SerializationFeature.INDENT_OUTPUT);
     try {
-      return mapper
+      return this.mapper
           .writerWithDefaultPrettyPrinter()
           .writeValueAsString(answerDTO)
           .getBytes(StandardCharsets.UTF_8);

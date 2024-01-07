@@ -57,16 +57,9 @@ public class LocationServiceTest {
   private static LocationAnswerDTO mockLocationApiResponseInnsbruck;
 
   private static CurrentAndForecastAnswerDTO mockWeatherApiResponseInnsbruck;
-  private static MockRestServiceServer mockServer;
-  private static RestClient testRestClient;
   private static ObjectMapper mapper;
   private static CurrentAndForecastAnswerDTO weatherDtoMunich;
   private static LocationAnswerDTO locationDtoMunich;
-
-  private static String mockWeatherApiResponseMunich;
-  private static String mockLocationApiResponseMunich;
-  private static String mockURL;
-  private static String mockPasswort;
 
   @BeforeAll
   public static void setUp() throws IOException {
@@ -90,22 +83,12 @@ public class LocationServiceTest {
         mapper.readValue(
             new File(resources + "GeocodingResponseMunich.json"), new TypeReference<>() {});
     locationDtoMunich = _api.get(0);
-    mockLocationApiResponseMunich = mapper.writeValueAsString(weatherDtoMunich);
 
     // Munich Weather Mock DTO & String
-
     weatherDtoMunich =
         mapper.readValue(
             new File(resources + "WeatherApiResponseMunich.json"),
             CurrentAndForecastAnswerDTO.class);
-    mockWeatherApiResponseMunich = mapper.writeValueAsString(locationDtoMunich);
-
-    // SetUp stub RestClient, bind it to MockRestServiceServer,
-    // then initialize geocodingApiRequestService with this RestClient.
-    //    RestTemplate restTemplate = new RestTemplate();
-    //    mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-    //    testRestClient = RestClient.create(restTemplate);
-    //    geocodingApiRequestService = new GeocodingApiRequestService(testRestClient);
   }
 
   public Location getMockLocation() {
@@ -143,17 +126,24 @@ public class LocationServiceTest {
         "weatherApiRequestService",
         mockedWeatherApiRequestService);
 
+    // prepare mock-answers
     when(mockedGeocodingRequestService.retrieveLocationLonLat("München"))
         .thenReturn(locationDtoMunich);
     when(mockedWeatherApiRequestService.retrieveCurrentAndForecastWeather(48.1371079, 11.5753822))
         .thenReturn(weatherDtoMunich);
-
+    // actual call
     Location location = locationService.handleLocationSearch("München");
-    // todo: insert mock api call
+    // Assertions
+    Assertions.assertEquals("Munich", location.getCity());
+    CurrentAndForecastAnswerDTO expectedWeatherDto = weatherDtoMunich;
+    byte[] blob = location.getWeather().getWeatherData();
+    CurrentAndForecastAnswerDTO actualWeatherDtoStored =
+        currentAndForecastAnswerService.deserializeDTO(blob);
+    Assertions.assertEquals(expectedWeatherDto, actualWeatherDtoStored);
 
     //    // 2. Location should now exist in db
     //    // todo: test if location exists in db
-    //    location = locationService.handleLocationSearch("München");
+
     //    locationAssertions(location, mockLocationApiResponseInnsbruck);
     //    Assertions.assertEquals(1, locationRepository.findAll().size());
     //
