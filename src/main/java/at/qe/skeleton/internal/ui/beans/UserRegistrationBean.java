@@ -6,6 +6,8 @@ import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.RegistrationService;
 import at.qe.skeleton.internal.services.TokenService;
 import at.qe.skeleton.internal.services.UserxService;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -56,11 +58,21 @@ public class UserRegistrationBean {
         this.insertedToken = insertedToken;
     }
 
+    private void addMessage(String summary, FacesMessage.Severity severity) {
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(severity, summary, null));
+    }
     public String register() {
-        String token = tokenService.generateToken();
-        setToken(token);
-        registrationService.registerUser(user, token);
-        return "confirmRegistration";
+        try {
+            String token = tokenService.generateToken();
+            setToken(token);
+            registrationService.registerUser(user, token);
+            return "confirmRegistration";
+        }
+        catch (RuntimeException e) {
+            addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
+            return null;
+        }
     }
 
     public String confirmRegistration() {

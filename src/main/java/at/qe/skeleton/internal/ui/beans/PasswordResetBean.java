@@ -94,6 +94,14 @@ public class PasswordResetBean {
             addMessage("Invalid token", FacesMessage.SEVERITY_ERROR);
             return null;
         }
+        if(newPassword == null || newPassword.isEmpty()) {
+            addMessage("Please enter a new password", FacesMessage.SEVERITY_ERROR);
+            return null;
+        }
+        if(newPasswordRepeat == null || newPasswordRepeat.isEmpty()) {
+            addMessage("Please repeat your new password", FacesMessage.SEVERITY_ERROR);
+            return null;
+        }
         if (!newPassword.equals(newPasswordRepeat)) {
             addMessage("Passwords do not match", FacesMessage.SEVERITY_ERROR);
             return null;
