@@ -26,8 +26,13 @@
                 <p:menuitem value="Weather API Demo" url="/secured/weather_api_demo.xhtml"/>
             </p:submenu>
 
+            <p:submenu label="User Info" rendered="#{sessionInfoBean.loggedIn}">
+                <p:menuitem value="Add creditcard" url="/userInfo/addCreditCard.xhtml"/>
+            </p:submenu>
+
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
+            <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
 
         </p:menubar>
     </h:form>
