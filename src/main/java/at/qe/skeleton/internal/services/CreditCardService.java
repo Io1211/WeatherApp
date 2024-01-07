@@ -30,10 +30,11 @@ public class CreditCardService {
         creditCardRepository.delete(creditCard);
     }
 
-    public CreditCard loadCreditCard(String username) {
-        return creditCardRepository.findByOwnerUsername(username);
+    public CreditCard getCreditCardByUsername(String username) {
+        return creditCardRepository.findByOwnerUsername(username);}
+
     }
 
 
 
-}
+

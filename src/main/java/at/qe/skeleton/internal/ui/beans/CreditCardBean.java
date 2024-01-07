@@ -17,53 +17,55 @@ import java.util.List;
 @Scope("session")
 public class CreditCardBean {
 
-  private CreditCard creditCard = new CreditCard();
+    private CreditCard creditCard = new CreditCard();
 
-  @Autowired SessionInfoBean sessionInfoBean;
+    @Autowired
+    SessionInfoBean sessionInfoBean;
 
-  @Autowired private CreditCardService creditCardService;
+    @Autowired
+    private CreditCardService creditCardService;
 
-  private List<CardType> cardTypes;
+    private List<CardType> cardTypes;
 
-  @PostConstruct
-  public void init() {
-    cardTypes = Arrays.asList(CardType.values());
-  }
-
-  public List<CardType> getCardTypes() {
-    return cardTypes;
-  }
-
-  public CreditCard getCreditCard() {
-    return creditCard;
-  }
-
-  private void addMessage(String detail) {
-    FacesContext.getCurrentInstance()
-        .addMessage(
-            null,
-            new FacesMessage(FacesMessage.SEVERITY_ERROR, "CreditCard validation Error", detail));
-  }
-
-  public boolean validate() {
-    return creditCardService.validate(creditCard.getCardnumber());
-  }
-
-  public String saveCreditCard() {
-    if (validate()) {
-      creditCard.setOwner(sessionInfoBean.getCurrentUser());
-      System.out.println(
-          "Credit card with number "
-              + creditCard.getCardnumber()
-              + " from user "
-              + getCreditCard().getOwner()
-              + " saved.");
-      // save credit card in database
-    } else {
-        addMessage("Credit card number is not valid.");
-        return null;
-
+    @PostConstruct
+    public void init() {
+        cardTypes = Arrays.asList(CardType.values());
     }
-    return "/successPage";
-  }
+
+    public List<CardType> getCardTypes() {
+        return cardTypes;
+    }
+
+    public CreditCard getCreditCard() {
+        return creditCard;
+    }
+
+    private void addMessage(String detail) {
+        FacesContext.getCurrentInstance()
+                .addMessage(
+                        null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "CreditCard validation Error", detail));
+    }
+
+    public boolean validate() {
+        return creditCardService.validate(creditCard.getCardnumber());
+    }
+
+    public String saveCreditCard() {
+        if (validate()) {
+            creditCard.setOwner(sessionInfoBean.getCurrentUser().getUsername());
+            System.out.println(
+                    "Credit card with number "
+                            + creditCard.getCardnumber()
+                            + " from user "
+                            + getCreditCard().getOwner()
+                            + " saved.");
+            // save credit card in database
+        } else {
+            addMessage("Credit card number is not valid.");
+            return null;
+
+        }
+        return "/successPage";
+    }
 }
