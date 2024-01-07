@@ -15,6 +15,8 @@ import at.qe.skeleton.internal.services.AuditLogService;
 import at.qe.skeleton.internal.model.AuditLog;
 import at.qe.skeleton.internal.repositories.AuditLogRepository;
 
+import static org.mockito.Mockito.*;
+
 /**
  * Some tests for {@link AuditLogService} which test the three core methods.
  */
