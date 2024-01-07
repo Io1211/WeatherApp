@@ -2,6 +2,7 @@ package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.UserxRepository;
+import at.qe.skeleton.internal.services.AuditLogService;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -24,6 +25,7 @@ public class UserxService {
 
   @Autowired private UserxRepository userRepository;
   @Autowired private PasswordEncoder passwordEncoder;
+  @Autowired private AuditLogService auditLogService;
 
   /**
    * Returns a collection of all users.
@@ -68,6 +70,7 @@ public class UserxService {
     } else {
       user.setUpdateUser(getAuthenticatedUser());
     }
+    auditLogService.saveCreatedUserEntry(user);
     return userRepository.save(user);
   }
 
@@ -79,7 +82,7 @@ public class UserxService {
   @PreAuthorize("hasAuthority('ADMIN')")
   public void deleteUser(Userx user) {
     userRepository.delete(user);
-    // :TODO: write some audit log stating who and when this user was permanently deleted.
+    auditLogService.saveDeletedUserEntry(user);
   }
 
   private Userx getAuthenticatedUser() {
