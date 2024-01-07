@@ -4,6 +4,7 @@ import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -34,7 +35,11 @@ public class RegistrationService {
     }
     user.setRoles(Set.of(UserxRole.REGISTERED_USER));
     user.setEnabled(false);
-    sendRegistrationEmail(user.getEmail(), token);
+    try{
+    sendRegistrationEmail(user.getEmail(), token);}
+    catch(MailException e){
+      throw new RuntimeException("Invalid Email address.");
+    }
     userService.saveUser(user);
   }
 
