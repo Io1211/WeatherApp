@@ -2,7 +2,6 @@ package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.UserxRepository;
-import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -11,6 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.Collection;
 
 /**
  * Service for accessing and manipulating user data.
@@ -30,7 +32,6 @@ public class UserxService {
    *
    * @return
    */
-  @PreAuthorize("hasAuthority('ADMIN')")
   public Collection<Userx> getAllUsers() {
     return userRepository.findAll();
   }
@@ -41,7 +42,6 @@ public class UserxService {
    * @param username the username to search for
    * @return the user with the given username
    */
-  @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #username")
   public Userx loadUser(String username) {
     return userRepository.findFirstByUsername(username);
   }
@@ -54,7 +54,10 @@ public class UserxService {
    * @param user the user to save
    * @return the updated user
    */
-  @PreAuthorize("hasAuthority('ADMIN')")
+  public Userx loadUserByEmail(String email) {
+    return userRepository.findFirstByEmail(email);
+  }
+
   public Userx saveUser(Userx user) throws JpaSystemException {
     if (user.isNew()) {
       user.setCreateUser(getAuthenticatedUser());
@@ -69,6 +72,11 @@ public class UserxService {
       user.setUpdateUser(getAuthenticatedUser());
     }
     return userRepository.save(user);
+  }
+
+  public void setPasswordEncoded(Userx user, String password) {
+    user.setPassword(passwordEncoder.encode(password));
+    userRepository.save(user);
   }
 
   /**

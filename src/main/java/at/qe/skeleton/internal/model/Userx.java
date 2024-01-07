@@ -32,7 +32,7 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   @Column(length = 100)
   private String username;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = true)
   private Userx createUser;
 
   @Column(nullable = false)

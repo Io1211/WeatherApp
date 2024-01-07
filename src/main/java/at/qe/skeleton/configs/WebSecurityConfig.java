@@ -1,7 +1,9 @@
 package at.qe.skeleton.configs;
 
 import at.qe.skeleton.internal.model.UserxRole;
+
 import javax.sql.DataSource;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +40,6 @@ public class WebSecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
     try {
-
       http.cors(cors -> cors.disable())
           .csrf(csrf -> csrf.disable())
           .headers(
@@ -61,6 +62,14 @@ public class WebSecurityConfig {
                       .hasAnyAuthority("ADMIN")
                       .requestMatchers(new AntPathRequestMatcher("/secured/**"))
                       .hasAnyAuthority(ADMIN, MANAGER, PREMIUM_USER, REGISTERED_USER)
+                      .requestMatchers("/registration.xhtml")
+                      .permitAll()
+                      .requestMatchers("/resetPassword.xhtml")
+                      .permitAll()
+                      .requestMatchers("/requestNewPassword.xhtml")
+                      .permitAll()
+                      .requestMatchers("/confirmRegistration.xhtml")
+                      .permitAll()
                       .anyRequest()
                       .authenticated())
           .formLogin(
