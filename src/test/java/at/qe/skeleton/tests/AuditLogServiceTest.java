@@ -16,6 +16,7 @@ import at.qe.skeleton.internal.model.AuditLog;
 import at.qe.skeleton.internal.repositories.AuditLogRepository;
 
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Some tests for {@link AuditLogService} which test the three core methods.
@@ -33,7 +34,9 @@ public class AuditLogServiceTest {
     @Test
     void saveEntryTest() {
         String message = "Test";
+
         doNothing().when(auditLogRepository).save(any(AuditLog.class));
+        
         auditLogService.saveEntry(message);
         verify(auditLogRepository, times(1)).save(argThat(argument -> {
             assertEquals(message, argument.getMessage());
@@ -46,12 +49,13 @@ public class AuditLogServiceTest {
     void saveDeletedUserEntryTest() {
         Userx userx = new Userx();
         userx.setUsername("testUser");
-        userx.setRoles(Sets.newSet(UserxRole.PREMIUM));
-        auditLogService.saveDeletedUserEntry(userx);
+        userx.setRoles(Sets.newSet(UserxRole.PREMIUM_USER));
+
         doNothing().when(auditLogService).saveEntry(anyString());
+
+        // save and check log entry
         auditLogService.saveDeletedUserEntry(userx);
-        // check for correct delete message
-        verify(auditLogService, times(1)).saveEntry("User testUser with role(s) PREMIUM has been deleted.");
+        verify(auditLogService, times(1)).saveEntry("User testUser with role(s) PREMIUM_USER has been deleted.");
     }
 
 
@@ -60,9 +64,11 @@ public class AuditLogServiceTest {
         Userx userx = new Userx();
         userx.setUsername("testUser");
         userx.setRoles(Sets.newSet(UserxRole.ADMIN));
+
         doNothing().when(auditLogService).saveEntry(anyString());
+        
+        // save and check log entry
         auditLogService.saveCreatedUserEntry(userx);
-        // check for correct delete message
         verify(auditLogService, times(1)).saveEntry("User testUser with role(s) ADMIN has been saved.");
     }
 }
