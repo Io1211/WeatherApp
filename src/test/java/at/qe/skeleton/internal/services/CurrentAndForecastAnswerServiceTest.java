@@ -31,7 +31,8 @@ class CurrentAndForecastAnswerServiceTest {
 
   @Autowired CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
-  private final String dataFilePath = "src/test/resources/MockCurrentAndForecastAnswers.json";
+  private final String dataFilePath =
+      "src/test/resources/MockCurrentAndForecastAnswersInnsbruck.json";
 
   @AfterEach
   public void cleanDatabase() {

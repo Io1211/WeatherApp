@@ -36,7 +36,7 @@ public class LocationService {
   }
 
   public Location handleLocationSearch(String locationSearchString)
-      throws FailedToSerializeDTOException, IOException {
+      throws FailedToSerializeDTOException {
     Location location = new Location();
     LocationAnswerDTO locationAnswerDTO = callApi(locationSearchString);
     CurrentAndForecastAnswerDTO weatherDTO;
