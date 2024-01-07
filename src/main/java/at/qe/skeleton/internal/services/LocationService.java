@@ -9,12 +9,12 @@ import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
 import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
-import at.qe.skeleton.internal.services.utils.LocationSearch;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 
 @Component
 @Scope("application")
@@ -32,42 +32,48 @@ public class LocationService {
     return geocodingApiRequestService.retrieveLocationLonLat(locationName);
   }
 
-  public Location handleLocationSearch(LocationSearch locationSearch)
+  /**
+   * Searches for current Data with the given Location Name. If there is no db entry for the
+   * Location Object with the corresponding Lon/Lat Id, a new one is being created. If there is an
+   * existing Location in the db and it is not older than one hour, this Location will be returned.
+   * If there is an older Location in the db, the Weather Api will be called and the Location in the
+   * db will get updated with the new Weather and this Location will be returned. <br>
+   * <br>
+   *
+   * @param locationSearchString the name of the location
+   * @return a location with weatherdata not older than the last full hour.
+   * @throws FailedToSerializeDTOException if there occur problems with the DTO serialization.
+   */
+  public Location handleLocationSearch(String locationSearchString)
       throws FailedToSerializeDTOException {
-    String locationName = locationSearch.getLocationName();
-    LocationAnswerDTO locationAnswerDTO = locationSearch.getLocationAnswerDTO();
-    CurrentAndForecastAnswerDTO weatherDTO = locationSearch.getCurrentAndForecastAnswerDTO();
+    // This method covers 3 cases:
+    // 1. The searched location is already persisted and has up-to-date weather data.
+    // 2. The searched location is already persisted but the weather data is out of date.
+    // 3. The searched location does not exist in the database yet.
     Location location = new Location();
-    if (locationAnswerDTO == null) {
-      locationAnswerDTO = callApi(locationName);
-    }
+    LocationAnswerDTO locationAnswerDTO = callApi(locationSearchString);
+    CurrentAndForecastAnswerDTO weatherDTO;
+    // Case 1:
     if (locationAlreadyPersisted(locationAnswerDTO)) {
       location = getLocation(locationAnswerDTO);
       if (locationHasUpToDateWeatherData(location)) {
-        return locationRepository.save(location);
-      } else {
-        if (weatherDTO == null) {
-          weatherDTO =
-              currentAndForecastAnswerService.callApi(
-                  locationAnswerDTO.longitude(), locationAnswerDTO.latitude());
-        }
-        return locationRepository.save(
-            updateLocationWeather(
-                location, currentAndForecastAnswerService.saveWeather(weatherDTO)));
+        return location;
       }
-    } else {
-      location.setId(locationAnswerDTO.latitude(), locationAnswerDTO.longitude());
-      location.setCity(locationAnswerDTO.name());
-      location.setState(locationAnswerDTO.state());
-      location.setCountry(locationAnswerDTO.country());
-      if (weatherDTO == null) {
-        weatherDTO =
-            currentAndForecastAnswerService.callApi(
-                locationAnswerDTO.longitude(), locationAnswerDTO.latitude());
-      }
-      location.setWeather(currentAndForecastAnswerService.saveWeather(weatherDTO));
-      return locationRepository.save(location);
     }
+    // Cases 2 & 3:
+    // they can be handled the same, as overwriting the id, city, state etc. with the very
+    // same data doesn't make a difference in the data per se and simplifies this method slightly by
+    // combining the logic of the two cases.
+    location.setId(locationAnswerDTO.latitude(), locationAnswerDTO.longitude());
+    location.setCity(locationAnswerDTO.name());
+    location.setState(locationAnswerDTO.state());
+    location.setCountry(locationAnswerDTO.country());
+    weatherDTO =
+        currentAndForecastAnswerService.callApi(
+            locationAnswerDTO.longitude(), locationAnswerDTO.latitude());
+    location.setWeather(currentAndForecastAnswerService.saveWeather(weatherDTO));
+
+    return locationRepository.save(location);
   }
 
   public Location updateLocationWeather(
