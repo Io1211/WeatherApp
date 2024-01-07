@@ -5,7 +5,6 @@ import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.CreditCardService;
 import at.qe.skeleton.internal.services.UserxService;
 import at.qe.skeleton.internal.ui.beans.CreditCardBean;
-import at.qe.skeleton.internal.ui.beans.UserBean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,14 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Some very basic tests for UserBean.
  */
-@SpringBootTest
+
 public class CreditCardBeanTest {
 
     @Mock
     private CreditCardService creditcardservice;
-
-    @Mock
-    private UserxService userService;
 
     @Mock
     private CardType VISA;
@@ -35,8 +31,6 @@ public class CreditCardBeanTest {
     @InjectMocks
     private CreditCardBean creditCardBean;
 
-    //method creates mock instances for all fields annotated with @Mock and
-    //injects mocks into the fields annotated with @InjectMocks
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -65,10 +59,8 @@ public class CreditCardBeanTest {
 
     @Test
     public void testSetOwner() {
-        Userx testOwner = new Userx();
-        testOwner.setUsername("testUsername");
-        creditCardBean.getCreditCard().setOwner(testOwner);
-        assertEquals(testOwner, creditCardBean.getCreditCard().getOwner(), "Owner should be set correctly");
+        creditCardBean.getCreditCard().setOwner("testUsername");
+        assertEquals("testUsername", creditCardBean.getCreditCard().getOwner(), "Owner should be set correctly");
     }
 
     @Test
