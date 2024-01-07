@@ -14,7 +14,7 @@ public class PasswordResetService {
 
   @Autowired private EmailService emailService;
 
-  @Autowired public TokenService tokenService;
+  @Autowired private TokenService tokenService;
 
   public void sendPasswordResetEmailAndToken(String email, String token) {
     if (userxService.loadUserByEmail(email) == null) {

@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,9 +13,12 @@ public class EmailService {
 
   @Autowired private JavaMailSender mailSender;
 
+  @Value("${spring.mail.username}")
+  private String emailform;
+
   public void sendEmail(String email, String subject, String message) {
     SimpleMailMessage mailMessage = new SimpleMailMessage();
-    mailMessage.setFrom("group8weatherapp@gmail.com");
+    mailMessage.setFrom(emailform);
     mailMessage.setTo(email);
     mailMessage.setText(message);
     mailMessage.setSubject(subject);
