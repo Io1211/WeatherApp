@@ -10,9 +10,7 @@ import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
 import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
 import jakarta.validation.constraints.NotNull;
-
 import java.time.ZonedDateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -35,6 +33,10 @@ public class LocationService {
 
   public Location handleLocationSearch(String locationSearchString)
       throws FailedToSerializeDTOException {
+    // This method covers 3 cases:
+    // 1. The searched location is already persisted and has up-to-date weather data.
+    // 2. The searched location is already persisted but the weather data is out of date.
+    // 3. The searched location does not exist in the database yet.
     Location location = new Location();
     LocationAnswerDTO locationAnswerDTO = callApi(locationSearchString);
     CurrentAndForecastAnswerDTO weatherDTO;
@@ -44,7 +46,9 @@ public class LocationService {
         return location;
       }
     }
-    // problematic if we store same id twice? will it just be updated?
+    // Cases 2. & 3. can be handled the same, as overwriting the id, city, state etc. with the very
+    // same data doesn't make a difference in the data per se and simplifies this method slightly by
+    // combining the logic of the two cases.
     location.setId(locationAnswerDTO.latitude(), locationAnswerDTO.longitude());
     location.setCity(locationAnswerDTO.name());
     location.setState(locationAnswerDTO.state());

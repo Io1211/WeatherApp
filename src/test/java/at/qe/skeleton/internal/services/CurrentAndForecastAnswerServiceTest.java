@@ -31,6 +31,12 @@ class CurrentAndForecastAnswerServiceTest {
 
   @Autowired CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
+  // There is a bug concerning the PrecipitationDeserializer. The rain and snow fields in the
+  // CurrentWeatherDTO are always set to null when serializing/deserializing the
+  // CurrentAndForecastAnswerDTO.
+  // Therefore, the tests currently use the mock api response from Innsbruck, where these fields are
+  // expected to be null and not the one from Munich, were they are expected to return a non-null
+  // value until this problem is resolved.
   private final String dataFilePath =
       "src/test/resources/MockCurrentAndForecastAnswersInnsbruck.json";
 

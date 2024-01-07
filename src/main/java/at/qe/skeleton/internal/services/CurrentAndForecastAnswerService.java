@@ -8,10 +8,8 @@ import at.qe.skeleton.internal.services.utils.FailedJsonToDtoMappingException;
 import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +28,7 @@ public class CurrentAndForecastAnswerService {
 
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
-  private ObjectMapper mapper =
-      new ObjectMapper().findAndRegisterModules().enable(SerializationFeature.INDENT_OUTPUT);
+  private final ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
 
   private static final Logger LOGGER =
       LoggerFactory.getLogger(CurrentAndForecastAnswerService.class);
@@ -137,10 +134,7 @@ public class CurrentAndForecastAnswerService {
   public byte[] serializeDTO(@NotNull CurrentAndForecastAnswerDTO answerDTO)
       throws FailedToSerializeDTOException {
     try {
-      return this.mapper
-          .writerWithDefaultPrettyPrinter()
-          .writeValueAsString(answerDTO)
-          .getBytes(StandardCharsets.UTF_8);
+      return this.mapper.writeValueAsBytes(answerDTO);
     } catch (JsonProcessingException e) {
       throw new FailedToSerializeDTOException();
     }
