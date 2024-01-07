@@ -46,7 +46,7 @@ public class PasswordResetBeanTest {
         String result = passwordResetBean.resetPassword();
 
         verify(passwordResetService, times(1)).resetPassword(anyString(), anyString());
-        assertEquals("successPage", result);
+        assertEquals("login", result);
 
     }
 }

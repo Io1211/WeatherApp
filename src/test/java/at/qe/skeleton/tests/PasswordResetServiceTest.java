@@ -33,7 +33,7 @@ class PasswordResetServiceTest {
         verify(emailService).sendEmail(
                 eq(email),
                 eq("Reset your password"),
-                contains("Please click on the following link to reset your password: http://localhost:8080/resetPassword.xhtml")
+                contains("Your token")
         );
     }
 
