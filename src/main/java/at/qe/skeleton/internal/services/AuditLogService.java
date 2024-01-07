@@ -12,12 +12,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+/**
+ * This service is used to track all role changes from users.
+ */
+
 @Service
 public class AuditLogService {
 
     @Autowired
     private AuditLogRepository auditLogRepository;
 
+
+    /**
+     * Saves an entry into the database. The entry is given by a string.
+     *
+     * @param message is the message which i saves.
+     */
     public void saveEntry(String message) {
         AuditLog al = new AuditLog();
         al.setMessage(message);
@@ -25,7 +35,11 @@ public class AuditLogService {
         auditLogRepository.save(al);
     }
 
-    // concatenates all roles from the set into a string
+    /**
+     * Concatenates all roles from the set into a string.
+     *
+     * @param userx is the user whose roles will be converted into a string.
+     */
     public String convertRolesToString(Userx userx) {
         StringBuilder rolesAsString = new StringBuilder();
         for (UserxRole userxrole : userx.getRoles()) {
@@ -38,16 +52,30 @@ public class AuditLogService {
         return rolesAsString.toString();
     }
 
+    /**
+     * Creates the corresponding message which will be logged when a user is deleted.
+     *
+     * @param userx is the user which is being deleted.
+     */
     @PreAuthorize("hasAuthority('ADMIN')")
     public void saveDeletedUserEntry(Userx userx) {
         saveEntry("User " + userx.getUsername() + "with role(s) " + convertRolesToString(userx) +" has been deleted.");
     }
 
+    /**
+     * Creates the corresponding message which will be logged when a user is created.
+     *
+     * @param userx is the user which has been created.
+     */
     @PreAuthorize("hasAuthority('ADMIN')")
     public void saveCreatedUserEntry(Userx userx) {
         saveEntry("User " + userx.getUsername() + "with role(s) " + convertRolesToString(userx) + " has been saved.");
     }
 
+    /**
+     * Displays alls audit logs saved.
+     *
+     */
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<AuditLog> findAll() {
         return auditLogRepository.findAll();

@@ -11,10 +11,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.AuditLogService;
-import at.qe.skeleton.internal.services.AuditLog;
+import at.qe.skeleton.internal.model.AuditLog;
 
 /**
  * Some tests for {@link AuditLogService}.
+
  */
 
 @SpringBootTest
