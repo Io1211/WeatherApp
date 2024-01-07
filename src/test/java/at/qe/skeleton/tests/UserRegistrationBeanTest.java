@@ -41,7 +41,7 @@ class UserRegistrationBeanTest {
     String result = userRegistrationBean.register();
 
     assertEquals("confirmRegistration", result);
-    verify(registrationService).registerUser(eq(testUser), eq("12345"));
+    verify(registrationService).registerUser(testUser, "12345");
   }
 
   @Test
@@ -57,6 +57,6 @@ class UserRegistrationBeanTest {
     userRegistrationBean.confirmRegistration();
 
     verify(registrationService)
-        .confirmRegistrationOfUser(eq(user.getUsername()), eq("12345"), eq("12345"));
+        .confirmRegistrationOfUser(user.getUsername(), "12345", "12345");
   }
 }

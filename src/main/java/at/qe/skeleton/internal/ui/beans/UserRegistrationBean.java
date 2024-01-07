@@ -62,9 +62,8 @@ public class UserRegistrationBean {
 
   public String register() {
     try {
-      String token = tokenService.generateToken();
-      setToken(token);
-      registrationService.registerUser(user, token);
+      setToken( tokenService.generateToken());
+      registrationService.registerUser(user, getToken());
       return "confirmRegistration";
     } catch (RuntimeException e) {
       addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
