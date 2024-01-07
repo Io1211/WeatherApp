@@ -70,9 +70,15 @@ public class PasswordResetBean {
 
 
     public String sendPasswordResetEmail() {
-        String token = passwordResetService.tokenService.generateToken();
-        setToken(token);
-        passwordResetService.sendPasswordResetEmailAndToken(getEmail(), token);
+        try {
+            String token = passwordResetService.tokenService.generateToken();
+            setToken(token);
+            passwordResetService.sendPasswordResetEmailAndToken(getEmail(), token);
+        }
+        catch (IllegalArgumentException e) {
+            addMessage("User not found for email " + getEmail(), FacesMessage.SEVERITY_ERROR);
+            return null;
+        }
         return "resetPassword";
     }
 

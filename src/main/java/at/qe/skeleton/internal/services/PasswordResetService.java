@@ -20,7 +20,11 @@ public class PasswordResetService {
     public TokenService tokenService;
 
     public void sendPasswordResetEmailAndToken(String email, String token) {
-        emailService.sendEmail(email, "Reset your password",  "\nYour token: " + token + "\n\nIf you did not request a password reset, please ignore this email.");
+        if (userxService.loadUserByEmail(email) == null)
+        { throw new IllegalArgumentException("User not found for email " + email); }
+        else {
+            emailService.sendEmail(email, "Reset your password", "\nYour token: " + token + "\n\nIf you did not request a password reset, please ignore this email.");
+        }
     }
 
     public void resetPassword(String email, String newPassword) {
