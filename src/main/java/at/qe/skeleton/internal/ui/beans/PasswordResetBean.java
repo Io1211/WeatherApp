@@ -85,8 +85,6 @@ public class PasswordResetBean {
   }
 
   public String resetPassword() {
-    System.out.println(
-        "Resetting password for " + email + " to " + newPassword + " with token " + token);
     if (insertedToken == null || insertedToken.isEmpty()) {
       addMessage("Please enter your token", FacesMessage.SEVERITY_ERROR);
       return null;

@@ -24,7 +24,5 @@ public class EmailService {
     mailMessage.setSubject(subject);
 
     mailSender.send(mailMessage);
-    System.out.println(
-        "Sending email to " + email + " with subject " + subject + " and message " + message);
   }
 }

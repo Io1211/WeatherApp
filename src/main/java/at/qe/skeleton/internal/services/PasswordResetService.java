@@ -35,7 +35,6 @@ public class PasswordResetService {
       throw new IllegalArgumentException("User not found for email " + email);
     } else {
       userxService.setPasswordEncoded(user, newPassword);
-      System.out.println("Resetting password for " + email + " to " + user.getPassword());
     }
   }
 }
