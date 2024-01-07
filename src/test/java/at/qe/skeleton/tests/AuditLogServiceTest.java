@@ -13,6 +13,7 @@ import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.services.AuditLogService;
 import at.qe.skeleton.internal.model.AuditLog;
+import at.qe.skeleton.internal.repositories.AuditLogRepository;
 
 /**
  * Some tests for {@link AuditLogService} which test the three core methods.
@@ -24,15 +25,20 @@ public class AuditLogServiceTest {
     @Autowired
     private AuditLogService auditLogService;
 
+    @Autowired
+    private AuditLogRepository auditLogRepository;
+
     @Test
     void saveEntryTest() {
         String message = "Test";
         doNothing().when(auditLogRepository).save(any(AuditLog.class));
         auditLogService.saveEntry(message);
         verify(auditLogRepository, times(1)).save(argThat(argument -> {
-            return argument.getMessage().equals(message);
+            assertEquals(message, argument.getMessage());
+            return true; 
         }));
     }
+
 
     @Test
     void saveDeletedUserEntryTest() {
