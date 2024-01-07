@@ -1,7 +1,9 @@
 package at.qe.skeleton.configs;
 
 import at.qe.skeleton.internal.model.UserxRole;
+
 import javax.sql.DataSource;
+
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -32,53 +34,57 @@ public class WebSecurityConfig {
   private static final String LOGIN = "/login.xhtml";
   private static final String ACCESSDENIED = "/error/access_denied.xhtml";
 
-  @Autowired DataSource dataSource;
+  @Autowired
+  DataSource dataSource;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
     try {
-
       http.cors(cors -> cors.disable())
-          .csrf(csrf -> csrf.disable())
-          .headers(
-              headers ->
-                  headers.frameOptions(FrameOptionsConfig::sameOrigin)) // needed for H2 console
-          .authorizeHttpRequests(
-              authorize ->
-                  authorize
-                      .requestMatchers(new AntPathRequestMatcher("/"))
-                      .permitAll()
-                      .requestMatchers(new AntPathRequestMatcher("/**.jsf"))
-                      .permitAll()
-                      .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
-                      .permitAll()
-                      .requestMatchers(new AntPathRequestMatcher("/jakarta.faces.resource/**"))
-                      .permitAll()
-                      .requestMatchers(new AntPathRequestMatcher("/error/**"))
-                      .permitAll()
-                      .requestMatchers(new AntPathRequestMatcher("/admin/**"))
-                      .hasAnyAuthority("ADMIN")
-                      .requestMatchers(new AntPathRequestMatcher("/secured/**"))
-                      .hasAnyAuthority(ADMIN, MANAGER, PREMIUM_USER, REGISTERED_USER)
-                      .anyRequest()
-                      .authenticated())
-          .formLogin(
-              form ->
-                  form.loginPage(LOGIN)
-                      .permitAll()
-                      .defaultSuccessUrl("/secured/welcome.xhtml")
-                      .loginProcessingUrl("/login")
-                      .successForwardUrl("/secured/welcome.xhtml")
-                      .failureUrl("/login.xhtml?error"))
-          .logout(
-              logout ->
-                  logout
-                      .logoutSuccessUrl(LOGIN)
-                      .deleteCookies("JSESSIONID")
-                      .invalidateHttpSession(true)
-                      .logoutRequestMatcher(new AntPathRequestMatcher("/logout")))
-          .sessionManagement(session -> session.invalidSessionUrl("/error/invalid_session.xhtml"));
+              .csrf(csrf -> csrf.disable())
+              .headers(
+                      headers ->
+                              headers.frameOptions(FrameOptionsConfig::sameOrigin)) // needed for H2 console
+              .authorizeHttpRequests(
+                      authorize ->
+                              authorize
+                                      .requestMatchers(new AntPathRequestMatcher("/"))
+                                      .permitAll()
+                                      .requestMatchers(new AntPathRequestMatcher("/**.jsf"))
+                                      .permitAll()
+                                      .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
+                                      .permitAll()
+                                      .requestMatchers(new AntPathRequestMatcher("/jakarta.faces.resource/**"))
+                                      .permitAll()
+                                      .requestMatchers(new AntPathRequestMatcher("/error/**"))
+                                      .permitAll()
+                                      .requestMatchers(new AntPathRequestMatcher("/admin/**"))
+                                      .hasAnyAuthority("ADMIN")
+                                      .requestMatchers(new AntPathRequestMatcher("/secured/**"))
+                                      .hasAnyAuthority(ADMIN, MANAGER, PREMIUM_USER, REGISTERED_USER)
+                                      .requestMatchers("/registration.xhtml").permitAll()
+                                      .requestMatchers("/resetPassword.xhtml").permitAll()
+                                      .requestMatchers("/requestNewPassword.xhtml").permitAll()
+                                      .requestMatchers("/confirmRegistration.xhtml").permitAll()
+                                      .anyRequest()
+                                      .authenticated())
+              .formLogin(
+                      form ->
+                              form.loginPage(LOGIN)
+                                      .permitAll()
+                                      .defaultSuccessUrl("/secured/welcome.xhtml")
+                                      .loginProcessingUrl("/login")
+                                      .successForwardUrl("/secured/welcome.xhtml")
+                                      .failureUrl("/login.xhtml?error"))
+              .logout(
+                      logout ->
+                              logout
+                                      .logoutSuccessUrl(LOGIN)
+                                      .deleteCookies("JSESSIONID")
+                                      .invalidateHttpSession(true)
+                                      .logoutRequestMatcher(new AntPathRequestMatcher("/logout")))
+              .sessionManagement(session -> session.invalidSessionUrl("/error/invalid_session.xhtml"));
 
       return http.build();
     } catch (Exception ex) {
@@ -89,11 +95,11 @@ public class WebSecurityConfig {
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
     auth.jdbcAuthentication()
-        .dataSource(dataSource)
-        .usersByUsernameQuery("select username, password, enabled from userx where username=?")
-        .authoritiesByUsernameQuery(
-            "select userx_username, roles from userx_userx_role where userx_username=?")
-        .passwordEncoder(passwordEncoder());
+            .dataSource(dataSource)
+            .usersByUsernameQuery("select username, password, enabled from userx where username=?")
+            .authoritiesByUsernameQuery(
+                    "select userx_username, roles from userx_userx_role where userx_username=?")
+            .passwordEncoder(passwordEncoder());
   }
 
   @Bean
