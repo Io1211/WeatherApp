@@ -72,7 +72,14 @@ public class UserRegistrationBean {
   }
 
   public String confirmRegistration() {
-    registrationService.confirmRegistrationOfUser(user.getUsername(), token, insertedToken);
-    return "login";
+    try{
+      registrationService.confirmRegistrationOfUser(user.getUsername(), token, insertedToken);
+      return "login";
+    }
+    catch (RuntimeException e) {
+      addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
+      return null;
+    }
+
   }
 }
