@@ -10,6 +10,7 @@ import java.util.Random;
 @Component
 @Scope("application")
 public class PasswordResetService {
+
   @Autowired private UserxService userxService;
 
   @Autowired private EmailService emailService;
