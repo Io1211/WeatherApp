@@ -14,8 +14,6 @@ public class PasswordResetService {
 
   @Autowired private EmailService emailService;
 
-  @Autowired private TokenService tokenService;
-
   public void sendPasswordResetEmailAndToken(String email, String token) {
     if (userxService.loadUserByEmail(email) == null) {
       throw new IllegalArgumentException("User not found for email " + email);
