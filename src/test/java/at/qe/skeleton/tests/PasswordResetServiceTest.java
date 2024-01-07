@@ -17,42 +17,37 @@ import static org.mockito.Mockito.*;
 
 class PasswordResetServiceTest {
 
-    @Mock
-    private EmailService emailService;
+  @Mock private EmailService emailService;
 
-    @Mock
-    private UserxService userxService;
+  @Mock private UserxService userxService;
 
-    @InjectMocks
-    private PasswordResetService passwordResetService;
+  @InjectMocks private PasswordResetService passwordResetService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+  @BeforeEach
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
+  }
 
-    @Test
-    void testSendPasswordResetEmail() {
-        String email = "test@example.com";
-        String token = "1234";
-        Userx mockUser = new Userx();
-        when(userxService.loadUserByEmail(email)).thenReturn(mockUser);
-        passwordResetService.sendPasswordResetEmailAndToken(email, token);
-        verify(emailService).sendEmail(
-                eq(email),
-                eq("Reset your password"),
-                contains("Your token")
-        );
-    }
+  @Test
+  void testSendPasswordResetEmail() {
+    String email = "test@example.com";
+    String token = "1234";
+    Userx mockUser = new Userx();
+    when(userxService.loadUserByEmail(email)).thenReturn(mockUser);
+    passwordResetService.sendPasswordResetEmailAndToken(email, token);
+    verify(emailService).sendEmail(eq(email), eq("Reset your password"), contains("Your token"));
+  }
 
-    @Test
-    void testSendPasswordResetEmailWithInvalidEmail() {
-        String email = "wrong@example.com";
-        String token = "1234";
-        when(userxService.loadUserByEmail(email)).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> {
-            passwordResetService.sendPasswordResetEmailAndToken(email, token);
+  @Test
+  void testSendPasswordResetEmailWithInvalidEmail() {
+    String email = "wrong@example.com";
+    String token = "1234";
+    when(userxService.loadUserByEmail(email)).thenReturn(null);
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          passwordResetService.sendPasswordResetEmailAndToken(email, token);
         });
-        verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
-    }
+    verify(emailService, never()).sendEmail(anyString(), anyString(), anyString());
+  }
 }

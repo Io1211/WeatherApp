@@ -8,25 +8,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TokenServiceTest {
 
+  private TokenService tokenService;
 
-    private TokenService tokenService;
+  @BeforeEach
+  void setUp() {
+    tokenService = new TokenService();
+  }
 
-    @BeforeEach
-    void setUp() {
-        tokenService = new TokenService();
-    }
+  @Test
+  void testGenerateToken() {
+    String token = tokenService.generateToken();
+    assertNotNull(token);
+    assertTrue(token.matches("\\d{4}")); // Check if the token is a 4-digit number
+  }
 
-    @Test
-    void testGenerateToken() {
-        String token = tokenService.generateToken();
-        assertNotNull(token);
-        assertTrue(token.matches("\\d{4}")); // Check if the token is a 4-digit number
-    }
-
-    @Test
-    void testValidatePasswordResetToken() {
-        String token = "1234";
-        assertTrue(tokenService.validateToken(token, token));
-        assertFalse(tokenService.validateToken(token, "12345"));
-    }
+  @Test
+  void testValidatePasswordResetToken() {
+    String token = "1234";
+    assertTrue(tokenService.validateToken(token, token));
+    assertFalse(tokenService.validateToken(token, "12345"));
+  }
 }

@@ -13,107 +13,103 @@ import jakarta.faces.context.FacesContext;
 @Scope("session")
 public class PasswordResetBean {
 
-    @Autowired
-    private EmailService emailService;
+  @Autowired private EmailService emailService;
 
-    @Autowired
-    private PasswordResetService passwordResetService;
+  @Autowired private PasswordResetService passwordResetService;
 
-    @Autowired
-    private TokenService tokenService;
+  @Autowired private TokenService tokenService;
 
-    private String email;
-    private String token;
-    private String insertedToken;
-    private String newPassword;
-    private String newPasswordRepeat;
+  private String email;
+  private String token;
+  private String insertedToken;
+  private String newPassword;
+  private String newPasswordRepeat;
 
-    public String getEmail() {
-        return email;
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+  public String getInsertedToken() {
+    return insertedToken;
+  }
+
+  public void setInsertedToken(String insertedToken) {
+    this.insertedToken = insertedToken;
+  }
+
+  public String getNewPassword() {
+    return newPassword;
+  }
+
+  public void setNewPassword(String newPassword) {
+    this.newPassword = newPassword;
+  }
+
+  public String getNewPasswordRepeat() {
+    return newPasswordRepeat;
+  }
+
+  public void setNewPasswordRepeat(String newPasswordRepeat) {
+    this.newPasswordRepeat = newPasswordRepeat;
+  }
+
+  public String sendPasswordResetEmail() {
+    try {
+      String token = passwordResetService.tokenService.generateToken();
+      setToken(token);
+      passwordResetService.sendPasswordResetEmailAndToken(getEmail(), token);
+    } catch (IllegalArgumentException e) {
+      addMessage("User not found for email " + getEmail(), FacesMessage.SEVERITY_ERROR);
+      return null;
+    }
+    return "resetPassword";
+  }
+
+  public boolean validatePasswordResetToken() {
+    return tokenService.validateToken(getToken(), getInsertedToken());
+  }
+
+  private void addMessage(String summary, FacesMessage.Severity severity) {
+    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
+  }
+
+  public String resetPassword() {
+    System.out.println(
+        "Resetting password for " + email + " to " + newPassword + " with token " + token);
+    if (insertedToken == null || insertedToken.isEmpty()) {
+      addMessage("Please enter your token", FacesMessage.SEVERITY_ERROR);
+      return null;
+    }
+    if (!validatePasswordResetToken()) {
+      addMessage("Invalid token", FacesMessage.SEVERITY_ERROR);
+      return null;
+    }
+    if (newPassword == null || newPassword.isEmpty()) {
+      addMessage("Please enter a new password", FacesMessage.SEVERITY_ERROR);
+      return null;
+    }
+    if (newPasswordRepeat == null || newPasswordRepeat.isEmpty()) {
+      addMessage("Please repeat your new password", FacesMessage.SEVERITY_ERROR);
+      return null;
+    }
+    if (!newPassword.equals(newPasswordRepeat)) {
+      addMessage("Passwords do not match", FacesMessage.SEVERITY_ERROR);
+      return null;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getInsertedToken() {
-        return insertedToken;
-    }
-
-    public void setInsertedToken(String insertedToken) {
-        this.insertedToken = insertedToken;
-    }
-
-    public String getNewPassword() {
-        return newPassword;
-    }
-
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
-    }
-
-    public String getNewPasswordRepeat() {
-        return newPasswordRepeat;
-    }
-
-    public void setNewPasswordRepeat(String newPasswordRepeat) {
-        this.newPasswordRepeat = newPasswordRepeat;
-    }
-
-
-    public String sendPasswordResetEmail() {
-        try {
-            String token = passwordResetService.tokenService.generateToken();
-            setToken(token);
-            passwordResetService.sendPasswordResetEmailAndToken(getEmail(), token);
-        }
-        catch (IllegalArgumentException e) {
-            addMessage("User not found for email " + getEmail(), FacesMessage.SEVERITY_ERROR);
-            return null;
-        }
-        return "resetPassword";
-    }
-
-    public boolean validatePasswordResetToken() {
-        return tokenService.validateToken(getToken(), getInsertedToken());
-    }
-
-    private void addMessage(String summary, FacesMessage.Severity severity) {
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(severity, summary, null));
-    }
-    public String resetPassword() {
-        System.out.println("Resetting password for " + email + " to " + newPassword + " with token " + token);
-        if (insertedToken == null || insertedToken.isEmpty()) {
-            addMessage("Please enter your token", FacesMessage.SEVERITY_ERROR);
-            return null;
-        }
-        if (!validatePasswordResetToken()) {
-            addMessage("Invalid token", FacesMessage.SEVERITY_ERROR);
-            return null;
-        }
-        if(newPassword == null || newPassword.isEmpty()) {
-            addMessage("Please enter a new password", FacesMessage.SEVERITY_ERROR);
-            return null;
-        }
-        if(newPasswordRepeat == null || newPasswordRepeat.isEmpty()) {
-            addMessage("Please repeat your new password", FacesMessage.SEVERITY_ERROR);
-            return null;
-        }
-        if (!newPassword.equals(newPasswordRepeat)) {
-            addMessage("Passwords do not match", FacesMessage.SEVERITY_ERROR);
-            return null;
-        }
-
-        passwordResetService.resetPassword(email, newPassword);
-        return "login";
-    }
+    passwordResetService.resetPassword(email, newPassword);
+    return "login";
+  }
 }

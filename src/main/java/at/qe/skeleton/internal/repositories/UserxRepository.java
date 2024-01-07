@@ -23,6 +23,6 @@ public interface UserxRepository extends AbstractRepository<Userx, String> {
 
   @Query("SELECT u FROM Userx u WHERE :role MEMBER OF u.roles")
   List<Userx> findByRole(@Param("role") UserxRole role);
-    Userx findFirstByEmail(String email);
 
+  Userx findFirstByEmail(String email);
 }

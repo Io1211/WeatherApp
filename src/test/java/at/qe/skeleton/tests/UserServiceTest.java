@@ -243,7 +243,6 @@ public class UserServiceTest {
         });
   }
 
-
   @Test
   @WithMockUser(
       username = "user1",

@@ -12,7 +12,8 @@
                 <p:outputLabel for="token" value="Token:"/>
                 <p:inputText id="token" value="#{userRegistrationBean.insertedToken}" required="true"/>
 
-                <p:commandButton value="Confirm registration" action="#{userRegistrationBean.confirmRegistration}" update="messages"/>
+                <p:commandButton value="Confirm registration" action="#{userRegistrationBean.confirmRegistration}"
+                                 update="messages"/>
 
             </h:panelGrid>
         </h:form>

@@ -15,52 +15,53 @@ import static org.mockito.Mockito.*;
 
 class UserRegistrationBeanTest {
 
-    @InjectMocks
-    private UserRegistrationBean userRegistrationBean;
+  @InjectMocks private UserRegistrationBean userRegistrationBean;
 
-    @Mock
-    private RegistrationService registrationService;
+  @Mock private RegistrationService registrationService;
 
-    @Mock
-    private TokenService tokenService;
+  @Mock private TokenService tokenService;
 
-    @Mock
-    private UserxService userService;
+  @Mock private UserxService userService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+  @BeforeEach
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
+  }
 
-    @Test
-    void testRegister() {
-        Userx testUser = new Userx();
-        testUser.setUsername("test");
-        testUser.setPassword("test");
-        testUser.setEmail("test@gmail.com");
+  @Test
+  void testRegister() {
+    Userx testUser = new Userx();
+    testUser.setUsername("test");
+    testUser.setPassword("test");
+    testUser.setEmail("test@gmail.com");
 
-        userRegistrationBean.setUser(testUser);
-        when(tokenService.generateToken()).thenReturn("12345");
+    userRegistrationBean.setUser(testUser);
+    when(tokenService.generateToken()).thenReturn("12345");
 
-        String result = userRegistrationBean.register();
+    String result = userRegistrationBean.register();
 
-        assertEquals("confirmRegistration", result);
-        verify(registrationService).registerUser(eq(testUser), eq("12345")); // Verify that registrationService.registerUser is called with expected parameters
-    }
+    assertEquals("confirmRegistration", result);
+    verify(registrationService)
+        .registerUser(
+            eq(testUser),
+            eq(
+                "12345")); // Verify that registrationService.registerUser is called with expected
+                           // parameters
+  }
 
-    @Test
-    void testConfirmRegistrationOfUser() {
-        Userx user = new Userx();
-        user.setUsername("user");
-        user.setEnabled(false);
-        userRegistrationBean.setToken("12345");
-        userRegistrationBean.setUser(user);
+  @Test
+  void testConfirmRegistrationOfUser() {
+    Userx user = new Userx();
+    user.setUsername("user");
+    user.setEnabled(false);
+    userRegistrationBean.setToken("12345");
+    userRegistrationBean.setUser(user);
 
-        assertFalse(user.isEnabled());
-        userRegistrationBean.setInsertedToken("12345");
-        userRegistrationBean.confirmRegistration();
+    assertFalse(user.isEnabled());
+    userRegistrationBean.setInsertedToken("12345");
+    userRegistrationBean.confirmRegistration();
 
-        verify(registrationService).confirmRegistrationOfUser(eq(user.getUsername()), eq("12345"), eq("12345"));
-    }
-
+    verify(registrationService)
+        .confirmRegistrationOfUser(eq(user.getUsername()), eq("12345"), eq("12345"));
+  }
 }

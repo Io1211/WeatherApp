@@ -16,37 +16,32 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class PasswordResetBeanTest {
-    @Mock
-    private EmailService emailService;
+  @Mock private EmailService emailService;
 
-    @Mock
-    private PasswordResetService passwordResetService;
+  @Mock private PasswordResetService passwordResetService;
 
-    @Mock
-    private TokenService tokenService;
+  @Mock private TokenService tokenService;
 
-    @InjectMocks
-    private PasswordResetBean passwordResetBean;
+  @InjectMocks private PasswordResetBean passwordResetBean;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+  @BeforeEach
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
+  }
 
-    @Test
-    public void testResetPassword() {
-        passwordResetBean.setEmail("test@example.com");
-        passwordResetBean.setInsertedToken("12345");
-        passwordResetBean.setToken("12345");
-        passwordResetBean.setNewPassword("12345");
-        passwordResetBean.setNewPasswordRepeat("12345");
+  @Test
+  public void testResetPassword() {
+    passwordResetBean.setEmail("test@example.com");
+    passwordResetBean.setInsertedToken("12345");
+    passwordResetBean.setToken("12345");
+    passwordResetBean.setNewPassword("12345");
+    passwordResetBean.setNewPasswordRepeat("12345");
 
-        when(passwordResetBean.validatePasswordResetToken()).thenReturn(true);
+    when(passwordResetBean.validatePasswordResetToken()).thenReturn(true);
 
-        String result = passwordResetBean.resetPassword();
+    String result = passwordResetBean.resetPassword();
 
-        verify(passwordResetService, times(1)).resetPassword(anyString(), anyString());
-        assertEquals("login", result);
-
-    }
+    verify(passwordResetService, times(1)).resetPassword(anyString(), anyString());
+    assertEquals("login", result);
+  }
 }

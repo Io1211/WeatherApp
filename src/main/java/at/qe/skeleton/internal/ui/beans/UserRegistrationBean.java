@@ -18,65 +18,62 @@ import java.util.Set;
 @Scope("session")
 public class UserRegistrationBean {
 
-    private Userx user = new Userx();
+  private Userx user = new Userx();
 
-    @Autowired
-    private RegistrationService registrationService;
+  @Autowired private RegistrationService registrationService;
 
-    @Autowired
-    TokenService tokenService;
+  @Autowired TokenService tokenService;
 
-    private String token;
+  private String token;
 
-    private String insertedToken;
+  private String insertedToken;
 
-    public Userx getUser() {
-        return user;
+  public Userx getUser() {
+    return user;
+  }
+
+  public void setUser(Userx user) {
+    this.user = user;
+  }
+
+  public void setPassword(String password) {
+    this.user.setPassword(password);
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
+  }
+
+  public String getInsertedToken() {
+    return insertedToken;
+  }
+
+  public void setInsertedToken(String insertedToken) {
+    this.insertedToken = insertedToken;
+  }
+
+  private void addMessage(String summary, FacesMessage.Severity severity) {
+    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
+  }
+
+  public String register() {
+    try {
+      String token = tokenService.generateToken();
+      setToken(token);
+      registrationService.registerUser(user, token);
+      return "confirmRegistration";
+    } catch (RuntimeException e) {
+      addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
+      return null;
     }
+  }
 
-    public void setUser(Userx user) {
-        this.user = user;
-    }
-
-    public void setPassword(String password) {
-        this.user.setPassword(password);
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getInsertedToken() {
-        return insertedToken;
-    }
-
-    public void setInsertedToken(String insertedToken) {
-        this.insertedToken = insertedToken;
-    }
-
-    private void addMessage(String summary, FacesMessage.Severity severity) {
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(severity, summary, null));
-    }
-    public String register() {
-        try {
-            String token = tokenService.generateToken();
-            setToken(token);
-            registrationService.registerUser(user, token);
-            return "confirmRegistration";
-        }
-        catch (RuntimeException e) {
-            addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
-            return null;
-        }
-    }
-
-    public String confirmRegistration() {
-        registrationService.confirmRegistrationOfUser(user.getUsername(), token, insertedToken);
-        return "login";
-    }
+  public String confirmRegistration() {
+    registrationService.confirmRegistrationOfUser(user.getUsername(), token, insertedToken);
+    return "login";
+  }
 }

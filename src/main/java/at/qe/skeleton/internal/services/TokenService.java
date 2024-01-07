@@ -10,15 +10,14 @@ import java.util.Random;
 @Scope("application")
 public class TokenService {
 
-    public String generateToken() {
-        Random r = new Random();
-        int fourDigit = 1000 + r.nextInt(10000);
-        System.out.println(fourDigit);
-        return Integer.toString(fourDigit);
-    }
+  public String generateToken() {
+    Random r = new Random();
+    int fourDigit = 1000 + r.nextInt(10000);
+    System.out.println(fourDigit);
+    return Integer.toString(fourDigit);
+  }
 
-    public boolean validateToken(String token, String insertedToken) {
-        return token.equals(insertedToken);
-    }
-
+  public boolean validateToken(String token, String insertedToken) {
+    return token.equals(insertedToken);
+  }
 }
