@@ -29,6 +29,9 @@ public class RegistrationService {
     if (userService.loadUser(user.getUsername()) != null) {
       throw new RuntimeException("Username already exists.");
     }
+    if (userService.loadUserByEmail(user.getEmail()) != null) {
+      throw new RuntimeException("Email already exists.");
+    }
     user.setRoles(Set.of(UserxRole.REGISTERED_USER));
     user.setEnabled(false);
     sendRegistrationEmail(user.getEmail(), token);
