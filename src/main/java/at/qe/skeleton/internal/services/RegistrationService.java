@@ -35,10 +35,10 @@ public class RegistrationService {
     }
     user.setRoles(Set.of(UserxRole.REGISTERED_USER));
     user.setEnabled(false);
-    try{
-    sendRegistrationEmail(user.getEmail(), token);}
-    catch(MailException e){
-      throw new RuntimeException("Invalid Email address.");
+    try {
+      sendRegistrationEmail(user.getEmail(), token);
+    } catch (MailException e) {
+      throw new RuntimeException("Invalid Email.");
     }
     userService.saveUser(user);
   }
