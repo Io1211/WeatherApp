@@ -14,15 +14,44 @@ import at.qe.skeleton.internal.services.AuditLogService;
 import at.qe.skeleton.internal.model.AuditLog;
 
 /**
- * Some tests for {@link AuditLogService}.
-
+ * Some tests for {@link AuditLogService} which test the three core methods.
  */
-
 @SpringBootTest
 @WebAppConfiguration
 public class AuditLogServiceTest {
 
     @Autowired
-    AuditLogService auditLogService;
+    private AuditLogService auditLogService;
 
+    @Test
+    void saveEntryTest() {
+        String message = "Test";
+
+        auditLogService.saveEntry(message);
+
+        // TO-DO
+
+    }
+
+    @Test
+    void saveDeletedUserEntryTest() {
+        Userx userx = new Userx();
+        userx.setUsername("testUser");
+        userx.setRoles(Sets.newSet(UserxRole.ROLE_USER));
+
+        auditLogService.saveDeletedUserEntry(userx);
+
+        // TO-DO
+    }
+
+    @Test
+    void saveCreatedUserEntryTest() {
+        Userx userx = new Userx();
+        userx.setUsername("testUser");
+        userx.setRoles(Sets.newSet(UserxRole.ROLE_USER));
+
+        auditLogService.saveCreatedUserEntry(userx);
+
+        // TO-DO
+    }
 }
