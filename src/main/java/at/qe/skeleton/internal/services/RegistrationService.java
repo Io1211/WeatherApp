@@ -40,8 +40,7 @@ public class RegistrationService {
     if (tokenService.validateToken(insertedToken, token)) {
       user.setEnabled(true);
       userService.saveUser(user);
-    }
-    else {
+    } else {
       throw new RuntimeException("Invalid token.");
     }
   }

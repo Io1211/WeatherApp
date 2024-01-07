@@ -56,7 +56,6 @@ class UserRegistrationBeanTest {
     userRegistrationBean.setInsertedToken("12345");
     userRegistrationBean.confirmRegistration();
 
-    verify(registrationService)
-        .confirmRegistrationOfUser(user.getUsername(), "12345", "12345");
+    verify(registrationService).confirmRegistrationOfUser(user.getUsername(), "12345", "12345");
   }
 }

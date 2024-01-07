@@ -62,7 +62,7 @@ public class UserRegistrationBean {
 
   public String register() {
     try {
-      setToken( tokenService.generateToken());
+      setToken(tokenService.generateToken());
       registrationService.registerUser(user, getToken());
       return "confirmRegistration";
     } catch (RuntimeException e) {
@@ -72,14 +72,12 @@ public class UserRegistrationBean {
   }
 
   public String confirmRegistration() {
-    try{
+    try {
       registrationService.confirmRegistrationOfUser(user.getUsername(), token, insertedToken);
       return "login";
-    }
-    catch (RuntimeException e) {
+    } catch (RuntimeException e) {
       addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
-
   }
 }
