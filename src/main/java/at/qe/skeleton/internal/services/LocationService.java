@@ -9,10 +9,8 @@ import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
 import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
-import at.qe.skeleton.internal.services.utils.LocationSearch;
 import jakarta.validation.constraints.NotNull;
 
-import java.io.IOException;
 import java.time.ZonedDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -9,36 +9,27 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
-import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.*;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.MediaType;
+
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @SpringBootTest
 @WebAppConfiguration
@@ -171,20 +162,26 @@ public class LocationServiceTest {
 
     // Case 2: Location exists in db
     // verify that there is indeed 1 Location object in db
-    Assertions.assertEquals(1, locationRepository.findAll().size());
+    Assertions.assertEquals(
+        1, locationRepository.findAll().size(), "there should be exactly 1 Location Object in db.");
     // perform second search for the same Location Name
     Location locationCase2 = locationService.handleLocationSearch(searchString);
     // verify that there is still only 1 Location in db
-    Assertions.assertEquals(1, locationRepository.findAll().size());
+    Assertions.assertEquals(
+        1, locationRepository.findAll().size(), "there should be exactly 1 Location Object in db.");
     // verify that the mocked WeatherApiService only got called once
     verify(mockedWeatherApiRequestService, times(1))
         .retrieveCurrentAndForecastWeather(47.2654296, 11.3927685);
     // verify that the id of the Location object did not change
-    Assertions.assertEquals(locationCase1.getId(), locationCase2.getId());
+    Assertions.assertEquals(
+        locationCase1.getId(), locationCase2.getId(), "the id should not have changed");
     // verify that the WeatherDto that is being stored is still the correct one.
     CurrentAndForecastAnswerDTO actualWeatherDtoCase2 =
         extractWeatherDtoFromLocation(locationCase2);
-    Assertions.assertEquals(expectedWeatherDto, actualWeatherDtoCase2, "");
+    Assertions.assertEquals(
+        expectedWeatherDto,
+        actualWeatherDtoCase2,
+        "the WeatherDTO that has been deserialized from the db is not the same that has been stored after the api call");
 
     // Case 3: Location exists in db but is too old to reuse
     // setting an "old" timestamp for location.
@@ -196,29 +193,33 @@ public class LocationServiceTest {
         locationCase2
             .getWeather()
             .getTimestampLastCall()
-            .isBefore(ZonedDateTime.now().minusMinutes(1)));
+            .isBefore(ZonedDateTime.now().minusMinutes(1)),
+        "the timestamp should be older than 1 minute");
 
     Location locationCase3 = locationService.handleLocationSearch(searchString);
     // verify that the api has been called another time, in total two times.
     verify(mockedWeatherApiRequestService, times(2))
         .retrieveCurrentAndForecastWeather(47.2654296, 11.3927685);
     // verify that there is still only 1 Location in db
-    Assertions.assertEquals(1, locationRepository.findAll().size());
+    Assertions.assertEquals(
+        1,
+        locationRepository.findAll().size(),
+        "the database should still only contain 1 item, which has now been updated");
     // verify that the timestamp is now current:
     Assertions.assertTrue(
         locationCase3
             .getWeather()
             .getTimestampLastCall()
-            .isAfter(ZonedDateTime.now().minusMinutes(1)));
+            .isAfter(ZonedDateTime.now().minusMinutes(1)),
+        "the timestamp should be current");
     // verify that WeatherDto is still correct:
     CurrentAndForecastAnswerDTO actualWeatherDtoCase3 =
         extractWeatherDtoFromLocation(locationCase3);
-    Assertions.assertEquals(expectedWeatherDto, actualWeatherDtoCase3);
+    Assertions.assertEquals(
+        expectedWeatherDto,
+        actualWeatherDtoCase3,
+        "the WeatherDTO that has been deserialized from the db is not the same that has been stored after the api call");
   }
-
-  //    location = locationService.handleLocationSearch("münchen");
-  //    locationAssertions(location, mockLocationApiResponseInnsbruck);
-  //    Assertions.assertEquals(1, locationRepository.findAll().size());
 
   @Test
   void updateLocationWeatherTest() {
