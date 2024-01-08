@@ -45,8 +45,8 @@ public class ApiConfiguration {
 
     // since the URI from request.getURI is already encoded it is vital that we dont encode here
     // again
-    // thats why -> (build(true)). That means queryParam that get added here are not encoded
-    // automatically with .build
+    // thats why -> (build(true)).
+    // That means queryParam that get added here are not encoded automatically with .build
     // I think encoding the apiKey is not a good practice, since the api key should be exactly that
     // api key, right?
     @Override
@@ -73,11 +73,12 @@ public class ApiConfiguration {
     }
   }
 
-  @Bean
-  protected RestClient defaultRestClient() {
-    return RestClient.builder()
-        .baseUrl(baseUrl)
-        .requestInterceptor(new QueryAddingRequestInterceptor())
-        .build();
-  }
+    @Bean
+    protected RestClient defaultRestClient() {
+        return RestClient.builder()
+                .baseUrl(baseUrl)
+                .requestInterceptor(new QueryAddingRequestInterceptor())
+                .build();
+    }
+
 }

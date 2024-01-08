@@ -1,8 +1,9 @@
 package at.qe.skeleton.configs;
 
+import at.qe.skeleton.internal.model.UserxRole;
+
 import javax.sql.DataSource;
 
-import at.qe.skeleton.internal.model.UserxRole;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +12,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -28,7 +29,8 @@ public class WebSecurityConfig {
 
   private static final String ADMIN = UserxRole.ADMIN.name();
   private static final String MANAGER = UserxRole.MANAGER.name();
-  private static final String EMPLOYEE = UserxRole.EMPLOYEE.name();
+  private static final String PREMIUM_USER = UserxRole.PREMIUM_USER.name();
+  private static final String REGISTERED_USER = UserxRole.REGISTERED_USER.name();
   private static final String LOGIN = "/login.xhtml";
   private static final String ACCESSDENIED = "/error/access_denied.xhtml";
 
@@ -38,7 +40,6 @@ public class WebSecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
     try {
-
       http.cors(cors -> cors.disable())
           .csrf(csrf -> csrf.disable())
           .headers(
@@ -60,18 +61,25 @@ public class WebSecurityConfig {
                       .requestMatchers(new AntPathRequestMatcher("/admin/**"))
                       .hasAnyAuthority("ADMIN")
                       .requestMatchers(new AntPathRequestMatcher("/secured/**"))
-                      .hasAnyAuthority(ADMIN, MANAGER, EMPLOYEE)
+                      .hasAnyAuthority(ADMIN, MANAGER, PREMIUM_USER, REGISTERED_USER)
+                      .requestMatchers("/registration.xhtml")
+                      .permitAll()
+                      .requestMatchers("/resetPassword.xhtml")
+                      .permitAll()
+                      .requestMatchers("/requestNewPassword.xhtml")
+                      .permitAll()
+                      .requestMatchers("/confirmRegistration.xhtml")
+                      .permitAll()
                       .anyRequest()
                       .authenticated())
-          // :TODO: use failureUrl(/login.xhtml?error) and make sure that a corresponding message is
-          // displayed
           .formLogin(
               form ->
                   form.loginPage(LOGIN)
                       .permitAll()
                       .defaultSuccessUrl("/secured/welcome.xhtml")
                       .loginProcessingUrl("/login")
-                      .successForwardUrl("/secured/welcome.xhtml"))
+                      .successForwardUrl("/secured/welcome.xhtml")
+                      .failureUrl("/login.xhtml?error"))
           .logout(
               logout ->
                   logout
@@ -89,17 +97,16 @@ public class WebSecurityConfig {
 
   @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    // Configure roles and passwords via datasource
     auth.jdbcAuthentication()
         .dataSource(dataSource)
         .usersByUsernameQuery("select username, password, enabled from userx where username=?")
         .authoritiesByUsernameQuery(
-            "select userx_username, roles from userx_userx_role where userx_username=?");
+            "select userx_username, roles from userx_userx_role where userx_username=?")
+        .passwordEncoder(passwordEncoder());
   }
 
   @Bean
   public static PasswordEncoder passwordEncoder() {
-    // :TODO: use proper passwordEncoder and do not store passwords in plain text
-    return NoOpPasswordEncoder.getInstance();
+    return new BCryptPasswordEncoder();
   }
 }

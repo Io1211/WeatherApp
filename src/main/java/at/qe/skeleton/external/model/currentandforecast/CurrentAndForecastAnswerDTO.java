@@ -31,7 +31,7 @@ import java.util.List;
 public record CurrentAndForecastAnswerDTO(
     @JsonProperty("lat") double latitude,
     @JsonProperty("lon") double longitude,
-    @JsonProperty("timezone") String timezone,
+    String timezone,
     @JsonProperty("timezone_offset") int timezoneOffset,
     @JsonProperty("current") CurrentWeatherDTO currentWeather,
     @JsonProperty("minutely") List<PrecipitationByTimestampDTO> minutelyPrecipitation,

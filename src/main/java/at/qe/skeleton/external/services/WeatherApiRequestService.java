@@ -16,8 +16,6 @@ import org.springframework.web.util.UriComponentsBuilder;
  * This class is part of the skeleton project provided for students of the course "Software
  * Architecture" offered by Innsbruck University.
  */
-
-// The "application" scope creates the bean instance for the lifecycle of a ServletContext.
 @Scope("application")
 @Component
 @Validated // makes sure the parameter validation annotations are checked during runtime
@@ -45,13 +43,12 @@ public class WeatherApiRequestService {
    * parameters
    *
    * @param latitude of the location
-   * @param longitude of the locationx
+   * @param longitude of the location
    * @return the current and forecast weather
    * @throws HttpStatusCodeException when 4xx or 5xx Status Code is returned
    */
 
   // todo: decide what happens when 4xx or 5xx status code is retrieved from API.
-  //  We might set the limit to 5 and make user choose exact location.
   // HttpStatusCodeException?
   public CurrentAndForecastAnswerDTO retrieveCurrentAndForecastWeather(
       @Min(-90) @Max(90) double latitude, @Min(-180) @Max(180) double longitude) {

@@ -1,15 +1,14 @@
 package at.qe.skeleton.tests;
 
+import at.qe.skeleton.internal.model.UserxRole;
+import at.qe.skeleton.internal.services.UserxService;
+import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import at.qe.skeleton.internal.model.UserxRole;
-import at.qe.skeleton.internal.services.UserxService;
-import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 
 /**
  * Some very basic tests for {@link UserxService}.
@@ -28,7 +27,7 @@ public class SessionInfoBeanTest {
   @Test
   @WithMockUser(
       username = "user1",
-      authorities = {"EMPLOYEE"})
+      authorities = {"REGISTERED_USER"})
   public void testLoggedIn() {
     Assertions.assertTrue(
         sessionInfoBean.isLoggedIn(),
@@ -42,11 +41,11 @@ public class SessionInfoBeanTest {
         sessionInfoBean.getCurrentUser().getUsername(),
         "sessionInfoBean.getCurrentUser does not return authenticated user");
     Assertions.assertEquals(
-        "EMPLOYEE",
+        "REGISTERED_USER",
         sessionInfoBean.getCurrentUserRoles(),
         "sessionInfoBean.getCurrentUserRoles does not return authenticated user's roles");
     Assertions.assertTrue(
-        sessionInfoBean.hasRole("EMPLOYEE"),
+        sessionInfoBean.hasRole("REGISTERED_USER"),
         "sessionInfoBean.hasRole does not return true for a role the authenticated user has");
     Assertions.assertFalse(
         sessionInfoBean.hasRole("ADMIN"),

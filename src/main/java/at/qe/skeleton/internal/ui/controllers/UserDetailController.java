@@ -23,7 +23,7 @@ public class UserDetailController implements Serializable {
   private Userx user;
 
   /**
-   * Sets the currently displayed user and reloads it from db. This user is targeted by any further
+   * Sets the currently displayed user and reloads it form db. This user is targeted by any further
    * calls of {@link #doReloadUser()}, {@link #doSaveUser()} and {@link #doDeleteUser()}.
    *
    * @param user

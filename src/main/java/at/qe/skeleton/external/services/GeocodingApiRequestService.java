@@ -85,11 +85,9 @@ public class GeocodingApiRequestService {
     if (locationAnswerList != null && !locationAnswerList.isEmpty()) {
       return locationAnswerList;
     } else {
-      // man könnte in UI dann an den user ein fenster öffnen mit
-      // "we couldnt find any Locations with the name "#{WeatherApiDemoBean.locationSearchInput}""
+      // todo: think about error handling...
+      //  what if no search results from api? show error in frontend...
       throw new RuntimeException("GeocodingApiRequest returned no LocationAnswerDTO");
     }
-
-    // todo introduce error handling using responseEntity.getStatusCode.isXXXError
   }
 }

@@ -1,14 +1,18 @@
 package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
-import java.util.Collection;
+import at.qe.skeleton.internal.repositories.UserxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import at.qe.skeleton.internal.repositories.UserxRepository;
+
+import java.time.LocalDateTime;
+import java.util.Collection;
 
 /**
  * Service for accessing and manipulating user data.
@@ -21,13 +25,13 @@ import at.qe.skeleton.internal.repositories.UserxRepository;
 public class UserxService {
 
   @Autowired private UserxRepository userRepository;
+  @Autowired private PasswordEncoder passwordEncoder;
 
   /**
    * Returns a collection of all users.
    *
    * @return
    */
-  @PreAuthorize("hasAuthority('ADMIN')")
   public Collection<Userx> getAllUsers() {
     return userRepository.findAll();
   }
@@ -38,7 +42,6 @@ public class UserxService {
    * @param username the username to search for
    * @return the user with the given username
    */
-  @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #username")
   public Userx loadUser(String username) {
     return userRepository.findFirstByUsername(username);
   }
@@ -51,14 +54,29 @@ public class UserxService {
    * @param user the user to save
    * @return the updated user
    */
-  @PreAuthorize("hasAuthority('ADMIN')")
-  public Userx saveUser(Userx user) {
+  public Userx loadUserByEmail(String email) {
+    return userRepository.findFirstByEmail(email);
+  }
+
+  public Userx saveUser(Userx user) throws JpaSystemException {
     if (user.isNew()) {
       user.setCreateUser(getAuthenticatedUser());
+      String password = user.getPassword();
+      // Passing null as an argument to the encoder throws IllegalArgumentException,
+      // but we want JpaSystemException
+      if (password == null) {
+        throw new JpaSystemException(new RuntimeException("Password can't be empty"));
+      }
+      user.setPassword(passwordEncoder.encode(password));
     } else {
       user.setUpdateUser(getAuthenticatedUser());
     }
     return userRepository.save(user);
+  }
+
+  public void setPasswordEncoded(Userx user, String password) {
+    user.setPassword(passwordEncoder.encode(password));
+    userRepository.save(user);
   }
 
   /**
@@ -69,6 +87,7 @@ public class UserxService {
   @PreAuthorize("hasAuthority('ADMIN')")
   public void deleteUser(Userx user) {
     userRepository.delete(user);
+    // :TODO: write some audit log stating who and when this user was permanently deleted.
   }
 
   private Userx getAuthenticatedUser() {

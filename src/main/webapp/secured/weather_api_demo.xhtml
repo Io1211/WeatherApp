@@ -38,6 +38,17 @@
             </p:commandButton>
 
             <p:panel header="Response" id="Response" rendered="#{weatherApiDemoBean.isLocationAnswerDTOReady}">
+            <p:commandButton value="CommitSearchRequest"
+                             action="#{weatherApiDemoBean.performLocationSearch()}"
+                             update=":weatherForm:Request, :weatherForm:Response"/>
+            <p:panel header="Request" id="Request">
+                <div style="height: 50px">
+                    Location searched for: #{weatherApiDemoBean.locationSearchInput}. <br/>
+                    resulting api call to weatherApi:
+                    https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value
+                </div>
+            </p:panel>
+            <p:panel header="Response" id="Response">
                 <div>
                     <h5 style="margin-top:0">Current Weather</h5>
                     <h:panelGrid columns="2">
@@ -52,6 +63,7 @@
                         <h:outputText
                                 value="#{weatherApiDemoBean.sunsetDateTime}"/>
                     </h:panelGrid>
+                    <h:outputText escape="false" value="#{weatherApiDemoBean.searchedWeather}"/>
                 </div>
             </p:panel>
         </h:form>

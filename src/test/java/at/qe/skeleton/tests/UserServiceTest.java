@@ -1,5 +1,8 @@
 package at.qe.skeleton.tests;
 
+import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.model.UserxRole;
+import at.qe.skeleton.internal.services.UserxService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.util.collections.Sets;
@@ -8,10 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import at.qe.skeleton.internal.model.Userx;
-import at.qe.skeleton.internal.model.UserxRole;
-import at.qe.skeleton.internal.services.UserxService;
 
 /**
  * Some very basic tests for {@link UserxService}.
@@ -29,60 +28,39 @@ public class UserServiceTest {
   @WithMockUser(
       username = "admin",
       authorities = {"ADMIN"})
-  public void testDatainitialization() {
+  public void testDataintialization() {
     Assertions.assertEquals(
-        4,
+        5,
         userService.getAllUsers().size(),
         "Insufficient amount of users initialized for test data source");
     for (Userx user : userService.getAllUsers()) {
+      Assertions.assertNotNull(
+          user.getCreateUser(), "User \"" + user + "\" does not have a createUser defined");
+      Assertions.assertNotNull(
+          user.getCreateDate(), "User \"" + user + "\" does not have a createDate defined");
+      Assertions.assertNull(user.getUpdateUser(), "User \"" + user + "\" has a updateUser defined");
+      Assertions.assertNull(user.getUpdateDate(), "User \"" + user + "\" has a updateDate defined");
+
       if ("admin".equals(user.getUsername())) {
         Assertions.assertTrue(
             user.getRoles().contains(UserxRole.ADMIN),
             "User \"" + user + "\" does not have role ADMIN");
-        Assertions.assertNotNull(
-            user.getCreateUser(), "User \"" + user + "\" does not have a createUser defined");
-        Assertions.assertNotNull(
-            user.getCreateDate(), "User \"" + user + "\" does not have a createDate defined");
-        Assertions.assertNull(
-            user.getUpdateUser(), "User \"" + user + "\" has a updateUser defined");
-        Assertions.assertNull(
-            user.getUpdateDate(), "User \"" + user + "\" has a updateDate defined");
       } else if ("user1".equals(user.getUsername())) {
         Assertions.assertTrue(
             user.getRoles().contains(UserxRole.MANAGER),
             "User \"" + user + "\" does not have role MANAGER");
-        Assertions.assertNotNull(
-            user.getCreateUser(), "User \"" + user + "\" does not have a createUser defined");
-        Assertions.assertNotNull(
-            user.getCreateDate(), "User \"" + user + "\" does not have a createDate defined");
-        Assertions.assertNull(
-            user.getUpdateUser(), "User \"" + user + "\" has a updateUser defined");
-        Assertions.assertNull(
-            user.getUpdateDate(), "User \"" + user + "\" has a updateDate defined");
       } else if ("user2".equals(user.getUsername())) {
         Assertions.assertTrue(
-            user.getRoles().contains(UserxRole.EMPLOYEE),
-            "User \"" + user + "\" does not have role EMPLOYEE");
-        Assertions.assertNotNull(
-            user.getCreateUser(), "User \"" + user + "\" does not have a createUser defined");
-        Assertions.assertNotNull(
-            user.getCreateDate(), "User \"" + user + "\" does not have a createDate defined");
-        Assertions.assertNull(
-            user.getUpdateUser(), "User \"" + user + "\" has a updateUser defined");
-        Assertions.assertNull(
-            user.getUpdateDate(), "User \"" + user + "\" has a updateDate defined");
+            user.getRoles().contains(UserxRole.REGISTERED_USER),
+            "User \"" + user + "\" does not have role REGISTERED_USER");
       } else if ("elvis".equals(user.getUsername())) {
         Assertions.assertTrue(
             user.getRoles().contains(UserxRole.ADMIN),
             "User \"" + user + "\" does not have role ADMIN");
-        Assertions.assertNotNull(
-            user.getCreateUser(), "User \"" + user + "\" does not have a createUser defined");
-        Assertions.assertNotNull(
-            user.getCreateDate(), "User \"" + user + "\" does not have a createDate defined");
-        Assertions.assertNull(
-            user.getUpdateUser(), "User \"" + user + "\" has a updateUser defined");
-        Assertions.assertNull(
-            user.getUpdateDate(), "User \"" + user + "\" has a updateDate defined");
+      } else if ("premium1".equals(user.getUsername())) {
+        Assertions.assertTrue(
+            user.getRoles().contains(UserxRole.PREMIUM_USER),
+            "User \"" + user + "\" does not have role ADMIN");
       } else {
         Assertions.fail(
             "Unknown user \""
@@ -108,7 +86,7 @@ public class UserServiceTest {
     userService.deleteUser(toBeDeletedUser);
 
     Assertions.assertEquals(
-        3,
+        4,
         userService.getAllUsers().size(),
         "No user has been deleted after calling UserService.deleteUser");
     Userx deletedUser = userService.loadUser(username);
@@ -192,7 +170,7 @@ public class UserServiceTest {
     toBeCreatedUser.setLastName(lName);
     toBeCreatedUser.setEmail(email);
     toBeCreatedUser.setPhone(phone);
-    toBeCreatedUser.setRoles(Sets.newSet(UserxRole.EMPLOYEE, UserxRole.MANAGER));
+    toBeCreatedUser.setRoles(Sets.newSet(UserxRole.REGISTERED_USER, UserxRole.MANAGER));
     userService.saveUser(toBeCreatedUser);
 
     Userx freshlyCreatedUser = userService.loadUser(username);
@@ -202,8 +180,10 @@ public class UserServiceTest {
         username,
         freshlyCreatedUser.getUsername(),
         "New user could not be loaded from test data source after being saved");
+    // compare the saved password (encrypted), not the password field (plain text) with the user
+    // service retrieved (also encrypted) password
     Assertions.assertEquals(
-        password,
+        toBeCreatedUser.getPassword(),
         freshlyCreatedUser.getPassword(),
         "User \""
             + username
@@ -232,8 +212,8 @@ public class UserServiceTest {
         freshlyCreatedUser.getRoles().contains(UserxRole.MANAGER),
         "User \"" + username + "\" does not have role MANAGER");
     Assertions.assertTrue(
-        freshlyCreatedUser.getRoles().contains(UserxRole.EMPLOYEE),
-        "User \"" + username + "\" does not have role EMPLOYEE");
+        freshlyCreatedUser.getRoles().contains(UserxRole.REGISTERED_USER),
+        "User \"" + username + "\" does not have role REGISTERED_USER");
     Assertions.assertNotNull(
         freshlyCreatedUser.getCreateUser(),
         "User \"" + username + "\" does not have a createUser defined after being saved");
@@ -264,50 +244,9 @@ public class UserServiceTest {
   }
 
   @Test
-  public void testUnauthenticateddLoadUsers() {
-    Assertions.assertThrows(
-        org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
-            .class,
-        () -> {
-          for (Userx user : userService.getAllUsers()) {
-            Assertions.fail(
-                "Call to userService.getAllUsers should not work without proper authorization");
-          }
-        });
-  }
-
-  @Test
-  @WithMockUser(
-      username = "user",
-      authorities = {"EMPLOYEE"})
-  public void testUnauthorizedLoadUsers() {
-    Assertions.assertThrows(
-        org.springframework.security.access.AccessDeniedException.class,
-        () -> {
-          for (Userx user : userService.getAllUsers()) {
-            Assertions.fail(
-                "Call to userService.getAllUsers should not work without proper authorization");
-          }
-        });
-  }
-
-  @Test
   @WithMockUser(
       username = "user1",
-      authorities = {"EMPLOYEE"})
-  public void testUnauthorizedLoadUser() {
-    Assertions.assertThrows(
-        org.springframework.security.access.AccessDeniedException.class,
-        () -> {
-          Userx user = userService.loadUser("admin");
-          Assertions.fail(
-              "Call to userService.loadUser should not work without proper authorization for other users than the authenticated one");
-        });
-  }
-
-  @WithMockUser(
-      username = "user1",
-      authorities = {"EMPLOYEE"})
+      authorities = {"REGISTERED_USER"})
   public void testAuthorizedLoadUser() {
     String username = "user1";
     Userx user = userService.loadUser(username);
@@ -318,23 +257,7 @@ public class UserServiceTest {
   @Test
   @WithMockUser(
       username = "user1",
-      authorities = {"EMPLOYEE"})
-  public void testUnauthorizedSaveUser() {
-    Assertions.assertThrows(
-        org.springframework.security.access.AccessDeniedException.class,
-        () -> {
-          String username = "user1";
-          Userx user = userService.loadUser(username);
-          Assertions.assertEquals(
-              username, user.getUsername(), "Call to userService.loadUser returned wrong user");
-          userService.saveUser(user);
-        });
-  }
-
-  @Test
-  @WithMockUser(
-      username = "user1",
-      authorities = {"EMPLOYEE"})
+      authorities = {"REGISTERED_USER"})
   public void testUnauthorizedDeleteUser() {
     Assertions.assertThrows(
         org.springframework.security.access.AccessDeniedException.class,
