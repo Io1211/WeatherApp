@@ -28,11 +28,12 @@ public class AuditLogService {
      *
      * @param message is the message which i saves.
      */
-    public void saveEntry(String message) {
+    public AuditLog saveEntry(String message) {
         AuditLog al = new AuditLog();
         al.setMessage(message);
         al.setDate(LocalDateTime.now());
         auditLogRepository.save(al);
+        return al;
     }
 
     /**
@@ -59,7 +60,7 @@ public class AuditLogService {
      */
     @PreAuthorize("hasAuthority('ADMIN')")
     public void saveDeletedUserEntry(Userx userx) {
-        saveEntry("User " + userx.getUsername() + "with role(s) " + convertRolesToString(userx) +" has been deleted.");
+        saveEntry("User " + userx.getUsername() + " with role(s) " + convertRolesToString(userx) + " has been deleted.");
     }
 
     /**
@@ -69,7 +70,7 @@ public class AuditLogService {
      */
     @PreAuthorize("hasAuthority('ADMIN')")
     public void saveCreatedUserEntry(Userx userx) {
-        saveEntry("User " + userx.getUsername() + "with role(s) " + convertRolesToString(userx) + " has been saved.");
+        saveEntry("User " + userx.getUsername() + " with role(s) " + convertRolesToString(userx) + " has been saved.");
     }
 
     /**
