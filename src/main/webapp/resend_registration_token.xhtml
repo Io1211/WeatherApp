@@ -12,7 +12,8 @@
                 <p:outputLabel for="email" value="Email:"/>
                 <p:inputText id="email" value="#{userRegistrationBean.user.email}" required="true"/>
 
-                <p:commandButton value="Resend token" action="#{userRegistrationBean.resendRegistrationEmail}" update="messages"/>
+                <p:commandButton value="Resend token" action="#{userRegistrationBean.resendRegistrationEmail}"
+                                 update="messages"/>
             </h:panelGrid>
         </h:form>
     </ui:define>

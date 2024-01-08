@@ -64,7 +64,7 @@ public class UserRegistrationBean {
     try {
       setToken(tokenService.generateToken());
       registrationService.registerUser(user, getToken());
-      return "confirmRegistration";
+      return "confirm_registration";
     } catch (RuntimeException e) {
       addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
@@ -76,7 +76,7 @@ public class UserRegistrationBean {
       setToken(tokenService.generateToken());
       registrationService.resendRegistrationEmailToUser(user.getEmail(), getToken());
       user = registrationService.loadUsereByEmail(user.getEmail());
-      return "confirmRegistration";
+      return "confirm_registration";
     } catch (RuntimeException e) {
       addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
