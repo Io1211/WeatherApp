@@ -9,8 +9,12 @@ import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
 import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -28,8 +32,19 @@ public class LocationService {
 
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
-  public LocationAnswerDTO callApi(@NotNull String locationName) {
-    return geocodingApiRequestService.retrieveLocationLonLat(locationName);
+  /**
+   * calls the GeocodingApiRequestService. you can specifiy how many Locations you want to get back
+   * at max by the api. the maximum of locations you can get back is 5. The minimum is 1. The method
+   * gives back a List of LocationAnswerDTOs. The reason why we give back a List and not a single
+   * object, is that it is needed for the autocompletion feature.
+   *
+   * @param locationName the name of the Location to be searched for
+   * @param limit the limit of locations you want to retrieve from api
+   * @return List of {@link LocationAnswerDTO}.
+   */
+  public List<LocationAnswerDTO> callApi(
+      @NotNull String locationName, @NotNull @Min(1) @Max(5) int limit) {
+    return geocodingApiRequestService.retrieveLocationsLonLat(locationName, limit);
   }
 
   /**
@@ -51,7 +66,7 @@ public class LocationService {
     // 2. The searched location is already persisted but the weather data is out of date.
     // 3. The searched location does not exist in the database yet.
     Location location = new Location();
-    LocationAnswerDTO locationAnswerDTO = callApi(locationSearchString);
+    LocationAnswerDTO locationAnswerDTO = callApi(locationSearchString, 1).get(0);
     CurrentAndForecastAnswerDTO weatherDTO;
     // Case 1:
     if (locationAlreadyPersisted(locationAnswerDTO)) {

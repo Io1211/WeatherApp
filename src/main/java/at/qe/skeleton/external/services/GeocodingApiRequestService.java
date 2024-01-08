@@ -45,7 +45,7 @@ public class GeocodingApiRequestService {
    * zip/post code <br>
    * <br>
    *
-   * @param locationName to search for - it is coming from UI
+   * @param locationName to search for
    * @param limit limit of locations that should be returned from ui
    * @return A list of LocationAnswerDTO objects containing the longitude and latitude, as well as
    *     name, country code and state(maybe null) of the location.
