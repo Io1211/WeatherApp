@@ -27,6 +27,7 @@
                 <p:inputText id="phone" value="#{userRegistrationBean.user.phone}" required="true"/>
 
                 <p:commandButton value="Register" action="#{userRegistrationBean.register}" update="messages"/>
+                <h:outputLink value="/resend_registration_token.xhtml">Resend token</h:outputLink>
             </h:panelGrid>
         </h:form>
     </ui:define>
