@@ -52,4 +52,23 @@ public class RegistrationService {
       throw new RuntimeException("Invalid token.");
     }
   }
+
+  public void resendRegistrationEmailToUser(String email, String token) {
+    Userx user = userService.loadUserByEmail(email);
+    if (user == null) {
+      throw new RuntimeException("Email does not exist.");
+    }
+    if (user.isEnabled()) {
+      throw new RuntimeException("User is already enabled.");
+    }
+    try {
+      sendRegistrationEmail(user.getEmail(), token);
+    } catch (MailException e) {
+      throw new RuntimeException("Invalid Email.");
+    }
+  }
+
+  public Userx loadUsereByEmail(String email) {
+    return userService.loadUserByEmail(email);
+  }
 }

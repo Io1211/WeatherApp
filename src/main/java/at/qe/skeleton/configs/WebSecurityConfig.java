@@ -64,6 +64,8 @@ public class WebSecurityConfig {
                       .hasAnyAuthority(ADMIN, MANAGER, PREMIUM_USER, REGISTERED_USER)
                       .requestMatchers("/registration.xhtml")
                       .permitAll()
+                      .requestMatchers("/resend_registration_token.xhtml")
+                      .permitAll()
                       .requestMatchers("/resetPassword.xhtml")
                       .permitAll()
                       .requestMatchers("/requestNewPassword.xhtml")
