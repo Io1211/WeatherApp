@@ -40,7 +40,7 @@ class UserRegistrationBeanTest {
 
     String result = userRegistrationBean.register();
 
-    assertEquals("confirmRegistration", result);
+    assertEquals("confirm_registration", result);
     verify(registrationService).registerUser(testUser, "12345");
   }
 
