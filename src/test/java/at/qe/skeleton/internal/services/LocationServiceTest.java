@@ -37,12 +37,12 @@ public class LocationServiceTest {
 
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
-  private static LocationAnswerDTO mockLocationApiResponseInnsbruck;
+  private static List<LocationAnswerDTO> locationDtoListInnsbruck;
+  private static List<LocationAnswerDTO> locationDtoListMunich;
 
   private static ObjectMapper mapper;
   private static CurrentAndForecastAnswerDTO weatherDtoMunich;
   private static CurrentAndForecastAnswerDTO weatherDtoInnsbruck;
-  private static LocationAnswerDTO locationDtoMunich;
 
   // There is a bug concerning the PrecipitationDeserializer. The rain and snow fields in the
   // CurrentWeatherDTO are always set to null when serializing/deserializing the
@@ -56,10 +56,9 @@ public class LocationServiceTest {
     mapper = new ObjectMapper().findAndRegisterModules();
 
     // Innsbruck Location Mock
-    List<LocationAnswerDTO> _api =
+    locationDtoListInnsbruck =
         mapper.readValue(
             new File(resources + "GeocodingResponseInnsbruck.json"), new TypeReference<>() {});
-    mockLocationApiResponseInnsbruck = _api.get(0);
 
     // Innsbruck Weather Mock
     weatherDtoInnsbruck =
@@ -68,10 +67,9 @@ public class LocationServiceTest {
             CurrentAndForecastAnswerDTO.class);
 
     // München Location Mock DTO
-    _api =
+    locationDtoListMunich =
         mapper.readValue(
             new File(resources + "GeocodingResponseMunich.json"), new TypeReference<>() {});
-    locationDtoMunich = _api.get(0);
 
     // Munich Weather Mock DTO
     weatherDtoMunich =
@@ -80,13 +78,21 @@ public class LocationServiceTest {
             CurrentAndForecastAnswerDTO.class);
   }
 
-  public Location getMockLocation() {
+  /**
+   * Takes a List of LocationAnswerDTOs, just like they would be returned from {@link
+   * GeocodingApiRequestService}. Takes the first element of that List and builds a Mock Location
+   * Object from that.
+   *
+   * @param locationAnswerDTOList
+   * @return mock Location
+   */
+  public Location getMockLocation(List<LocationAnswerDTO> locationAnswerDTOList) {
+    LocationAnswerDTO dto = locationAnswerDTOList.get(0);
     Location location = new Location();
-    location.setId(
-        mockLocationApiResponseInnsbruck.latitude(), mockLocationApiResponseInnsbruck.longitude());
-    location.setCity(mockLocationApiResponseInnsbruck.name());
-    location.setState(mockLocationApiResponseInnsbruck.state());
-    location.setCountry(mockLocationApiResponseInnsbruck.country());
+    location.setId(dto.latitude(), dto.longitude());
+    location.setCity(dto.name());
+    location.setState(dto.state());
+    location.setCountry(dto.country());
     return location;
   }
 
@@ -125,8 +131,8 @@ public class LocationServiceTest {
         "weatherApiRequestService",
         mockedWeatherApiRequestService);
     // mocking the answers for innsbruck (without Precipitation)
-    when(mockedGeocodingRequestService.retrieveLocationLonLat("Innsbruck"))
-        .thenReturn(mockLocationApiResponseInnsbruck);
+    when(mockedGeocodingRequestService.retrieveLocationsLonLat("Innsbruck", 1))
+        .thenReturn(locationDtoListInnsbruck);
     when(mockedWeatherApiRequestService.retrieveCurrentAndForecastWeather(47.2654296, 11.3927685))
         .thenReturn(weatherDtoInnsbruck);
 
@@ -206,14 +212,14 @@ public class LocationServiceTest {
     CurrentAndForecastAnswer currentAndForecastAnswer = new CurrentAndForecastAnswer();
     currentAndForecastAnswer.setWeatherData(weatherDtoInnsbruck.toString().getBytes());
 
-    Location location = getMockLocation();
+    Location location = getMockLocation(locationDtoListInnsbruck);
     location.setWeather(currentAndForecastAnswer);
 
     currentAndForecastAnswer.setWeatherData("updated".getBytes());
     Location updatedLocation =
         locationService.updateLocationWeather(location, currentAndForecastAnswer);
 
-    locationAssertions(updatedLocation, mockLocationApiResponseInnsbruck);
+    locationAssertions(updatedLocation, locationDtoListInnsbruck);
     Assertions.assertEquals(
         1, locationRepository.findAll().size()); // check that the updates are being persisted
     Assertions.assertEquals(1, currentAndForecastAnswerRepository.findAll().size());
@@ -222,7 +228,7 @@ public class LocationServiceTest {
 
   @Test
   void locationAlreadyPersistedTest() {
-    Location location = getMockLocation();
+    Location location = getMockLocation(locationDtoListInnsbruck);
     CurrentAndForecastAnswer weather = new CurrentAndForecastAnswer();
     weather.setWeatherData(weatherDtoInnsbruck.toString().getBytes());
     location.setWeather(currentAndForecastAnswerRepository.save(weather));
@@ -235,13 +241,11 @@ public class LocationServiceTest {
         currentAndForecastAnswerRepository.findAll().size(),
         "There was a problem in test setup");
 
-    Assertions.assertTrue(
-        locationService.locationAlreadyPersisted(mockLocationApiResponseInnsbruck));
+    Assertions.assertTrue(locationService.locationAlreadyPersisted(locationDtoListInnsbruck));
     location =
         locationRepository.findLocationById(
             new LocationId(
-                mockLocationApiResponseInnsbruck.latitude(),
-                mockLocationApiResponseInnsbruck.longitude()));
+                locationDtoListInnsbruck.latitude(), locationDtoListInnsbruck.longitude()));
     Assertions.assertEquals(weather.getId(), location.getWeather().getId());
   }
 
@@ -274,9 +278,9 @@ public class LocationServiceTest {
 
   @Test
   void getLocationTest() {
-    Location location = getMockLocation();
+    Location location = getMockLocation(locationDtoListInnsbruck);
     CurrentAndForecastAnswer weather = new CurrentAndForecastAnswer();
-    weather.setWeatherData(mockLocationApiResponseInnsbruck.toString().getBytes());
+    weather.setWeatherData(locationDtoListInnsbruck.toString().getBytes());
     location.setWeather(currentAndForecastAnswerRepository.save(weather));
     locationRepository.save(location);
 
@@ -284,6 +288,6 @@ public class LocationServiceTest {
         1, locationRepository.findAll().size(), "There was a problem in the test setup");
 
     Assertions.assertEquals(
-        location.getId(), locationService.getLocation(mockLocationApiResponseInnsbruck).getId());
+        location.getId(), locationService.getLocation(locationDtoListInnsbruck).getId());
   }
 }
