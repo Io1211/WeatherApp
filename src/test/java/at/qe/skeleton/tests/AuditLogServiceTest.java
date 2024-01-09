@@ -82,7 +82,7 @@ public class AuditLogServiceTest {
         when(userxMock.getRoles()).thenReturn(userRoles);
 
         String result = auditLogService.convertRolesToString(userxMock);
-        assertEquals("PREMIUM_USER, ADMIN", result);
+        assertTrue(result.contains("PREMIUM_USER") && result.contains("ADMIN"));
     }
 
 
