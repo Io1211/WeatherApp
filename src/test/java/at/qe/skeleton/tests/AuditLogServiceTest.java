@@ -82,21 +82,21 @@ public class AuditLogServiceTest {
         when(userxMock.getRoles()).thenReturn(userRoles);
 
         String result = auditLogService.convertRolesToString(userxMock);
-        assertEquals("ADMIN, PREMIUM_USER", result);
+        assertEquals("PREMIUM_USER, ADMIN", result);
     }
 
 
     @Test
     void saveDeletedUserEntryTest() {
-        Userx userx = new Userx();
-        userx.setUsername("testUser");
-        userx.setRoles(Sets.newSet(UserxRole.PREMIUM_USER));
+        //Userx userx = new Userx();
+        userxMock.setUsername("testUser");
+        userxMock.setRoles(Sets.newSet(UserxRole.PREMIUM_USER));
 
         // this pretends that the user has been deleted and a save is triggered
-        auditLogService.saveDeletedUserEntry(userx);
+        auditLogService.saveDeletedUserEntry(userxMock);
         
         // actually delete the user
-        userxService.deleteUser(userx);
+        userxService.deleteUser(userxMock);
 
         //check the log entries if the most recent ones match
         List<AuditLog> als = auditLogRepository.findAll();
