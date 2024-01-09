@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -57,6 +58,7 @@ public class AuditLogServiceTest {
     @AfterEach
     void resetMockito() {
         Mockito.reset(mockedAuditLogRepository);
+        Mockito.reset(auditLogRepository);
         auditLogRepository.findAll().forEach(auditLogRepository::delete);
     }
 
@@ -106,14 +108,17 @@ public class AuditLogServiceTest {
 
     @Test
     void saveCreatedUserEntryTest() {
-        Userx userx = new Userx();
-        userx.setUsername("testUser");
-        userx.setRoles(Sets.newSet(UserxRole.ADMIN));
+        userxMock.setUsername("testUser");
+        userxMock.setRoles(Sets.newSet(UserxRole.ADMIN));
 
-        doNothing().when(auditLogService).saveEntry(anyString());
+        // this pretends that the user has been saved
+        auditLogService.saveCreatedUserEntry(userxMock);
         
-        // save and check log entry
-        auditLogService.saveCreatedUserEntry(userx);
-        verify(auditLogService, times(1)).saveEntry("User testUser with role(s) ADMIN has been saved.");
+        // actually save the user
+        userxService.saveUser(userxMock);
+
+        //check the log entries if the most recent ones match
+        List<AuditLog> als = auditLogRepository.findAll();
+        assertEquals(als.get(0), als.get(1));
     }
 }
