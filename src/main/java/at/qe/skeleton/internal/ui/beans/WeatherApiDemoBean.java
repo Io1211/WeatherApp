@@ -1,8 +1,6 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
-import at.qe.skeleton.external.model.location.LocationAnswerDTO;
-import at.qe.skeleton.external.services.GeocodingApiRequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import at.qe.skeleton.internal.model.Location;
@@ -36,16 +34,12 @@ public class WeatherApiDemoBean {
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
   private Location location;
-  CurrentAndForecastAnswerDTO weatherDTO;
+  private CurrentAndForecastAnswerDTO weatherDTO;
 
   private boolean isLocationAnswerDTOReady = false;
 
   public boolean getIsLocationAnswerDTOReady() {
     return isLocationAnswerDTOReady;
-  }
-
-  public void setLocationSearchInput(String locationSearchInput) {
-    this.locationSearchInput = locationSearchInput;
   }
 
   public void performLocationAndWeatherSearch()
@@ -58,7 +52,7 @@ public class WeatherApiDemoBean {
     // todo: add logic for handling errors in ui
   }
 
-  public String getSunsetDateTime() {
+  public String getSunsetString() {
     Instant sunsetInstant = this.weatherDTO.currentWeather().sunset();
     String apiResponseTimezone = this.weatherDTO.timezone();
     ZoneId utcZoneId = ZoneId.of(apiResponseTimezone);
@@ -71,12 +65,20 @@ public class WeatherApiDemoBean {
     return location;
   }
 
-  public CurrentAndForecastAnswerDTO getCurrentAndForecastAnswerDTO() {
+  public CurrentAndForecastAnswerDTO getWeatherDTO() {
     return weatherDTO;
   }
 
   public String getLocationSearchInput() {
     return locationSearchInput;
+  }
+
+  public void setLocationSearchInput(String locationSearchInput) {
+    this.locationSearchInput = locationSearchInput;
+  }
+
+  public void setWeatherDTO(CurrentAndForecastAnswerDTO weatherDTO) {
+    this.weatherDTO = weatherDTO;
   }
 }
 

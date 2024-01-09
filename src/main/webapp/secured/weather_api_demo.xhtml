@@ -58,13 +58,13 @@
                     <h:panelGrid columns="2">
                         <h:outputText value="Weather Description"/>
                         <h:outputText
-                                value="#{weatherApiDemoBean.currentAndForecastAnswerDTO.currentWeather().weather().description()}"/>
+                                value="#{weatherApiDemoBean.weatherDTO.currentWeather().weather().description()}"/>
                         <h:outputText value="Temperature"/>
                         <h:outputText
-                                value="#{weatherApiDemoBean.currentAndForecastAnswerDTO.currentWeather().temperature()}"/>
+                                value="#{weatherApiDemoBean.weatherDTO.currentWeather().temperature()}"/>
                         <h:outputText value="Sunset"/>
                         <h:outputText
-                                value="#{weatherApiDemoBean.sunsetDateTime}"/>
+                                value="#{weatherApiDemoBean.sunsetString}"/>
                     </h:panelGrid>
                 </div>
             </p:panel>
