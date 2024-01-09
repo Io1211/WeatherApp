@@ -33,7 +33,7 @@ public class LocationService {
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
   /**
-   * calls the GeocodingApiRequestService. you can specifiy how many Locations you want to get back
+   * Calls the GeocodingApiRequestService. you can specifiy how many Locations you want to get back
    * at max by the api. the maximum of locations you can get back is 5. The minimum is 1. The method
    * gives back a List of LocationAnswerDTOs. The reason why we give back a List and not a single
    * object, is that it is needed for the autocompletion feature.

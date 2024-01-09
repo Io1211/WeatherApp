@@ -38,7 +38,9 @@ public class LocationServiceTest {
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
   private static List<LocationAnswerDTO> locationDtoListInnsbruck;
+  private static LocationAnswerDTO locationDtoInnsbruck;
   private static List<LocationAnswerDTO> locationDtoListMunich;
+  private static LocationAnswerDTO locationDtoMunich;
 
   private static ObjectMapper mapper;
   private static CurrentAndForecastAnswerDTO weatherDtoMunich;
@@ -59,6 +61,7 @@ public class LocationServiceTest {
     locationDtoListInnsbruck =
         mapper.readValue(
             new File(resources + "GeocodingResponseInnsbruck.json"), new TypeReference<>() {});
+    locationDtoInnsbruck = locationDtoListInnsbruck.get(0);
 
     // Innsbruck Weather Mock
     weatherDtoInnsbruck =
@@ -70,6 +73,7 @@ public class LocationServiceTest {
     locationDtoListMunich =
         mapper.readValue(
             new File(resources + "GeocodingResponseMunich.json"), new TypeReference<>() {});
+    locationDtoMunich = locationDtoListMunich.get(0);
 
     // Munich Weather Mock DTO
     weatherDtoMunich =
@@ -79,20 +83,17 @@ public class LocationServiceTest {
   }
 
   /**
-   * Takes a List of LocationAnswerDTOs, just like they would be returned from {@link
-   * GeocodingApiRequestService}. Takes the first element of that List and builds a Mock Location
-   * Object from that.
+   * Takes a LocationAnswerDTO and builds a Mock Location out of it.
    *
-   * @param locationAnswerDTOList
+   * @param locationAnswerDTO
    * @return mock Location
    */
-  public Location getMockLocation(List<LocationAnswerDTO> locationAnswerDTOList) {
-    LocationAnswerDTO dto = locationAnswerDTOList.get(0);
+  public Location getMockLocation(LocationAnswerDTO locationAnswerDTO) {
     Location location = new Location();
-    location.setId(dto.latitude(), dto.longitude());
-    location.setCity(dto.name());
-    location.setState(dto.state());
-    location.setCountry(dto.country());
+    location.setId(locationAnswerDTO.latitude(), locationAnswerDTO.longitude());
+    location.setCity(locationAnswerDTO.name());
+    location.setState(locationAnswerDTO.state());
+    location.setCountry(locationAnswerDTO.country());
     return location;
   }
 
@@ -209,17 +210,20 @@ public class LocationServiceTest {
 
   @Test
   void updateLocationWeatherTest() {
+    byte[] weatherBlob = weatherDtoInnsbruck.toString().getBytes();
     CurrentAndForecastAnswer currentAndForecastAnswer = new CurrentAndForecastAnswer();
-    currentAndForecastAnswer.setWeatherData(weatherDtoInnsbruck.toString().getBytes());
+    currentAndForecastAnswer.setWeatherData(weatherBlob);
 
-    Location location = getMockLocation(locationDtoListInnsbruck);
+    Location location = getMockLocation(locationDtoInnsbruck);
     location.setWeather(currentAndForecastAnswer);
+
+    Assertions.assertEquals(weatherBlob, location.getWeather().getWeatherData());
 
     currentAndForecastAnswer.setWeatherData("updated".getBytes());
     Location updatedLocation =
         locationService.updateLocationWeather(location, currentAndForecastAnswer);
 
-    locationAssertions(updatedLocation, locationDtoListInnsbruck);
+    locationAssertions(updatedLocation, locationDtoInnsbruck);
     Assertions.assertEquals(
         1, locationRepository.findAll().size()); // check that the updates are being persisted
     Assertions.assertEquals(1, currentAndForecastAnswerRepository.findAll().size());
@@ -228,7 +232,7 @@ public class LocationServiceTest {
 
   @Test
   void locationAlreadyPersistedTest() {
-    Location location = getMockLocation(locationDtoListInnsbruck);
+    Location location = getMockLocation(locationDtoInnsbruck);
     CurrentAndForecastAnswer weather = new CurrentAndForecastAnswer();
     weather.setWeatherData(weatherDtoInnsbruck.toString().getBytes());
     location.setWeather(currentAndForecastAnswerRepository.save(weather));
@@ -241,11 +245,10 @@ public class LocationServiceTest {
         currentAndForecastAnswerRepository.findAll().size(),
         "There was a problem in test setup");
 
-    Assertions.assertTrue(locationService.locationAlreadyPersisted(locationDtoListInnsbruck));
+    Assertions.assertTrue(locationService.locationAlreadyPersisted(locationDtoInnsbruck));
     location =
         locationRepository.findLocationById(
-            new LocationId(
-                locationDtoListInnsbruck.latitude(), locationDtoListInnsbruck.longitude()));
+            new LocationId(locationDtoInnsbruck.latitude(), locationDtoInnsbruck.longitude()));
     Assertions.assertEquals(weather.getId(), location.getWeather().getId());
   }
 
@@ -278,7 +281,7 @@ public class LocationServiceTest {
 
   @Test
   void getLocationTest() {
-    Location location = getMockLocation(locationDtoListInnsbruck);
+    Location location = getMockLocation(locationDtoInnsbruck);
     CurrentAndForecastAnswer weather = new CurrentAndForecastAnswer();
     weather.setWeatherData(locationDtoListInnsbruck.toString().getBytes());
     location.setWeather(currentAndForecastAnswerRepository.save(weather));
@@ -288,6 +291,6 @@ public class LocationServiceTest {
         1, locationRepository.findAll().size(), "There was a problem in the test setup");
 
     Assertions.assertEquals(
-        location.getId(), locationService.getLocation(locationDtoListInnsbruck).getId());
+        location.getId(), locationService.getLocation(locationDtoInnsbruck).getId());
   }
 }
