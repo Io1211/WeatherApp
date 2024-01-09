@@ -217,9 +217,11 @@ public class LocationServiceTest {
     Location location = getMockLocation(locationDtoInnsbruck);
     location.setWeather(currentAndForecastAnswer);
 
+    // check that weather in Location Object has indeed been set to weatherBlob
     Assertions.assertEquals(weatherBlob, location.getWeather().getWeatherData());
 
-    currentAndForecastAnswer.setWeatherData("updated".getBytes());
+    byte[] updatedWeatherBlob = "updated".getBytes();
+    currentAndForecastAnswer.setWeatherData(updatedWeatherBlob);
     Location updatedLocation =
         locationService.updateLocationWeather(location, currentAndForecastAnswer);
 
@@ -227,7 +229,10 @@ public class LocationServiceTest {
     Assertions.assertEquals(
         1, locationRepository.findAll().size()); // check that the updates are being persisted
     Assertions.assertEquals(1, currentAndForecastAnswerRepository.findAll().size());
+    // make sure that the updated Location has changed together with currentAndForeCastAnswer and
+    // holds indeed the updated weatherBlob
     Assertions.assertEquals(currentAndForecastAnswer, updatedLocation.getWeather());
+    Assertions.assertEquals(updatedWeatherBlob, updatedLocation.getWeather().getWeatherData());
   }
 
   @Test
