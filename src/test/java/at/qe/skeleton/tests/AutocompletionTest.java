@@ -1,7 +1,5 @@
 package at.qe.skeleton.tests;
 
-package at.qe.skeleton.tests;
-
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
 import at.qe.skeleton.internal.model.CurrentAndForecastAnswer;
@@ -41,25 +39,22 @@ public class AutocompletionTest {
    * kommt irgend eine russische Stadt zurück
    *
    */
-    @Mock LocationService locationService;
-    @InjectMocks
-    AutoCompleteController controller;
+  @Mock LocationService locationService;
+  @InjectMocks AutoCompleteController controller;
 
-    List<LocationAnswerDTO> locationAnswerDTOList;
+  List<LocationAnswerDTO> locationAnswerDTOList;
 
-    @Before
-    public void setUp(){
-        //load the "autoCompletionApiResponseRom.json" and store it in locationAnswerDTOList;
-    }
-    @Test
-    public void autoCompleteLocationTest () {
-        String query = "Rom";
-        // return the locationAnswerDTOLIst
-        //when(locationService.callApi(query, 5)).thenReturn()
+  @Before
+  public void setUp() {
+    // load the "autoCompletionApiResponseRom.json" and store it in locationAnswerDTOList;
+  }
 
-        //check wether the correct suggestions are presented (see screenshot)
-    }
+  @Test
+  public void autoCompleteLocationTest() {
+    String query = "Rom";
+    // return the locationAnswerDTOLIst
+    // when(locationService.callApi(query, 5)).thenReturn()
 
-
-
+    // check wether the correct suggestions are presented (see screenshot)
+  }
 }
