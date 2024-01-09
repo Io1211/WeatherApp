@@ -4,8 +4,9 @@ import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswer
 import at.qe.skeleton.external.services.WeatherApiRequestService;
 import at.qe.skeleton.internal.model.CurrentAndForecastAnswer;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
-import at.qe.skeleton.internal.services.utils.FailedJsonToDtoMappingException;
-import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
+import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
+import at.qe.skeleton.internal.services.exceptions.FailedJsonToDtoMappingException;
+import at.qe.skeleton.internal.services.exceptions.FailedToSerializeDTOException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.constraints.NotNull;
@@ -33,14 +34,15 @@ public class CurrentAndForecastAnswerService {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(CurrentAndForecastAnswerService.class);
 
-  public CurrentAndForecastAnswerDTO callApi(double lon, double lat) {
+  public CurrentAndForecastAnswerDTO callApi(double lon, double lat) throws FailedApiRequest {
     try {
       return this.weatherApiRequestService.retrieveCurrentAndForecastWeather(lat, lon);
     } catch (final Exception e) {
-      // TODO: Better error handling
       LOGGER.error("error in request", e);
+      throw new FailedApiRequest(
+          "An error occurred in the CurrentAndForecastWeather api call with latitude: %s and longitude: %s"
+              .formatted(lat, lon));
     }
-    return null;
   }
 
   /**

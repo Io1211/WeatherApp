@@ -3,8 +3,13 @@ package at.qe.skeleton.internal.ui.beans;
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
-import at.qe.skeleton.internal.services.utils.FailedJsonToDtoMappingException;
-import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
+import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
+import at.qe.skeleton.internal.services.exceptions.FailedJsonToDtoMappingException;
+import at.qe.skeleton.internal.services.exceptions.FailedToSerializeDTOException;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,6 +27,8 @@ public class WeatherApiDemoBean {
   @Autowired private CurrentAndForecastAnswerService currentAndForecastAnswerService;
 
   @Autowired private LocationService locationService;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
   private String currentWeather;
 
@@ -43,7 +50,20 @@ public class WeatherApiDemoBean {
 
   public void performLocationSearch()
       throws FailedToSerializeDTOException, FailedJsonToDtoMappingException {
-    Location location = locationService.handleLocationSearch(locationSearchInput);
+    Location location = null;
+    try {
+      location = locationService.handleLocationSearch(locationSearchInput);
+    } catch (FailedApiRequest e) {
+      FacesContext.getCurrentInstance()
+          .addMessage(
+              "searchError",
+              new FacesMessage(
+                  FacesMessage.SEVERITY_WARN,
+                  "There was an error in an api request",
+                  e.getMessage()));
+      LOGGER.error(e.getMessage());
+      return;
+    }
     CurrentAndForecastAnswerDTO weather =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
     this.latitude = location.getId().getLatitude();

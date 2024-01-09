@@ -8,13 +8,15 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
-import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
+import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
+import at.qe.skeleton.internal.services.exceptions.FailedToSerializeDTOException;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpStatusCodeException;
 
 @Component
 @Scope("application")
@@ -28,16 +30,26 @@ public class LocationService {
 
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
-  public LocationAnswerDTO callApi(@NotNull String locationName) {
-    return geocodingApiRequestService.retrieveLocationLonLat(locationName);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocationService.class);
+
+  public LocationAnswerDTO callApi(@NotNull String locationName) throws FailedApiRequest {
+    try {
+      return geocodingApiRequestService.retrieveLocationLonLat(locationName);
+    } catch (final Exception e) {
+      LOGGER.error("error in request", e);
+      throw new FailedApiRequest(
+          "An error occurred in the Geocoding api call with %s as the searched location"
+              .formatted(locationName));
+    }
   }
 
   /**
-   * Searches for current Data with the given Location Name. If there is no db entry for the
-   * Location Object with the corresponding Lon/Lat Id, a new one is being created. If there is an
-   * existing Location in the db and it is not older than one hour, this Location will be returned.
-   * If there is an older Location in the db, the Weather Api will be called and the Location in the
-   * db will get updated with the new Weather and this Location will be returned. <br>
+   * Searches for the location to the provided location-name in the database. If there is no
+   * corresponding entry, meaning a location with the longitude and latitude (id) of the searched
+   * location-name, a new one is created with up-to-date weather data. If one exists, its weather
+   * data is checked. If it is up-to-date i.e., saved more recently than the last full hour, the
+   * previously persisted location (containing the weather data) is returned. Else, new weather data
+   * is fetched from the weather api and saved to the persisted location, which is then returned.
    * <br>
    *
    * @param locationSearchString the name of the location
@@ -45,7 +57,7 @@ public class LocationService {
    * @throws FailedToSerializeDTOException if there occur problems with the DTO serialization.
    */
   public Location handleLocationSearch(String locationSearchString)
-      throws FailedToSerializeDTOException {
+      throws FailedToSerializeDTOException, FailedApiRequest {
     // This method covers 3 cases:
     // 1. The searched location is already persisted and has up-to-date weather data.
     // 2. The searched location is already persisted but the weather data is out of date.
