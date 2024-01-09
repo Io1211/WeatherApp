@@ -90,7 +90,6 @@ public class AuditLogServiceTest {
 
     @Test
     void saveDeletedUserEntryTest() {
-        //Userx userx = new Userx();
         userxMock.setUsername("testUser");
         userxMock.setRoles(Sets.newSet(UserxRole.PREMIUM_USER));
 
