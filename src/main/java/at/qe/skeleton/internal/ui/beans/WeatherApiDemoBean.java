@@ -66,13 +66,10 @@ public class WeatherApiDemoBean {
     }
     CurrentAndForecastAnswerDTO weather =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
-    this.latitude = location.getId().getLatitude();
-    this.longitude = location.getId().getLongitude();
+    this.latitude = weather.latitude();
+    this.longitude = weather.longitude();
     StringBuilder body = new StringBuilder();
     body.append("City: %s<br>".formatted(location.getCity()));
-    body.append(
-        "Location: Lon - %s\tLat - %s<br>"
-            .formatted(location.getId().getLongitude(), location.getId().getLatitude()));
     body.append(
         "Weather: Lon - %s\tLat - %s<br>".formatted(weather.longitude(), weather.latitude()));
     body.append("Description: %s<br>".formatted(weather.currentWeather().weather().description()));
@@ -112,6 +109,3 @@ public class WeatherApiDemoBean {
     this.longitude = longitude;
   }
 }
-
-// todo: introduce error handling
-// todo: write tests
