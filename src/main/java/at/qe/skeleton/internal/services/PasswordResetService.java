@@ -1,9 +1,11 @@
 package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.repositories.UserxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Random;
 
@@ -11,12 +13,14 @@ import java.util.Random;
 @Scope("application")
 public class PasswordResetService {
 
-  @Autowired private UserxService userxService;
+  @Autowired private UserxRepository userRepository;
+
+  @Autowired private PasswordEncoder passwordEncoder;
 
   @Autowired private EmailService emailService;
 
   public void sendPasswordResetEmailAndToken(String email, String token) {
-    if (userxService.loadUserByEmail(email) == null) {
+    if (userRepository.findFirstByEmail(email) == null) {
       throw new IllegalArgumentException("User not found for email " + email);
     } else {
       emailService.sendEmail(
@@ -29,12 +33,13 @@ public class PasswordResetService {
   }
 
   public void resetPassword(String email, String newPassword) {
-    Userx user = userxService.loadUserByEmail(email);
+    Userx user = userRepository.findFirstByEmail(email);
     if (user == null) {
       // TO DO: exception handling for application internal errors
       throw new IllegalArgumentException("User not found for email " + email);
     } else {
-      userxService.setPasswordEncoded(user, newPassword);
+      user.setPassword(passwordEncoder.encode(newPassword));
+      userRepository.save(user);
     }
   }
 }

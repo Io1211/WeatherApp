@@ -32,6 +32,7 @@ public class UserxService {
    *
    * @return
    */
+  @PreAuthorize("hasAuthority('ADMIN')")
   public Collection<Userx> getAllUsers() {
     return userRepository.findAll();
   }
@@ -42,6 +43,8 @@ public class UserxService {
    * @param username the username to search for
    * @return the user with the given username
    */
+
+  // @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #username")
   public Userx loadUser(String username) {
     return userRepository.findFirstByUsername(username);
   }
@@ -54,10 +57,7 @@ public class UserxService {
    * @param user the user to save
    * @return the updated user
    */
-  public Userx loadUserByEmail(String email) {
-    return userRepository.findFirstByEmail(email);
-  }
-
+  @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #username")
   public Userx saveUser(Userx user) throws JpaSystemException {
     if (user.isNew()) {
       user.setCreateUser(getAuthenticatedUser());
