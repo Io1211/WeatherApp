@@ -16,6 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.services.AuditLogService;
+import at.qe.skeleton.internal.services.UserxService;
 import at.qe.skeleton.internal.model.AuditLog;
 import at.qe.skeleton.internal.repositories.AuditLogRepository;
 
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 
 /**
@@ -36,9 +38,6 @@ import java.util.Set;
 @SpringBootTest
 @WebAppConfiguration
 public class AuditLogServiceTest {
-
-    @Autowired 
-    private AuditLogService auditLogServiceTest;
     
     @Autowired 
     private AuditLogService auditLogService;
@@ -52,6 +51,9 @@ public class AuditLogServiceTest {
     @Mock
     private Userx userxMock;
 
+    @Mock
+    private UserxService userxService;
+
     @AfterEach
     void resetMockito() {
         Mockito.reset(mockedAuditLogRepository);
@@ -63,8 +65,8 @@ public class AuditLogServiceTest {
     void saveEntryTest() {
         String message = "Test";
 
-        ReflectionTestUtils.setField(auditLogServiceTest, "auditLogRepository", mockedAuditLogRepository); 
-        auditLogServiceTest.saveEntry(message);
+        ReflectionTestUtils.setField(auditLogService, "auditLogRepository", mockedAuditLogRepository); 
+        auditLogService.saveEntry(message);
         
         AuditLog expectedAuditLog = new AuditLog();
         expectedAuditLog.setMessage(message);
@@ -90,11 +92,15 @@ public class AuditLogServiceTest {
         userx.setUsername("testUser");
         userx.setRoles(Sets.newSet(UserxRole.PREMIUM_USER));
 
-        doNothing().when(auditLogService).saveEntry(anyString());
-
-        // save and check log entry
+        // this pretends that the user has been deleted and a save is triggered
         auditLogService.saveDeletedUserEntry(userx);
-        verify(auditLogService, times(1)).saveEntry("User testUser with role(s) PREMIUM_USER has been deleted.");
+        
+        // actually delete the user
+        userxService.deleteUser(userx);
+
+        //check the log entries if the most recent ones match
+        List<AuditLog> als = auditLogRepository.findAll();
+        assertEquals(als.get(0), als.get(1));
     }
 
 
