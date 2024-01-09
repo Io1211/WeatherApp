@@ -126,4 +126,5 @@ class GeocodingApiLocationDtoTest {
     Assertions.assertEquals("AT", actualLocationAnswerDTO.country());
     Assertions.assertEquals("Tyrol", actualLocationAnswerDTO.state());
   }
+  // todo: add test for empty answer from api
 }

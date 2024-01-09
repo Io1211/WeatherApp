@@ -139,7 +139,7 @@ public class LocationServiceTest {
 
     // Case 1: Location doesnt exist yet in db
     String searchString = "Innsbruck";
-    Location locationCase1 = locationService.handleLocationSearch(searchString);
+    Location locationCase1 = locationService.handleLocationAndWeatherSearch(searchString);
     Assertions.assertEquals("Innsbruck", locationCase1.getCity());
 
     CurrentAndForecastAnswerDTO expectedWeatherDto = weatherDtoInnsbruck;
@@ -152,7 +152,7 @@ public class LocationServiceTest {
     Assertions.assertEquals(
         1, locationRepository.findAll().size(), "there should be exactly 1 Location Object in db.");
     // perform second search for the same Location Name
-    Location locationCase2 = locationService.handleLocationSearch(searchString);
+    Location locationCase2 = locationService.handleLocationAndWeatherSearch(searchString);
     // verify that there is still only 1 Location in db
     Assertions.assertEquals(
         1, locationRepository.findAll().size(), "there should be exactly 1 Location Object in db.");
@@ -183,7 +183,7 @@ public class LocationServiceTest {
             .isBefore(ZonedDateTime.now().minusMinutes(1)),
         "the timestamp should be older than 1 minute");
 
-    Location locationCase3 = locationService.handleLocationSearch(searchString);
+    Location locationCase3 = locationService.handleLocationAndWeatherSearch(searchString);
     // verify that the api has been called another time, in total two times.
     verify(mockedWeatherApiRequestService, times(2))
         .retrieveCurrentAndForecastWeather(47.2654296, 11.3927685);

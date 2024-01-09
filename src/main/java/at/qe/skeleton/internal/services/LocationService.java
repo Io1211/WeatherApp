@@ -48,18 +48,19 @@ public class LocationService {
   }
 
   /**
-   * Searches for current Data with the given Location Name. If there is no db entry for the
-   * Location Object with the corresponding Lon/Lat Id, a new one is being created. If there is an
-   * existing Location in the db and it is not older than one hour, this Location will be returned.
-   * If there is an older Location in the db, the Weather Api will be called and the Location in the
-   * db will get updated with the new Weather and this Location will be returned. <br>
+   * Delievers a Location Object from the given String - including current Weather Data with the
+   * given Location Name. If there is no db entry for the Location Object with the corresponding
+   * Lon/Lat Id, a new one is being created. If there is an existing Location in the db and it is
+   * not older than one hour, this Location will be returned. If there is an older Location in the
+   * db, the Weather Api will be called and the Location in the db will get updated with the new
+   * Weather and this Location will be returned. <br>
    * <br>
    *
    * @param locationSearchString the name of the location
    * @return a location with weatherdata not older than the last full hour.
    * @throws FailedToSerializeDTOException if there occur problems with the DTO serialization.
    */
-  public Location handleLocationSearch(String locationSearchString)
+  public Location handleLocationAndWeatherSearch(String locationSearchString)
       throws FailedToSerializeDTOException {
     // This method covers 3 cases:
     // 1. The searched location is already persisted and has up-to-date weather data.

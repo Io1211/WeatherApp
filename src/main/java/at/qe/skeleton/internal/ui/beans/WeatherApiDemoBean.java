@@ -48,11 +48,12 @@ public class WeatherApiDemoBean {
     this.locationSearchInput = locationSearchInput;
   }
 
-  public void performLocationSearch()
+  public void performLocationAndWeatherSearch()
       throws FailedToSerializeDTOException, FailedJsonToDtoMappingException {
-    this.location = locationService.handleLocationSearch(locationSearchInput);
+    this.location = locationService.handleLocationAndWeatherSearch(locationSearchInput);
     this.weatherDTO =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
+    this.isLocationAnswerDTOReady = true;
 
     // todo: add logic for handling errors in ui
   }

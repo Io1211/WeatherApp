@@ -3,6 +3,8 @@ package at.qe.skeleton.internal.ui.controllers;
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
 import at.qe.skeleton.external.services.GeocodingApiRequestService;
 import at.qe.skeleton.external.services.WeatherApiRequestService;
+import at.qe.skeleton.internal.services.CurrentAndForecastAnswerService;
+import at.qe.skeleton.internal.services.LocationService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -18,31 +20,40 @@ import java.util.List;
 @Component
 @Scope("view")
 public class AutoCompleteController {
-  GeocodingApiRequestService geocodingApiRequestService;
-  WeatherApiRequestService weatherApiRequestService;
+  LocationService locationService;
+  CurrentAndForecastAnswerService currentAndForecastAnswerService;
 
-  // todo: it should only depict one value now, since we pick from autocomplete now.
-  // todo: dont store the responses
-  // todo: refactor WeatherApiDemoBean so that it fits the purpose
-  // todo: if state is null it should not show that.
   public AutoCompleteController(
-      GeocodingApiRequestService geocodingApiRequestService,
-      WeatherApiRequestService weatherApiRequestService) {
-    this.geocodingApiRequestService = geocodingApiRequestService;
-    this.weatherApiRequestService = weatherApiRequestService;
+      LocationService locationService,
+      CurrentAndForecastAnswerService currentAndForecastAnswerService) {
+    this.locationService = locationService;
+    this.currentAndForecastAnswerService = currentAndForecastAnswerService;
   }
 
-  // todo: still not sure if this is the right way... is it meant to do that? but how could we
-  // search for cities otherwise? maybe like this:
-  // https://www.youtube.com/watch?v=xBqEWbirtvA
+  /**
+   * Finds Suggestions for the Location based on the Query String. returns up to 5 Suggestions. In
+   * the Return Strings the state or country may be omitted if the actual answer of the Geocoding
+   * API does not deliver a valid value for these attributes.
+   *
+   * @param query The Search String coming from the User in the Search Mask
+   * @return A List of Strings representing the Location-name Suggestions for the Auto-Completion,
+   *     including name, country and state
+   */
   public List<String> autoCompleteLocation(String query) {
     String queryLowerCase = query.toLowerCase();
-    List<LocationAnswerDTO> locationAnswerDTOList =
-        geocodingApiRequestService.retrieveLocationsLonLat(queryLowerCase, 5);
-    return locationAnswerDTOList.stream()
-        .map(
-            location ->
-                String.format("%s, %s, %s", location.name(), location.country(), location.state()))
-        .toList();
+    List<LocationAnswerDTO> locationAnswerDTOList = locationService.callApi(queryLowerCase, 5);
+
+    return locationAnswerDTOList.stream().map(this::retrieveLocationName).toList();
+  }
+
+  private String retrieveLocationName(LocationAnswerDTO locationDTO) {
+    if (locationDTO.state() == null) {
+      return String.format("%s, %s", locationDTO.name(), locationDTO.country());
+    }
+    if (locationDTO.country() == null) {
+      return String.format("%s, %s", locationDTO.name(), locationDTO.state());
+    }
+    return String.format(
+        "%s, %s, %s", locationDTO.name(), locationDTO.country(), locationDTO.state());
   }
 }

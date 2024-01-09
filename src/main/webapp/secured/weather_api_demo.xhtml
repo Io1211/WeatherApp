@@ -33,23 +33,27 @@
                                 completeMethod="#{autoCompleteController.autoCompleteLocation}"/>
             </p:panel>
             <p:commandButton value="CommitSearchRequest" id="commitSearchRequest"
-                             action="#{weatherApiDemoBean.performLocationSearchAndWeatherRequest}"
+                             action="#{weatherApiDemoBean.performLocationAndWeatherSearch()}"
                              update="weatherForm">
             </p:commandButton>
 
-            <p:panel header="Response" id="Response" rendered="#{weatherApiDemoBean.isLocationAnswerDTOReady}">
-            <p:commandButton value="CommitSearchRequest"
-                             action="#{weatherApiDemoBean.performLocationSearch()}"
-                             update=":weatherForm:Request, :weatherForm:Response"/>
             <p:panel header="Request" id="Request">
                 <div style="height: 50px">
-                    Location searched for: #{weatherApiDemoBean.locationSearchInput}. <br/>
+
                     resulting api call to weatherApi:
-                    https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value
+                    https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.location.id.latitude}&amp;lon=#{weatherApiDemoBean.location.id.longitude}&amp;appid=passwort
                 </div>
             </p:panel>
-            <p:panel header="Response" id="Response">
+            <p:panel header="Response" id="Response" rendered="#{weatherApiDemoBean.isLocationAnswerDTOReady}">
                 <div>
+                    <h4>Location searched for:
+                        #{weatherApiDemoBean.location.city},
+                        #{weatherApiDemoBean.location.country}
+                        <!-- check wether this gets rendered even when state is null-->
+                        <h:outputText value=",#{weatherApiDemoBean.location.state}"
+                                      rendered="#{not empty weatherApiDemoBean.location.state}"/>
+                    </h4>
+                    <br/>
                     <h5 style="margin-top:0">Current Weather</h5>
                     <h:panelGrid columns="2">
                         <h:outputText value="Weather Description"/>
@@ -58,12 +62,10 @@
                         <h:outputText value="Temperature"/>
                         <h:outputText
                                 value="#{weatherApiDemoBean.currentAndForecastAnswerDTO.currentWeather().temperature()}"/>
-
                         <h:outputText value="Sunset"/>
                         <h:outputText
                                 value="#{weatherApiDemoBean.sunsetDateTime}"/>
                     </h:panelGrid>
-                    <h:outputText escape="false" value="#{weatherApiDemoBean.searchedWeather}"/>
                 </div>
             </p:panel>
         </h:form>
