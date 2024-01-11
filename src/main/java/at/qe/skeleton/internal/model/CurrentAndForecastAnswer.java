@@ -7,11 +7,12 @@ import org.springframework.data.domain.Persistable;
 
 /** Entity to persist current and forecast weather data */
 @Entity
-public class CurrentAndForecastAnswer implements Persistable<String>, Serializable {
+public class CurrentAndForecastAnswer implements Persistable<Long>, Serializable {
 
   @Id @GeneratedValue private Long id;
 
   private ZonedDateTime timestampLastCall;
+
   @Lob private byte[] weatherData;
 
   public ZonedDateTime getTimestampLastCall() {
@@ -36,8 +37,8 @@ public class CurrentAndForecastAnswer implements Persistable<String>, Serializab
   }
 
   @Override
-  public String getId() {
-    return String.valueOf(this.id);
+  public Long getId() {
+    return this.id;
   }
 
   public void setId(Long id) {
