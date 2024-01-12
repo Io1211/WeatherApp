@@ -9,7 +9,6 @@ import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
-import at.qe.skeleton.internal.services.exceptions.FailedToSerializeDTOException;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 import org.slf4j.Logger;
@@ -36,10 +35,11 @@ public class LocationService {
     try {
       return geocodingApiRequestService.retrieveLocationLonLat(locationName);
     } catch (final Exception e) {
-      LOGGER.error("error in request", e);
-      throw new FailedApiRequest(
+      String errorMessage =
           "An error occurred in the Geocoding api call with %s as the searched location"
-              .formatted(locationName));
+              .formatted(locationName);
+      LOGGER.error(errorMessage, e);
+      throw new FailedApiRequest(errorMessage);
     }
   }
 
@@ -54,10 +54,8 @@ public class LocationService {
    *
    * @param locationSearchString the name of the location
    * @return a location with weatherdata not older than the last full hour.
-   * @throws FailedToSerializeDTOException if there occur problems with the DTO serialization.
    */
-  public Location handleLocationSearch(String locationSearchString)
-      throws FailedToSerializeDTOException, FailedApiRequest {
+  public Location handleLocationSearch(String locationSearchString) throws FailedApiRequest {
     // This method covers 3 cases:
     // 1. The searched location is already persisted and has up-to-date weather data.
     // 2. The searched location is already persisted but the weather data is out of date.

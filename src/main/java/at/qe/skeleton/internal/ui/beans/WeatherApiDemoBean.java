@@ -4,8 +4,6 @@ import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswer
 import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
-import at.qe.skeleton.internal.services.exceptions.FailedJsonToDtoMappingException;
-import at.qe.skeleton.internal.services.exceptions.FailedToSerializeDTOException;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.slf4j.Logger;
@@ -30,8 +28,6 @@ public class WeatherApiDemoBean {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
-  private String currentWeather;
-
   private String searchedWeather;
 
   private String locationSearchInput;
@@ -48,8 +44,7 @@ public class WeatherApiDemoBean {
     this.locationSearchInput = locationSearchInput;
   }
 
-  public void performLocationSearch()
-      throws FailedToSerializeDTOException, FailedJsonToDtoMappingException {
+  public void performLocationSearch() {
     Location location = null;
     try {
       location = locationService.handleLocationSearch(locationSearchInput);
@@ -68,18 +63,11 @@ public class WeatherApiDemoBean {
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
     this.latitude = weather.latitude();
     this.longitude = weather.longitude();
-    StringBuilder body = new StringBuilder();
-    body.append("City: %s<br>".formatted(location.getCity()));
-    body.append(
-        "Weather: Lon - %s\tLat - %s<br>".formatted(weather.longitude(), weather.latitude()));
-    body.append("Description: %s<br>".formatted(weather.currentWeather().weather().description()));
-    body.append("Title      : %s<br><br>".formatted(weather.currentWeather().weather().title()));
-    this.searchedWeather = body.toString();
-  }
-
-  public void warningTest() {
-    FacesContext.getCurrentInstance()
-        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Warn", "Message Content"));
+    this.searchedWeather =
+        "City: %s<br>".formatted(location.getCity())
+            + "Weather: Lon - %s\tLat - %s<br>".formatted(weather.longitude(), weather.latitude())
+            + "Description: %s<br>".formatted(weather.currentWeather().weather().description())
+            + "Title      : %s<br><br>".formatted(weather.currentWeather().weather().title());
   }
 
   public String getSearchedWeather() {
@@ -88,14 +76,6 @@ public class WeatherApiDemoBean {
 
   public void setSearchedWeather(String searchedWeather) {
     this.searchedWeather = searchedWeather;
-  }
-
-  public String getCurrentWeather() {
-    return currentWeather;
-  }
-
-  public void setCurrentWeather(String currentWeather) {
-    this.currentWeather = currentWeather;
   }
 
   public double getLatitude() {
