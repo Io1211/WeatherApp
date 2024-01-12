@@ -25,12 +25,14 @@ import java.io.*;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.time.ZoneId;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AutocompletionTest {
   // todo: add tests
 
@@ -42,19 +44,36 @@ public class AutocompletionTest {
   @Mock LocationService locationService;
   @InjectMocks AutoCompleteController controller;
 
+  ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
   List<LocationAnswerDTO> locationAnswerDTOList;
+  String resourcesPath = "src/test/resources/";
+  private static final int LIMIT = 5;
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
     // load the "autoCompletionApiResponseRom.json" and store it in locationAnswerDTOList;
+    locationAnswerDTOList =
+        mapper.readValue(
+            new File(resourcesPath + "autoCompletionApiResponseRom.json"),
+            new TypeReference<>() {});
   }
 
   @Test
   public void autoCompleteLocationTest() {
     String query = "Rom";
-    // return the locationAnswerDTOLIst
-    // when(locationService.callApi(query, 5)).thenReturn()
+    String queryToLowerCase = query.toLowerCase();
 
-    // check wether the correct suggestions are presented (see screenshot)
+    when(locationService.callApi(queryToLowerCase, LIMIT)).thenReturn(locationAnswerDTOList);
+
+    List<String> expectedAnswers = new ArrayList<>();
+    expectedAnswers.add("Rome, IT, Lazio");
+    expectedAnswers.add("Rom, FR, Nouvelle-Aquitaine");
+    expectedAnswers.add("Rom, DE, Mecklenburg-Vorpommern");
+    expectedAnswers.add("Rømø, DK, Region of Southern Denmark");
+    expectedAnswers.add("Rom, NO");
+
+    List<String> actualAnswers = controller.autoCompleteLocation(query);
+
+    assertEquals(expectedAnswers, actualAnswers);
   }
 }
