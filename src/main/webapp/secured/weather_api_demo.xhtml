@@ -29,14 +29,17 @@
         <h:form id="weatherForm">
             <p:panel header="Location Search">
                 <!-- find out what happens with this input value -> it gets converted twice somehow..-->
-                <p:inputText value="#{weatherApiDemoBean.locationSearchInput}" style="margin-right: 15px" />
-            <p:commandButton id="locationSearch" value="CommitSearchRequest"
-                             action="#{weatherApiDemoBean.performLocationSearch()}"
-                             update=":weatherForm:Request :weatherForm:Response"/>
+                <p:inputText value="#{weatherApiDemoBean.locationSearchInput}" style="margin-right: 15px"/>
+                <p:commandButton id="locationSearch" value="CommitSearchRequest"
+                                 action="#{weatherApiDemoBean.performLocationSearch()}"
+                                 update=":weatherForm"/>
                 <br/>
                 <!-- TODO: actually display the message -->
-                <p:message id="searchError" for="locationSearch" />
+
                 <!-- -->
+            </p:panel>
+            <p:panel>
+                <p:messages id="messages" showDetail="true" closable="true"/>
             </p:panel>
             <br/>
             <p:panel header="Request" id="Request">

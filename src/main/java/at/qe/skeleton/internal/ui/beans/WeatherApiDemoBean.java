@@ -77,6 +77,11 @@ public class WeatherApiDemoBean {
     this.searchedWeather = body.toString();
   }
 
+  public void warningTest() {
+    FacesContext.getCurrentInstance()
+        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Warn", "Message Content"));
+  }
+
   public String getSearchedWeather() {
     return searchedWeather;
   }
