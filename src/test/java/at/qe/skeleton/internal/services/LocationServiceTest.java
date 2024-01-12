@@ -38,8 +38,6 @@ public class LocationServiceTest {
 
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
-  private static ObjectMapper mapper;
-
   private static LocationAnswerDTO locationDtoInnsbruck;
   private static CurrentAndForecastAnswerDTO weatherDtoInnsbruck;
 
@@ -49,7 +47,7 @@ public class LocationServiceTest {
   @BeforeAll
   public static void setUp() throws IOException {
     String resources = "src/test/resources/";
-    mapper = new ObjectMapper().findAndRegisterModules();
+    ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
 
     // Innsbruck Location Mock
     List<LocationAnswerDTO> _api =
