@@ -8,17 +8,14 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
-import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
-import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpStatusCodeException;
 
 @Component
 @Scope("application")
@@ -32,6 +29,18 @@ public class LocationService {
 
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocationService.class);
+
+  public LocationAnswerDTO callApi(@NotNull String locationName) throws FailedApiRequest {
+    try {
+      return geocodingApiRequestService.retrieveLocationLonLat(locationName);
+    } catch (final Exception e) {
+      String errorMessage =
+          "An error occurred in the Geocoding api call with %s as the searched location"
+              .formatted(locationName);
+      LOGGER.error(errorMessage, e);
+      throw new FailedApiRequest(errorMessage);
+    }
   /**
    * Calls the GeocodingApiRequestService. you can specifiy how many Locations you want to get back
    * at max by the api. the maximum of locations you can get back is 5. The minimum is 1. The method
@@ -58,10 +67,8 @@ public class LocationService {
    *
    * @param locationSearchString the name of the location
    * @return a location with weatherdata not older than the last full hour.
-   * @throws FailedToSerializeDTOException if there occur problems with the DTO serialization.
    */
-  public Location handleLocationAndWeatherSearch(String locationSearchString)
-      throws FailedToSerializeDTOException {
+  public Location handleLocationSearch(String locationSearchString) throws FailedApiRequest {
     // This method covers 3 cases:
     // 1. The searched location is already persisted and has up-to-date weather data.
     // 2. The searched location is already persisted but the weather data is out of date.

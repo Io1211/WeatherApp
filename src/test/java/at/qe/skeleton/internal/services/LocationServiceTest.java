@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ public class LocationServiceTest {
 
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
+  private static LocationAnswerDTO locationDtoInnsbruck;
   private static List<LocationAnswerDTO> locationDtoListInnsbruck;
   private static LocationAnswerDTO locationDtoInnsbruck;
   private static List<LocationAnswerDTO> locationDtoListMunich;
@@ -46,16 +48,13 @@ public class LocationServiceTest {
   private static CurrentAndForecastAnswerDTO weatherDtoMunich;
   private static CurrentAndForecastAnswerDTO weatherDtoInnsbruck;
 
-  // There is a bug concerning the PrecipitationDeserializer. The rain and snow fields in the
-  // CurrentWeatherDTO are always set to null when serializing/deserializing the
-  // CurrentAndForecastAnswerDTO.
-  // Therefore, the tests currently use the mock api response from Innsbruck, where these fields are
-  // expected to be null and not the one from Munich, were they are expected to return a non-null
-  // value until this problem is resolved.
+  private static LocationAnswerDTO locationDtoMunich;
+  private static CurrentAndForecastAnswerDTO weatherDtoMunich;
+
   @BeforeAll
   public static void setUp() throws IOException {
     String resources = "src/test/resources/";
-    mapper = new ObjectMapper().findAndRegisterModules();
+    ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
 
     // Innsbruck Location Mock
     locationDtoListInnsbruck =
@@ -116,14 +115,13 @@ public class LocationServiceTest {
     // up-to-date
   }
 
-  private CurrentAndForecastAnswerDTO extractWeatherDtoFromLocation(Location location)
-      throws Exception {
+  private CurrentAndForecastAnswerDTO extractWeatherDtoFromLocation(Location location) {
     byte[] blob = location.getWeather().getWeatherData();
     return currentAndForecastAnswerService.deserializeDTO(blob);
   }
 
   @Test
-  public void handleLocationSearchWithNoPrecipitation() throws Exception {
+  public void handleLocationSearchTest() throws Exception {
     // inject mocked api services
     ReflectionTestUtils.setField(
         locationService, "geocodingApiRequestService", mockedGeocodingRequestService);
@@ -131,34 +129,42 @@ public class LocationServiceTest {
         currentAndForecastAnswerService,
         "weatherApiRequestService",
         mockedWeatherApiRequestService);
+
+    // setup search and mocking parameters
+    String searchedLocationName = "Munich";
+    LocationAnswerDTO searchedMockLocation = locationDtoMunich;
+    double searchedLatitude = searchedMockLocation.latitude();
+    double searchedLongitude = searchedMockLocation.longitude();
+    CurrentAndForecastAnswerDTO searchedMockWeather = weatherDtoMunich;
+
     // mocking the answers for innsbruck (without Precipitation)
-    when(mockedGeocodingRequestService.retrieveLocationsLonLat("Innsbruck", 1))
+    when(mockedGeocodingRequestService.retrieveLocationsLonLat(searchedLocationName, 1))
         .thenReturn(locationDtoListInnsbruck);
-    when(mockedWeatherApiRequestService.retrieveCurrentAndForecastWeather(47.2654296, 11.3927685))
-        .thenReturn(weatherDtoInnsbruck);
+    when(mockedWeatherApiRequestService.retrieveCurrentAndForecastWeather(
+            searchedLatitude, searchedLongitude))
+        .thenReturn(searchedMockWeather);
 
     // Case 1: Location doesnt exist yet in db
-    String searchString = "Innsbruck";
-    Location locationCase1 = locationService.handleLocationAndWeatherSearch(searchString);
-    Assertions.assertEquals("Innsbruck", locationCase1.getCity());
+    Location locationCase1 = locationService.handleLocationSearch(searchedLocationName);
+    Assertions.assertEquals(searchedLocationName, locationCase1.getCity());
 
-    CurrentAndForecastAnswerDTO expectedWeatherDto = weatherDtoInnsbruck;
     CurrentAndForecastAnswerDTO actualWeatherDtoCase1 =
         extractWeatherDtoFromLocation(locationCase1);
-    Assertions.assertEquals(expectedWeatherDto, actualWeatherDtoCase1);
+    Assertions.assertEquals(searchedMockWeather, actualWeatherDtoCase1);
 
     // Case 2: Location exists in db
     // verify that there is indeed 1 Location object in db
     Assertions.assertEquals(
         1, locationRepository.findAll().size(), "there should be exactly 1 Location Object in db.");
     // perform second search for the same Location Name
-    Location locationCase2 = locationService.handleLocationAndWeatherSearch(searchString);
+    Location locationCase2 = locationService.handleLocationSearch(searchedLocationName);
     // verify that there is still only 1 Location in db
     Assertions.assertEquals(
         1, locationRepository.findAll().size(), "there should be exactly 1 Location Object in db.");
     // verify that the mocked WeatherApiService only got called once
     verify(mockedWeatherApiRequestService, times(1))
-        .retrieveCurrentAndForecastWeather(47.2654296, 11.3927685);
+        .retrieveCurrentAndForecastWeather(
+            searchedMockLocation.latitude(), searchedMockLocation.longitude());
     // verify that the id of the Location object did not change
     Assertions.assertEquals(
         locationCase1.getId(), locationCase2.getId(), "the id should not have changed");
@@ -166,7 +172,7 @@ public class LocationServiceTest {
     CurrentAndForecastAnswerDTO actualWeatherDtoCase2 =
         extractWeatherDtoFromLocation(locationCase2);
     Assertions.assertEquals(
-        expectedWeatherDto,
+        searchedMockWeather,
         actualWeatherDtoCase2,
         "the WeatherDTO that has been deserialized from the db is not the same that has been stored after the api call");
 
@@ -183,15 +189,16 @@ public class LocationServiceTest {
             .isBefore(ZonedDateTime.now().minusMinutes(1)),
         "the timestamp should be older than 1 minute");
 
-    Location locationCase3 = locationService.handleLocationAndWeatherSearch(searchString);
+    Location locationCase3 = locationService.handleLocationSearch(searchedLocationName);
     // verify that the api has been called another time, in total two times.
     verify(mockedWeatherApiRequestService, times(2))
-        .retrieveCurrentAndForecastWeather(47.2654296, 11.3927685);
+        .retrieveCurrentAndForecastWeather(
+            searchedMockLocation.latitude(), searchedMockLocation.longitude());
     // verify that there is still only 1 Location in db
     Assertions.assertEquals(
         1,
         locationRepository.findAll().size(),
-        "the database should still only contain 1 item, which has now been updated");
+        "the database should still only contain 1 location entity, which has now been updated");
     // verify that the timestamp is now current:
     Assertions.assertTrue(
         locationCase3
@@ -203,29 +210,34 @@ public class LocationServiceTest {
     CurrentAndForecastAnswerDTO actualWeatherDtoCase3 =
         extractWeatherDtoFromLocation(locationCase3);
     Assertions.assertEquals(
-        expectedWeatherDto,
+        searchedMockWeather,
         actualWeatherDtoCase3,
         "the WeatherDTO that has been deserialized from the db is not the same that has been stored after the api call");
   }
 
   @Test
   void updateLocationWeatherTest() {
-    byte[] weatherBlob = weatherDtoInnsbruck.toString().getBytes();
-    CurrentAndForecastAnswer currentAndForecastAnswer = new CurrentAndForecastAnswer();
-    currentAndForecastAnswer.setWeatherData(weatherBlob);
+    CurrentAndForecastAnswerDTO searchedMockDTO = weatherDtoInnsbruck;
+    LocationAnswerDTO searchedLocationDTO = locationDtoInnsbruck;
+    byte[] serializedWeatherBlob = SerializationUtils.serialize(searchedMockDTO);
 
-    Location location = getMockLocation(locationDtoInnsbruck);
+    CurrentAndForecastAnswer currentAndForecastAnswer = new CurrentAndForecastAnswer();
+    currentAndForecastAnswer.setWeatherData(serializedWeatherBlob);
+
+    Location location = getMockLocation(searchedLocationDTO);
     location.setWeather(currentAndForecastAnswer);
 
+    byte[] updatedSerializedWeatherBlob = SerializationUtils.serialize("updated");
+
+    currentAndForecastAnswer.setWeatherData(updatedSerializedWeatherBlob);
     // check that weather in Location Object has indeed been set to weatherBlob
     Assertions.assertEquals(weatherBlob, location.getWeather().getWeatherData());
 
-    byte[] updatedWeatherBlob = "updated".getBytes();
-    currentAndForecastAnswer.setWeatherData(updatedWeatherBlob);
+    currentAndForecastAnswer.setWeatherData(updatedSerializedWeatherBlob);
     Location updatedLocation =
         locationService.updateLocationWeather(location, currentAndForecastAnswer);
 
-    locationAssertions(updatedLocation, locationDtoInnsbruck);
+    locationAssertions(updatedLocation, searchedLocationDTO);
     Assertions.assertEquals(
         1, locationRepository.findAll().size()); // check that the updates are being persisted
     Assertions.assertEquals(1, currentAndForecastAnswerRepository.findAll().size());
@@ -237,24 +249,28 @@ public class LocationServiceTest {
 
   @Test
   void locationAlreadyPersistedTest() {
-    Location location = getMockLocation(locationDtoInnsbruck);
+    LocationAnswerDTO searchedLocationDTO = locationDtoMunich;
+
+    Location location = getMockLocation(searchedLocationDTO);
     CurrentAndForecastAnswer weather = new CurrentAndForecastAnswer();
-    weather.setWeatherData(weatherDtoInnsbruck.toString().getBytes());
+    weather.setWeatherData(SerializationUtils.serialize(searchedLocationDTO));
     location.setWeather(currentAndForecastAnswerRepository.save(weather));
     locationRepository.save(location);
 
     Assertions.assertEquals(
-        1, locationRepository.findAll().size(), "There was a problem in test setup");
+        1,
+        locationRepository.findAll().size(),
+        "There should be exactly 1 location entity in the database at this point");
     Assertions.assertEquals(
         1,
         currentAndForecastAnswerRepository.findAll().size(),
-        "There was a problem in test setup");
+        "There should be exactly 1 weather entity in the database at this point");
 
-    Assertions.assertTrue(locationService.locationAlreadyPersisted(locationDtoInnsbruck));
+    Assertions.assertTrue(locationService.locationAlreadyPersisted(searchedLocationDTO));
     location =
         locationRepository.findLocationById(
-            new LocationId(locationDtoInnsbruck.latitude(), locationDtoInnsbruck.longitude()));
-    Assertions.assertEquals(weather.getId(), location.getWeather().getId());
+            new LocationId(searchedLocationDTO.latitude(), searchedLocationDTO.longitude()));
+    locationAssertions(location, searchedLocationDTO);
   }
 
   @Test
@@ -274,7 +290,7 @@ public class LocationServiceTest {
     oldWeatherLocation.setWeather(oldWeather);
     Assertions.assertFalse(locationService.locationHasUpToDateWeatherData(oldWeatherLocation));
 
-    // Weather requests with timestamps within the current full hour should return true..
+    // Weather requests with timestamps within the current full hour should return true.
     Location newWeatherLocation = new Location();
     CurrentAndForecastAnswer newWeather =
         currentAndForecastAnswerRepository.save(
@@ -286,16 +302,20 @@ public class LocationServiceTest {
 
   @Test
   void getLocationTest() {
-    Location location = getMockLocation(locationDtoInnsbruck);
+    LocationAnswerDTO searchedLocationDTO = locationDtoMunich;
+    CurrentAndForecastAnswerDTO searchedWeatherDTO = weatherDtoMunich;
+
+    Location location = getMockLocation(searchedLocationDTO);
     CurrentAndForecastAnswer weather = new CurrentAndForecastAnswer();
-    weather.setWeatherData(locationDtoListInnsbruck.toString().getBytes());
+    weather.setWeatherData(SerializationUtils.serialize(searchedWeatherDTO));
     location.setWeather(currentAndForecastAnswerRepository.save(weather));
     locationRepository.save(location);
 
     Assertions.assertEquals(
-        1, locationRepository.findAll().size(), "There was a problem in the test setup");
+        1,
+        locationRepository.findAll().size(),
+        "There should be exactly one location in the database at this point");
 
-    Assertions.assertEquals(
-        location.getId(), locationService.getLocation(locationDtoInnsbruck).getId());
+    locationAssertions(location, searchedLocationDTO);
   }
 }
