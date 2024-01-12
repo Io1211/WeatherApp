@@ -58,6 +58,11 @@ public class AutocompletionTest {
             new TypeReference<>() {});
   }
 
+  // Rom fits very good as test case since it has one api-Answer which does not contain a "state"
+  // value -> that means
+  // it is returned as null and needs to be ommitted. The test should therefore display only name
+  // and country
+  // of that Location
   @Test
   public void autoCompleteLocationTest() {
     String query = "Rom";
