@@ -24,11 +24,11 @@ class CurrentAndForecastAnswerServiceTest {
 
   @Autowired CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
-  private CurrentAndForecastAnswerDTO mockDTO;
+  private static CurrentAndForecastAnswerDTO mockDTO;
 
-  @BeforeEach
-  public void loadMockResponseFromFile() throws IOException {
-    this.mockDTO =
+  @BeforeAll
+  public static void setUp() throws IOException {
+    mockDTO =
         new ObjectMapper()
             .findAndRegisterModules()
             .readValue(
@@ -43,7 +43,7 @@ class CurrentAndForecastAnswerServiceTest {
   }
 
   private void checkDTO(CurrentAndForecastAnswerDTO toTestDTO) {
-    CurrentAndForecastAnswerDTO referenceDTO = this.mockDTO;
+    CurrentAndForecastAnswerDTO referenceDTO = mockDTO;
     Assertions.assertEquals(
         referenceDTO.latitude(),
         toTestDTO.latitude(),
@@ -84,8 +84,7 @@ class CurrentAndForecastAnswerServiceTest {
 
   @Test
   void testSaveWeather() {
-    CurrentAndForecastAnswer savedAnswer =
-        currentAndForecastAnswerService.saveWeather(this.mockDTO);
+    CurrentAndForecastAnswer savedAnswer = currentAndForecastAnswerService.saveWeather(mockDTO);
     Assertions.assertNotNull(savedAnswer, "Failed to save the mock DTO in the database");
     CurrentAndForecastAnswerDTO justCreatedDTO =
         currentAndForecastAnswerService.deserializeDTO(
@@ -98,7 +97,7 @@ class CurrentAndForecastAnswerServiceTest {
   @Test
   void testGetAllCurrentAndForecastWeather() {
     List<CurrentAndForecastAnswerDTO> answerDTOList = new ArrayList<>();
-    IntStream.range(0, 5).forEach(dto -> answerDTOList.add(this.mockDTO));
+    IntStream.range(0, 5).forEach(dto -> answerDTOList.add(mockDTO));
     answerDTOList.forEach(dto -> currentAndForecastAnswerService.saveWeather(dto));
     List<CurrentAndForecastAnswerDTO> justCreatedDTOs = new ArrayList<>();
     currentAndForecastAnswerRepository
@@ -122,8 +121,8 @@ class CurrentAndForecastAnswerServiceTest {
   }
 
   @Test
-  void testDeserializeDTO() throws IOException {
-    byte[] serializedDTO = SerializationUtils.serialize(this.mockDTO);
+  void testDeserializeDTO() {
+    byte[] serializedDTO = SerializationUtils.serialize(mockDTO);
     Assertions.assertNotNull(serializedDTO, "Failed to serialize the DTO");
     CurrentAndForecastAnswerDTO deserializedDTO =
         currentAndForecastAnswerService.deserializeDTO(serializedDTO);
@@ -133,7 +132,7 @@ class CurrentAndForecastAnswerServiceTest {
 
   @Test
   void testSerializeDTO() {
-    byte[] serializedDTO = currentAndForecastAnswerService.serializeDTO(this.mockDTO);
+    byte[] serializedDTO = currentAndForecastAnswerService.serializeDTO(mockDTO);
     Assertions.assertNotNull(serializedDTO, "Failed to serialize the DTO");
     CurrentAndForecastAnswerDTO retrievedDTO =
         currentAndForecastAnswerService.deserializeDTO(serializedDTO);
