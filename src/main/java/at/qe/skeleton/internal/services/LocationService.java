@@ -9,8 +9,12 @@ import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +35,6 @@ public class LocationService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocationService.class);
 
-  public LocationAnswerDTO callApi(@NotNull String locationName) throws FailedApiRequest {
-    try {
-      return geocodingApiRequestService.retrieveLocationLonLat(locationName);
-    } catch (final Exception e) {
-      String errorMessage =
-          "An error occurred in the Geocoding api call with %s as the searched location"
-              .formatted(locationName);
-      LOGGER.error(errorMessage, e);
-      throw new FailedApiRequest(errorMessage);
-    }
   /**
    * Calls the GeocodingApiRequestService. you can specifiy how many Locations you want to get back
    * at max by the api. the maximum of locations you can get back is 5. The minimum is 1. The method
@@ -51,9 +45,17 @@ public class LocationService {
    * @param limit the limit of locations you want to retrieve from api
    * @return List of {@link LocationAnswerDTO}.
    */
-  public List<LocationAnswerDTO> callApi(
-      @NotNull String locationName, @NotNull @Min(1) @Max(5) int limit) {
-    return geocodingApiRequestService.retrieveLocationsLonLat(locationName, limit);
+  public List<LocationAnswerDTO> callApi(@NotNull String locationName, @Min(1) @Max(5) int limit)
+      throws FailedApiRequest {
+    try {
+      return geocodingApiRequestService.retrieveLocationsLonLat(locationName, limit);
+    } catch (final Exception e) {
+      String errorMessage =
+          "An error occurred in the Geocoding api call with %s as the searched location"
+              .formatted(locationName);
+      LOGGER.error(errorMessage, e);
+      throw new FailedApiRequest(errorMessage);
+    }
   }
 
   /**

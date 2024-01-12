@@ -7,6 +7,7 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.CurrentAndForecastAnswerService;
 import at.qe.skeleton.internal.services.LocationService;
 import at.qe.skeleton.internal.services.LocationServiceTest;
+import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.ui.beans.WeatherApiDemoBean;
 import at.qe.skeleton.internal.ui.controllers.AutoCompleteController;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -64,7 +65,7 @@ public class AutocompletionTest {
   // and country
   // of that Location
   @Test
-  public void autoCompleteLocationTest() {
+  public void autoCompleteLocationTest() throws FailedApiRequest {
     String query = "Rom";
     String queryToLowerCase = query.toLowerCase();
 

@@ -5,6 +5,11 @@ import at.qe.skeleton.external.services.GeocodingApiRequestService;
 import at.qe.skeleton.external.services.WeatherApiRequestService;
 import at.qe.skeleton.internal.services.CurrentAndForecastAnswerService;
 import at.qe.skeleton.internal.services.LocationService;
+import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +28,8 @@ public class AutoCompleteController {
   LocationService locationService;
   CurrentAndForecastAnswerService currentAndForecastAnswerService;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(AutoCompleteController.class);
+
   public AutoCompleteController(
       LocationService locationService,
       CurrentAndForecastAnswerService currentAndForecastAnswerService) {
@@ -40,10 +47,30 @@ public class AutoCompleteController {
    *     including name, country and state
    */
   public List<String> autoCompleteLocation(String query) {
-    String queryLowerCase = query.toLowerCase();
-    List<LocationAnswerDTO> locationAnswerDTOList = locationService.callApi(queryLowerCase, 5);
-
-    return locationAnswerDTOList.stream().map(this::retrieveLocationName).toList();
+    try {
+      String queryLowerCase = query.toLowerCase();
+      List<LocationAnswerDTO> locationAnswerDTOList = locationService.callApi(queryLowerCase, 5);
+      return locationAnswerDTOList.stream().map(this::retrieveLocationName).toList();
+    }
+    // todo: we already use this exact code piece twice, will need it probably more often,
+    // should make a seperate method for it, refactor it.
+    catch (FailedApiRequest e) {
+      FacesContext.getCurrentInstance()
+          .addMessage(
+              "searchError",
+              new FacesMessage(
+                  FacesMessage.SEVERITY_WARN,
+                  "There was an error in an api request",
+                  e.getMessage()));
+      LOGGER.error(e.getMessage());
+      // todo: think about return type.
+      return new ArrayList<>();
+    }
+    // todo: introduce custom Exception for empty location list from api
+    catch (Exception e) {
+      LOGGER.info(e.getMessage());
+      return new ArrayList<>();
+    }
   }
 
   private String retrieveLocationName(LocationAnswerDTO locationDTO) {

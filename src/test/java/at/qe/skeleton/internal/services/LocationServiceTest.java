@@ -40,16 +40,11 @@ public class LocationServiceTest {
 
   private static LocationAnswerDTO locationDtoInnsbruck;
   private static List<LocationAnswerDTO> locationDtoListInnsbruck;
-  private static LocationAnswerDTO locationDtoInnsbruck;
   private static List<LocationAnswerDTO> locationDtoListMunich;
   private static LocationAnswerDTO locationDtoMunich;
 
-  private static ObjectMapper mapper;
   private static CurrentAndForecastAnswerDTO weatherDtoMunich;
   private static CurrentAndForecastAnswerDTO weatherDtoInnsbruck;
-
-  private static LocationAnswerDTO locationDtoMunich;
-  private static CurrentAndForecastAnswerDTO weatherDtoMunich;
 
   @BeforeAll
   public static void setUp() throws IOException {
@@ -220,19 +215,17 @@ public class LocationServiceTest {
     CurrentAndForecastAnswerDTO searchedMockDTO = weatherDtoInnsbruck;
     LocationAnswerDTO searchedLocationDTO = locationDtoInnsbruck;
     byte[] serializedWeatherBlob = SerializationUtils.serialize(searchedMockDTO);
-
     CurrentAndForecastAnswer currentAndForecastAnswer = new CurrentAndForecastAnswer();
     currentAndForecastAnswer.setWeatherData(serializedWeatherBlob);
-
     Location location = getMockLocation(searchedLocationDTO);
     location.setWeather(currentAndForecastAnswer);
 
-    byte[] updatedSerializedWeatherBlob = SerializationUtils.serialize("updated");
-
-    currentAndForecastAnswer.setWeatherData(updatedSerializedWeatherBlob);
     // check that weather in Location Object has indeed been set to weatherBlob
-    Assertions.assertEquals(weatherBlob, location.getWeather().getWeatherData());
+    Assertions.assertEquals(serializedWeatherBlob, location.getWeather().getWeatherData());
 
+    // update CurrentAndForecastAnswer
+    byte[] updatedSerializedWeatherBlob = SerializationUtils.serialize("updated");
+    currentAndForecastAnswer.setWeatherData(updatedSerializedWeatherBlob);
     currentAndForecastAnswer.setWeatherData(updatedSerializedWeatherBlob);
     Location updatedLocation =
         locationService.updateLocationWeather(location, currentAndForecastAnswer);
@@ -244,7 +237,8 @@ public class LocationServiceTest {
     // make sure that the updated Location has changed together with currentAndForeCastAnswer and
     // holds indeed the updated weatherBlob
     Assertions.assertEquals(currentAndForecastAnswer, updatedLocation.getWeather());
-    Assertions.assertEquals(updatedWeatherBlob, updatedLocation.getWeather().getWeatherData());
+    Assertions.assertEquals(
+        updatedSerializedWeatherBlob, updatedLocation.getWeather().getWeatherData());
   }
 
   @Test
