@@ -1,22 +1,53 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
+    <!--PrimeFaces is a UI components library over the JSF framework (7 JavaServer Faces Technology).
+    It has things like date pickers, data grids, graphics, carousels, etc.
+    So many of the configurations and the coding has actually more to do with JSF -->
 
+
+    <!--Explanation of sequence of Events in frontend:
+    Here's a simplified sequence of events:
+
+    1. User clicks the "CommitSearchRequest" button.
+    2. The performLocationSearch method is invoked, updating the latitude and longitude values in WeatherApiDemoBean.
+    3. The performWeatherApiRequest method is called directly within the commandButton action, and it can access the updated latitude and longitude values from WeatherApiDemoBean.
+    4. Both methods execute within the same request-response cycle, so the bean state is available and consistent throughout.
+
+    Since the view scope keeps the bean alive for the duration of the user's interaction with a specific view,
+    both methods (performLocationSearch and performWeatherApiRequest) will operate on the same instance of the bean
+    during the same view lifecycle.
+    Therefore, any changes made in one method will be reflected in the other within the same view scope.
+    -->
     <ui:define name="content">
-        <h:form>
-            <p:panel header="Request">
+        <h:form id="weatherForm">
+            <p:panel header="Location Search">
+                <!-- find out what happens with this input value -> it gets converted twice somehow..-->
+                <p:inputText value="#{weatherApiDemoBean.locationSearchInput}" style="margin-right: 15px"/>
+                <p:commandButton id="locationSearch" value="CommitSearchRequest"
+                                 action="#{weatherApiDemoBean.performLocationSearch()}"
+                                 update=":weatherForm"/>
+                <br/>
+                <p:messages id="messages" showDetail="true" closable="true"/>
+            </p:panel>
+            <br/>
+            <p:panel header="Request" id="Request">
                 <div style="height: 50px">
+                    Location searched for: #{weatherApiDemoBean.locationSearchInput}. <br/>
+                    resulting api call to weatherApi:
                     https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value
                 </div>
             </p:panel>
-            <p:panel header="Response">
+            <br/>
+            <p:panel header="Response" id="Response">
                 <div>
-                    <h:outputText escape="false" value="#{weatherApiDemoBean.currentWeather}"/>
+                    <h:outputText escape="false" value="#{weatherApiDemoBean.searchedWeather}"/>
                 </div>
             </p:panel>
         </h:form>

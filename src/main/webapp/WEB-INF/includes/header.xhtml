@@ -14,10 +14,6 @@
                 <p:menuitem value="Registered User Action 1 - 1"/>
                 <p:menuitem value="Registered User Action 1 - 2"/>
             </p:submenu>
-            <p:submenu label="User Submenu 2" rendered="#{sessionInfoBean.hasRole('REGISTERED_USER')}">
-                <p:menuitem value="Registered User Action 2 - 1"/>
-                <p:menuitem value="Registered User Action 2 - 2"/>
-            </p:submenu>
             <p:submenu label="Manager Submenu" rendered="#{sessionInfoBean.hasRole('MANAGER')}">
                 <p:menuitem value="Manager Action 1"/>
                 <p:menuitem value="Manager Action 2"/>
@@ -32,6 +28,7 @@
 
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
+            <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
 
         </p:menubar>
     </h:form>

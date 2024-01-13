@@ -1,0 +1,43 @@
+[
+  {
+    "name": "Innsbruck",
+    "local_names": {
+      "en": "Innsbruck",
+      "cs": "Innsbruck",
+      "de": "Innsbruck",
+      "lv": "Insbruka",
+      "az": "İnsbruk",
+      "la": "Pons Aeni",
+      "ka": "ინსბრუკი",
+      "sr": "Инзбрук",
+      "th": "อินส์บรุค",
+      "bn": "ইন্সব্রুক",
+      "fr": "Innsbruck",
+      "he": "אינסברוק",
+      "fa": "اینسبروک",
+      "ko": "인스브루크",
+      "it": "Innsbruck",
+      "mr": "इन्सब्रुक",
+      "rm": "Puntina",
+      "ja": "インスブルック",
+      "cv": "Инсбрук",
+      "tr": "İnnsbruck",
+      "lt": "Insbrukas",
+      "hu": "Innsbruck",
+      "ru": "Инсбрук",
+      "uk": "Інсбрук",
+      "bg": "Инсбрук",
+      "be": "Інсбрук",
+      "mk": "Инсбрук",
+      "os": "Инсбрук",
+      "ar": "إنسبروك",
+      "el": "Ίνσμπρουκ",
+      "kk": "Инсбрук",
+      "zh": "因斯布鲁克"
+    },
+    "lat": 47.2654296,
+    "lon": 11.3927685,
+    "country": "AT",
+    "state": "Tyrol"
+  }
+]
