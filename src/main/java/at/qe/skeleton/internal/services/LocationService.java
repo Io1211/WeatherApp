@@ -9,6 +9,7 @@ import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
+import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -47,9 +48,12 @@ public class LocationService {
    * @return List of {@link LocationAnswerDTO}.
    */
   public List<LocationAnswerDTO> callApi(@NotNull String locationName, @Min(1) @Max(5) int limit)
-      throws FailedApiRequest {
+      throws FailedApiRequest, GeocodingApiReturnedEmptyListException {
     try {
       return geocodingApiRequestService.retrieveLocationsLonLat(locationName, limit);
+    } catch (GeocodingApiReturnedEmptyListException e) {
+      LOGGER.info(e.getMessage());
+      throw new GeocodingApiReturnedEmptyListException(e.getMessage());
     } catch (final Exception e) {
       String errorMessage =
           "An error occurred in the Geocoding api call with %s as the searched location"
