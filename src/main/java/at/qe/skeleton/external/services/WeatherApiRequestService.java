@@ -27,8 +27,6 @@ public class WeatherApiRequestService {
 
   private static final String LATITUDE_PARAMETER = "lat";
 
-  private static final String LIMIT_PARAMETER = "limit";
-
   private final RestClient restClient;
 
   @Autowired
