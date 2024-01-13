@@ -29,8 +29,11 @@
     <ui:define name="content">
         <h:form id="weatherForm">
             <p:panel header="Location Search">
+
                 <p:autoComplete id="LocationAutoComplete" value="#{weatherApiDemoBean.locationSearchInput}"
                                 completeMethod="#{autoCompleteController.autoCompleteLocation}"/>
+                <br/>
+                <p:messages id="messages" showDetail="true" closable="true"/>
             </p:panel>
             <p:commandButton value="CommitSearchRequest" id="commitSearchRequest"
                              action="#{weatherApiDemoBean.performLocationAndWeatherSearch()}"
@@ -44,6 +47,7 @@
                     https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.location.id.latitude}&amp;lon=#{weatherApiDemoBean.location.id.longitude}&amp;appid=passwort
                 </div>
             </p:panel>
+            <br/>
             <p:panel header="Response" id="Response" rendered="#{weatherApiDemoBean.isLocationAnswerDTOReady}">
                 <div>
                     <h4>Location searched for:

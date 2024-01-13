@@ -71,7 +71,7 @@ public class WeatherApiDemoBean {
           .addMessage(
               "searchError",
               new FacesMessage(
-                  FacesMessage.SEVERITY_WARN,
+                  FacesMessage.SEVERITY_ERROR,
                   "There was an error in an api request",
                   e.getMessage()));
       LOGGER.error(e.getMessage());

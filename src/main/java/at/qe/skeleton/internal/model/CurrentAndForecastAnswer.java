@@ -15,6 +15,17 @@ public class CurrentAndForecastAnswer implements Persistable<Long>, Serializable
 
   @Lob private byte[] weatherData;
 
+  @OneToOne(mappedBy = "weather", cascade = CascadeType.ALL)
+  private Location location;
+
+  public Location getLocation() {
+    return location;
+  }
+
+  public void setLocation(Location location) {
+    this.location = location;
+  }
+
   public ZonedDateTime getTimestampLastCall() {
     return timestampLastCall;
   }
