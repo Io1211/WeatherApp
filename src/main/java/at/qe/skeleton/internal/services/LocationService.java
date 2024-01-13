@@ -52,8 +52,7 @@ public class LocationService {
     try {
       return geocodingApiRequestService.retrieveLocationsLonLat(locationName, limit);
     } catch (GeocodingApiReturnedEmptyListException e) {
-      LOGGER.info(e.getMessage());
-      throw new GeocodingApiReturnedEmptyListException(e.getMessage());
+      throw e;
     } catch (final Exception e) {
       String errorMessage =
           "An error occurred in the Geocoding api call with %s as the searched location"
@@ -75,7 +74,8 @@ public class LocationService {
    * @param locationSearchString the name of the location
    * @return a location with weather-data not older than the last full hour.
    */
-  public Location handleLocationSearch(String locationSearchString) throws FailedApiRequest {
+  public Location handleLocationSearch(String locationSearchString)
+      throws FailedApiRequest, GeocodingApiReturnedEmptyListException {
     // This method covers 3 cases:
     // 1. The searched location is already persisted and has up-to-date weather data.
     // 2. The searched location is already persisted but the weather data is out of date.
