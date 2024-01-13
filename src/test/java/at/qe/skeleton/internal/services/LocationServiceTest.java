@@ -186,6 +186,12 @@ public class LocationServiceTest {
         1,
         locationRepository.findAll().size(),
         "the database should still only contain 1 location entity, which has now been updated");
+    // verify that there is only 1 Weather entity in db (the old one should be deleted upon the
+    // update)
+    Assertions.assertEquals(
+        1,
+        currentAndForecastAnswerRepository.findAll().size(),
+        "the database should only contain 1 weather entity. The old one should be deleted in the update");
     // verify that the timestamp is now current:
     Assertions.assertTrue(
         locationCase3
