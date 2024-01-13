@@ -1,8 +1,6 @@
 package at.qe.skeleton.internal.ui.controllers;
 
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
-import at.qe.skeleton.external.services.GeocodingApiRequestService;
-import at.qe.skeleton.external.services.WeatherApiRequestService;
 import at.qe.skeleton.internal.services.CurrentAndForecastAnswerService;
 import at.qe.skeleton.internal.services.LocationService;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
@@ -63,12 +61,8 @@ public class AutoCompleteController {
                   "There was an error in an api request",
                   e.getMessage()));
       LOGGER.error(e.getMessage());
-      // todo: think about return type.
       return new ArrayList<>();
-    }
-    // todo: introduce custom Exception for empty location list from api
-    catch (Exception e) {
-      LOGGER.info(e.getMessage());
+    } catch (Exception e) {
       return new ArrayList<>();
     }
   }

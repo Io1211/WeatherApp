@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
+import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import at.qe.skeleton.internal.model.Location;
@@ -8,16 +9,9 @@ import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -53,8 +47,6 @@ public class WeatherApiDemoBean {
     return isLocationAnswerDTOReady;
   }
 
-
-
   public String getLocationSearchInput() {
     return locationSearchInput;
   }
@@ -69,35 +61,45 @@ public class WeatherApiDemoBean {
     } catch (FailedApiRequest e) {
       FacesContext.getCurrentInstance()
           .addMessage(
-              "searchError",
+              null,
               new FacesMessage(
                   FacesMessage.SEVERITY_ERROR,
-                  "There was an error in an api request",
+                  "There was an error in an api request: ",
                   e.getMessage()));
       LOGGER.error(e.getMessage());
+      return;
+    } catch (GeocodingApiReturnedEmptyListException e) {
+      FacesContext.getCurrentInstance()
+          .addMessage(
+              "weatherForm:locationSearch",
+              new FacesMessage(
+                  FacesMessage.SEVERITY_INFO,
+                  "",
+                  "Sorry, we could´nt find a location with the name: `%s`"
+                      .formatted(locationSearchInput)));
       return;
     }
     this.weatherDTO =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
- this.isLocationAnswerDTOReady = true;
+    this.isLocationAnswerDTOReady = true;
   }
 
-    public String getSunsetString() {
-        Instant sunsetInstant = this.weatherDTO.currentWeather().sunset();
-        String apiResponseTimezone = this.weatherDTO.timezone();
-        ZoneId utcZoneId = ZoneId.of(apiResponseTimezone);
-        ZonedDateTime sunsetInDesiredZone = sunsetInstant.atZone(utcZoneId);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        return sunsetInDesiredZone.format(formatter);
-    }
+  public String getSunsetString() {
+    Instant sunsetInstant = this.weatherDTO.currentWeather().sunset();
+    String apiResponseTimezone = this.weatherDTO.timezone();
+    ZoneId utcZoneId = ZoneId.of(apiResponseTimezone);
+    ZonedDateTime sunsetInDesiredZone = sunsetInstant.atZone(utcZoneId);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    return sunsetInDesiredZone.format(formatter);
+  }
 
-    public Location getLocation() {
-        return location;
-    }
+  public Location getLocation() {
+    return location;
+  }
 
-    public CurrentAndForecastAnswerDTO getWeatherDTO() {
-        return weatherDTO;
-    }
+  public CurrentAndForecastAnswerDTO getWeatherDTO() {
+    return weatherDTO;
+  }
 
   public String getSearchedWeather() {
     return searchedWeather;
@@ -107,10 +109,9 @@ public class WeatherApiDemoBean {
     this.searchedWeather = searchedWeather;
   }
 
-
-    public void setWeatherDTO(CurrentAndForecastAnswerDTO weatherDTO) {
-        this.weatherDTO = weatherDTO;
-    }
+  public void setWeatherDTO(CurrentAndForecastAnswerDTO weatherDTO) {
+    this.weatherDTO = weatherDTO;
+  }
 }
 
 // todo: introduce error handling
