@@ -79,7 +79,7 @@ public class LocationServiceTest {
   /**
    * Takes a LocationAnswerDTO and builds a Mock Location out of it.
    *
-   * @param locationAnswerDTO
+   * @param locationAnswerDTO the locationDTO with which to creat a MockLocation for Testing.
    * @return mock Location
    */
   public Location getMockLocation(LocationAnswerDTO locationAnswerDTO) {
@@ -134,7 +134,7 @@ public class LocationServiceTest {
 
     // mocking the answers for innsbruck (without Precipitation)
     when(mockedGeocodingRequestService.retrieveLocationsLonLat(searchedLocationName, 1))
-        .thenReturn(locationDtoListInnsbruck);
+        .thenReturn(locationDtoListMunich);
     when(mockedWeatherApiRequestService.retrieveCurrentAndForecastWeather(
             searchedLatitude, searchedLongitude))
         .thenReturn(searchedMockWeather);

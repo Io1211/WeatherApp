@@ -38,7 +38,6 @@ public class LocationSearchTest {
 
   @InjectMocks WeatherApiDemoBean weatherApiDemoBean;
 
-  LocationServiceTest locationServiceTest = new LocationServiceTest();
   static LocationAnswerDTO locationDtoInnsbruck;
   static CurrentAndForecastAnswerDTO weatherDtoInnsbruck;
   static ObjectMapper mapper;
@@ -58,9 +57,7 @@ public class LocationSearchTest {
             new TypeReference<>() {});
   }
 
-  private Location getMockLocation(
-      LocationAnswerDTO locationAnswerDTO, CurrentAndForecastAnswerDTO weatherDTO)
-      throws Exception {
+  private Location getMockLocation(LocationAnswerDTO locationAnswerDTO) throws Exception {
     Location location = new Location();
     // first create CurrentAndForeCastAnswer
     byte[] weatherBlob = mapper.writeValueAsBytes(locationAnswerDTO);
@@ -80,19 +77,19 @@ public class LocationSearchTest {
   @Test
   public void testPerformLocationAndWeatherSearch() throws Exception {
     String searchString = "Innsbruck";
-    Location locationMock = getMockLocation(locationDtoInnsbruck, weatherDtoInnsbruck);
+    Location locationMock = getMockLocation(locationDtoInnsbruck);
 
     // setting up mocks
-    when(locationServiceMock.handleLocationAndWeatherSearch(searchString)).thenReturn(locationMock);
+    when(locationServiceMock.handleLocationSearch(searchString)).thenReturn(locationMock);
     when(currentAndForecastAnswerService.deserializeDTO(locationMock.getWeather().getWeatherData()))
         .thenReturn(weatherDtoInnsbruck);
 
     // preparing weatherApiDemoBean
     this.weatherApiDemoBean.setLocationSearchInput(searchString);
-    this.weatherApiDemoBean.performLocationAndWeatherSearch();
+    this.weatherApiDemoBean.performLocationSearch();
 
     // the actual test
-    verify(locationServiceMock, times(1)).handleLocationAndWeatherSearch(searchString);
+    verify(locationServiceMock, times(1)).handleLocationSearch(searchString);
     Assertions.assertEquals(weatherDtoInnsbruck, weatherApiDemoBean.getWeatherDTO());
   }
 
