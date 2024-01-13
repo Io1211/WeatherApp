@@ -1,7 +1,9 @@
 package at.qe.skeleton.internal.services;
 
+import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.UserxRepository;
+import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -10,9 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.util.Collection;
 
 /**
  * Service for accessing and manipulating user data.
@@ -76,6 +75,28 @@ public class UserxService {
 
   public void setPasswordEncoded(Userx user, String password) {
     user.setPassword(passwordEncoder.encode(password));
+    userRepository.save(user);
+  }
+
+  @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #user.username")
+  public void toggleFavorite(Userx user, Favorite favorite) {
+    var existingFavorite =
+        user.getFavorites().stream()
+            .filter(x -> x.getLocation() == favorite.getLocation())
+            .findAny();
+
+    if (existingFavorite.isPresent()) {
+      user.getFavorites().remove(favorite);
+    } else {
+      user.getFavorites().add(favorite);
+    }
+
+    //    if (user.getFavorites().stream().anyMatch(x -> x.getLocation() == favorite.getLocation()))
+    // {
+    //      user.getFavorites().remove(favorite);
+    //    } else {
+    //      user.getFavorites().add(favorite);
+    //    }
     userRepository.save(user);
   }
 

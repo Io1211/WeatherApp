@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
+import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
@@ -10,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,6 +29,8 @@ public class WeatherApiDemoBean {
 
   @Autowired private LocationService locationService;
 
+  @Autowired private UserxService userxService;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
   private String searchedWeather;
@@ -36,6 +41,8 @@ public class WeatherApiDemoBean {
 
   private double longitude;
 
+  private Location location;
+
   public String getLocationSearchInput() {
     return locationSearchInput;
   }
@@ -45,7 +52,6 @@ public class WeatherApiDemoBean {
   }
 
   public void performLocationSearch() {
-    Location location = null;
     try {
       location = locationService.handleLocationSearch(locationSearchInput);
     } catch (FailedApiRequest e) {
@@ -68,6 +74,19 @@ public class WeatherApiDemoBean {
             + "Weather: Lon - %s\tLat - %s<br>".formatted(weather.longitude(), weather.latitude())
             + "Description: %s<br>".formatted(weather.currentWeather().weather().description())
             + "Title      : %s<br><br>".formatted(weather.currentWeather().weather().title());
+  }
+
+  public void toggleFavorite() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    var user = this.userxService.loadUser(auth.getName());
+
+    var favorite = new Favorite();
+    favorite.setLocation(this.location);
+    favorite.setPriority(0);
+
+    System.out.println(favorite);
+
+    this.userxService.toggleFavorite(user, favorite);
   }
 
   public String getSearchedWeather() {
