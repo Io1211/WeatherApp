@@ -36,7 +36,7 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   @UpdateTimestamp private LocalDateTime updateDate;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
   private Set<Favorite> favorites;
 
   @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)

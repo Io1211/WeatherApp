@@ -76,15 +76,13 @@ public class WeatherApiDemoBean {
             + "Title      : %s<br><br>".formatted(weather.currentWeather().weather().title());
   }
 
+  // Todo: move this into the bean for the final location search
   public void toggleFavorite() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     var user = this.userxService.loadUser(auth.getName());
 
     var favorite = new Favorite();
     favorite.setLocation(this.location);
-    favorite.setPriority(0);
-
-    System.out.println(favorite);
 
     this.userxService.toggleFavorite(user, favorite);
   }

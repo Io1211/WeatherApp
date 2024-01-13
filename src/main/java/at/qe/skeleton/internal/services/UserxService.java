@@ -90,6 +90,8 @@ public class UserxService {
     if (existingFavorite.isPresent()) {
       user.getFavorites().remove(existingFavorite.get());
     } else {
+      // needed because of the bidirectional relationship
+      favorite.setUser(user);
       user.getFavorites().add(favorite);
     }
     userRepository.save(user);

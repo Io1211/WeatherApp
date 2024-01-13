@@ -1,11 +1,11 @@
 package at.qe.skeleton.internal.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
+
 import org.springframework.data.domain.Persistable;
 
 /** Entity to persist a users favorite locations */
@@ -19,6 +19,9 @@ public class Favorite implements Persistable<String>, Serializable {
 
   /** Used for ordering list of favorites */
   private Integer priority;
+
+  /** User who owns this favorite (bidirectional for setting the priority) */
+  @ManyToOne private Userx user;
 
   public void setLocation(Location location) {
     this.location = location;
@@ -34,6 +37,31 @@ public class Favorite implements Persistable<String>, Serializable {
 
   public Location getLocation() {
     return location;
+  }
+
+  public Userx getUser() {
+    return user;
+  }
+
+  public void setUser(Userx user) {
+    this.user = user;
+  }
+
+  @PrePersist
+  public void onCreate() {
+    if (this.user.getFavorites().size() == 1) {
+      this.priority = 0;
+    } else {
+
+      // set the newly created priority to the highest priority + 1
+      this.priority =
+          this.user.getFavorites().stream()
+                  .filter(x -> Objects.nonNull(x.getPriority())) // filter out new priority
+                  .mapToInt(Favorite::getPriority)
+                  .max()
+                  .orElse(0)
+              + 1;
+    }
   }
 
   @Override
