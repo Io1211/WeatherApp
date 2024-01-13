@@ -29,11 +29,14 @@
         <h:form id="weatherForm">
             <p:panel header="Location Search">
                 <!-- find out what happens with this input value -> it gets converted twice somehow..-->
-                <p:inputText value="#{weatherApiDemoBean.locationSearchInput}"/>
+                <p:inputText value="#{weatherApiDemoBean.locationSearchInput}" style="margin-right: 15px"/>
+                <p:commandButton id="locationSearch" value="CommitSearchRequest"
+                                 action="#{weatherApiDemoBean.performLocationSearch()}"
+                                 update=":weatherForm"/>
+                <br/>
+                <p:messages id="messages" showDetail="true" closable="true"/>
             </p:panel>
-            <p:commandButton value="CommitSearchRequest"
-                             action="#{weatherApiDemoBean.performLocationSearch()}"
-                             update=":weatherForm:Request, :weatherForm:Response"/>
+            <br/>
             <p:panel header="Request" id="Request">
                 <div style="height: 50px">
                     Location searched for: #{weatherApiDemoBean.locationSearchInput}. <br/>
@@ -41,6 +44,7 @@
                     https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value
                 </div>
             </p:panel>
+            <br/>
             <p:panel header="Response" id="Response">
                 <div>
                     <h:outputText escape="false" value="#{weatherApiDemoBean.searchedWeather}"/>
