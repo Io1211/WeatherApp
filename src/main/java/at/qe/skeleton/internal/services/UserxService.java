@@ -4,6 +4,8 @@ import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.UserxRepository;
 import java.util.Collection;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -82,21 +84,14 @@ public class UserxService {
   public void toggleFavorite(Userx user, Favorite favorite) {
     var existingFavorite =
         user.getFavorites().stream()
-            .filter(x -> x.getLocation() == favorite.getLocation())
+            .filter(x -> Objects.equals(x.getLocation().getId(), favorite.getLocation().getId()))
             .findAny();
 
     if (existingFavorite.isPresent()) {
-      user.getFavorites().remove(favorite);
+      user.getFavorites().remove(existingFavorite.get());
     } else {
       user.getFavorites().add(favorite);
     }
-
-    //    if (user.getFavorites().stream().anyMatch(x -> x.getLocation() == favorite.getLocation()))
-    // {
-    //      user.getFavorites().remove(favorite);
-    //    } else {
-    //      user.getFavorites().add(favorite);
-    //    }
     userRepository.save(user);
   }
 
