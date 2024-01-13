@@ -232,7 +232,6 @@ public class LocationServiceTest {
     // update CurrentAndForecastAnswer
     byte[] updatedSerializedWeatherBlob = SerializationUtils.serialize("updated");
     currentAndForecastAnswer.setWeatherData(updatedSerializedWeatherBlob);
-    currentAndForecastAnswer.setWeatherData(updatedSerializedWeatherBlob);
     Location updatedLocation =
         locationService.updateLocationWeather(location, currentAndForecastAnswer);
 
