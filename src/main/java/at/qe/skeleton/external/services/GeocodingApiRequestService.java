@@ -2,6 +2,8 @@ package at.qe.skeleton.external.services;
 
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
 import java.util.List;
+
+import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
