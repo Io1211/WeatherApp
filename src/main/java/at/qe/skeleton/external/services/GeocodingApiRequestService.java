@@ -1,8 +1,7 @@
 package at.qe.skeleton.external.services;
 
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
-
-import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
@@ -14,8 +13,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.List;
 
 @Scope("application")
 @Component
@@ -32,8 +29,6 @@ public class GeocodingApiRequestService {
 
   private static final String LOCATION_NAME = "q";
   private static final String LIMIT_OF_RESULTS = "limit";
-  private static final int LIMIT_VALUE = 5;
-
   private final RestClient restClient;
 
   @Autowired
@@ -56,7 +51,6 @@ public class GeocodingApiRequestService {
           HttpServerErrorException,
           GeocodingApiReturnedEmptyListException {
 
-    // todo: should we include country code or something in that method?
     ResponseEntity<List<LocationAnswerDTO>> responseEntity =
         this.restClient
             .get()
