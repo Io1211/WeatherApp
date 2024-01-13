@@ -2,6 +2,7 @@ package at.qe.skeleton.external.services;
 
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
 
+import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
@@ -51,7 +52,9 @@ public class GeocodingApiRequestService {
    *     name, country code and state(maybe null) of the location.
    */
   public List<LocationAnswerDTO> retrieveLocationsLonLat(String locationName, int limit)
-      throws RuntimeException {
+      throws HttpClientErrorException,
+          HttpServerErrorException,
+          GeocodingApiReturnedEmptyListException {
 
     // todo: should we include country code or something in that method?
     ResponseEntity<List<LocationAnswerDTO>> responseEntity =
@@ -85,9 +88,8 @@ public class GeocodingApiRequestService {
     if (locationAnswerList != null && !locationAnswerList.isEmpty()) {
       return locationAnswerList;
     } else {
-      // todo: think about error handling...
-      //  what if no search results from api? show error in frontend...
-      throw new RuntimeException("GeocodingApiRequest returned no LocationAnswerDTO");
+      throw new GeocodingApiReturnedEmptyListException(
+          "GeocodingApiRequest returned no LocationAnswerDTO");
     }
   }
 }
