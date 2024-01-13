@@ -9,8 +9,12 @@ import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +36,20 @@ public class LocationService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LocationService.class);
 
-  public LocationAnswerDTO callApi(@NotNull String locationName) throws FailedApiRequest {
+  /**
+   * Calls the GeocodingApiRequestService. you can specifiy how many Locations you want to get back
+   * at max by the api. the maximum of locations you can get back is 5. The minimum is 1. The method
+   * gives back a List of LocationAnswerDTOs. The reason why we give back a List and not a single
+   * object, is that it is needed for the autocompletion feature.
+   *
+   * @param locationName the name of the Location to be searched for
+   * @param limit the limit of locations you want to retrieve from api
+   * @return List of {@link LocationAnswerDTO}.
+   */
+  public List<LocationAnswerDTO> callApi(@NotNull String locationName, @Min(1) @Max(5) int limit)
+      throws FailedApiRequest {
     try {
-      return geocodingApiRequestService.retrieveLocationLonLat(locationName);
+      return geocodingApiRequestService.retrieveLocationsLonLat(locationName, limit);
     } catch (final Exception e) {
       String errorMessage =
           "An error occurred in the Geocoding api call with %s as the searched location"
@@ -61,7 +76,7 @@ public class LocationService {
     // 1. The searched location is already persisted and has up-to-date weather data.
     // 2. The searched location is already persisted but the weather data is out of date.
     // 3. The searched location does not exist in the database yet.
-    LocationAnswerDTO locationAnswerDTO = callApi(locationSearchString);
+    LocationAnswerDTO locationAnswerDTO = callApi(locationSearchString, 1).get(0);
     // Case 1:
     if (locationAlreadyPersisted(locationAnswerDTO)) {
       Location location = getLocation(locationAnswerDTO);

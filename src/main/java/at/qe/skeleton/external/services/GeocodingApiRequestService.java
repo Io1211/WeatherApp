@@ -1,7 +1,7 @@
 package at.qe.skeleton.external.services;
 
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
-
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,8 +13,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.List;
 
 @Scope("application")
 @Component
@@ -31,8 +29,6 @@ public class GeocodingApiRequestService {
 
   private static final String LOCATION_NAME = "q";
   private static final String LIMIT_OF_RESULTS = "limit";
-  private static final int LIMIT_VALUE = 1;
-
   private final RestClient restClient;
 
   @Autowired
@@ -45,10 +41,13 @@ public class GeocodingApiRequestService {
    * zip/post code <br>
    * <br>
    *
-   * @param locationName that is coming from UI. Can include country code and state after comma.
-   * @return langitude & latitude of the location
+   * @param locationName to search for
+   * @param limit limit of locations that should be returned from ui
+   * @return A list of LocationAnswerDTO objects containing the longitude and latitude, as well as
+   *     name, country code and state(maybe null) of the location.
    */
-  public LocationAnswerDTO retrieveLocationLonLat(String locationName) throws RuntimeException {
+  public List<LocationAnswerDTO> retrieveLocationsLonLat(String locationName, int limit)
+      throws RuntimeException {
 
     // todo: should we include country code or something in that method?
     ResponseEntity<List<LocationAnswerDTO>> responseEntity =
@@ -57,7 +56,7 @@ public class GeocodingApiRequestService {
             .uri(
                 UriComponentsBuilder.fromPath(GEOCODING_URI)
                     .queryParam(LOCATION_NAME, locationName)
-                    .queryParam(LIMIT_OF_RESULTS, String.valueOf(LIMIT_VALUE))
+                    .queryParam(LIMIT_OF_RESULTS, String.valueOf(limit))
                     .build()
                     .toUriString())
             .retrieve()
@@ -80,7 +79,7 @@ public class GeocodingApiRequestService {
     // the DTO
     List<LocationAnswerDTO> locationAnswerList = responseEntity.getBody();
     if (locationAnswerList != null && !locationAnswerList.isEmpty()) {
-      return locationAnswerList.get(0);
+      return locationAnswerList;
     } else {
       // todo: think about error handling...
       //  what if no search results from api? show error in frontend...

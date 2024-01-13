@@ -4,6 +4,7 @@
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
@@ -28,26 +29,47 @@
     <ui:define name="content">
         <h:form id="weatherForm">
             <p:panel header="Location Search">
-                <!-- find out what happens with this input value -> it gets converted twice somehow..-->
-                <p:inputText value="#{weatherApiDemoBean.locationSearchInput}" style="margin-right: 15px"/>
-                <p:commandButton id="locationSearch" value="CommitSearchRequest"
-                                 action="#{weatherApiDemoBean.performLocationSearch()}"
-                                 update=":weatherForm"/>
+
+                <p:autoComplete id="LocationAutoComplete" value="#{weatherApiDemoBean.locationSearchInput}"
+                                completeMethod="#{autoCompleteController.autoCompleteLocation}"/>
                 <br/>
                 <p:messages id="messages" showDetail="true" closable="true"/>
             </p:panel>
-            <br/>
+            <p:commandButton value="CommitSearchRequest" id="commitSearchRequest"
+                             action="#{weatherApiDemoBean.performLocationSearch()}"
+                             update="weatherForm">
+            </p:commandButton>
+
             <p:panel header="Request" id="Request">
                 <div style="height: 50px">
-                    Location searched for: #{weatherApiDemoBean.locationSearchInput}. <br/>
+
                     resulting api call to weatherApi:
-                    https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.latitude}&amp;lon=#{weatherApiDemoBean.longitude}&amp;appid=value
+                    https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.location.id.latitude}&amp;lon=#{weatherApiDemoBean.location.id.longitude}&amp;appid=passwort
                 </div>
             </p:panel>
             <br/>
-            <p:panel header="Response" id="Response">
+            <p:panel header="Response" id="Response" rendered="#{weatherApiDemoBean.isLocationAnswerDTOReady}">
                 <div>
-                    <h:outputText escape="false" value="#{weatherApiDemoBean.searchedWeather}"/>
+                    <h4>Location searched for:
+                        #{weatherApiDemoBean.location.city},
+                        #{weatherApiDemoBean.location.country}
+                        <!-- check wether this gets rendered even when state is null-->
+                        <h:outputText value=",#{weatherApiDemoBean.location.state}"
+                                      rendered="#{not empty weatherApiDemoBean.location.state}"/>
+                    </h4>
+                    <br/>
+                    <h5 style="margin-top:0">Current Weather</h5>
+                    <h:panelGrid columns="2">
+                        <h:outputText value="Weather Description"/>
+                        <h:outputText
+                                value="#{weatherApiDemoBean.weatherDTO.currentWeather().weather().description()}"/>
+                        <h:outputText value="Temperature"/>
+                        <h:outputText
+                                value="#{weatherApiDemoBean.weatherDTO.currentWeather().temperature()}"/>
+                        <h:outputText value="Sunset"/>
+                        <h:outputText
+                                value="#{weatherApiDemoBean.sunsetString}"/>
+                    </h:panelGrid>
                 </div>
             </p:panel>
         </h:form>

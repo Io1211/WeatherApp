@@ -1,6 +1,8 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
@@ -11,6 +13,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
@@ -32,9 +44,16 @@ public class WeatherApiDemoBean {
 
   private String locationSearchInput;
 
-  private double latitude;
+  private Location location;
+  private CurrentAndForecastAnswerDTO weatherDTO;
 
-  private double longitude;
+  private boolean isLocationAnswerDTOReady = false;
+
+  public boolean getIsLocationAnswerDTOReady() {
+    return isLocationAnswerDTOReady;
+  }
+
+
 
   public String getLocationSearchInput() {
     return locationSearchInput;
@@ -45,9 +64,8 @@ public class WeatherApiDemoBean {
   }
 
   public void performLocationSearch() {
-    Location location = null;
     try {
-      location = locationService.handleLocationSearch(locationSearchInput);
+      this.location = locationService.handleLocationSearch(locationSearchInput);
     } catch (FailedApiRequest e) {
       FacesContext.getCurrentInstance()
           .addMessage(
@@ -59,16 +77,27 @@ public class WeatherApiDemoBean {
       LOGGER.error(e.getMessage());
       return;
     }
-    CurrentAndForecastAnswerDTO weather =
+    this.weatherDTO =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
-    this.latitude = weather.latitude();
-    this.longitude = weather.longitude();
-    this.searchedWeather =
-        "City: %s<br>".formatted(location.getCity())
-            + "Weather: Lon - %s\tLat - %s<br>".formatted(weather.longitude(), weather.latitude())
-            + "Description: %s<br>".formatted(weather.currentWeather().weather().description())
-            + "Title      : %s<br><br>".formatted(weather.currentWeather().weather().title());
+ this.isLocationAnswerDTOReady = true;
   }
+
+    public String getSunsetString() {
+        Instant sunsetInstant = this.weatherDTO.currentWeather().sunset();
+        String apiResponseTimezone = this.weatherDTO.timezone();
+        ZoneId utcZoneId = ZoneId.of(apiResponseTimezone);
+        ZonedDateTime sunsetInDesiredZone = sunsetInstant.atZone(utcZoneId);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        return sunsetInDesiredZone.format(formatter);
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public CurrentAndForecastAnswerDTO getWeatherDTO() {
+        return weatherDTO;
+    }
 
   public String getSearchedWeather() {
     return searchedWeather;
@@ -78,19 +107,10 @@ public class WeatherApiDemoBean {
     this.searchedWeather = searchedWeather;
   }
 
-  public double getLatitude() {
-    return latitude;
-  }
 
-  public void setLatitude(double latitude) {
-    this.latitude = latitude;
-  }
-
-  public double getLongitude() {
-    return longitude;
-  }
-
-  public void setLongitude(double longitude) {
-    this.longitude = longitude;
-  }
+    public void setWeatherDTO(CurrentAndForecastAnswerDTO weatherDTO) {
+        this.weatherDTO = weatherDTO;
+    }
 }
+
+// todo: introduce error handling

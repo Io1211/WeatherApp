@@ -28,6 +28,7 @@ class GeocodingApiLocationDtoTest {
   private static String apiResponseStringWoergl;
   private static String apiResponseStringIbk;
   private static GeocodingApiRequestService geocodingApiRequestService;
+  private static final int LIMIT = 1;
 
   @BeforeAll
   static void prepareApiTestEnvironment() throws Exception {
@@ -61,13 +62,14 @@ class GeocodingApiLocationDtoTest {
 
   @Test
   public void GeocodingApiServiceBuildsAndCallsCorrectURI() {
+
     // setting which call should be expected by Mockserver and how he responds.
     mockServer
-        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
+        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=" + LIMIT))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
     // naking the api-request
-    geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
+    geocodingApiRequestService.retrieveLocationsLonLat("Innsbruck", LIMIT);
 
     // the actual test: verifying if request reached the expected URI
     mockServer.verify();
@@ -76,7 +78,7 @@ class GeocodingApiLocationDtoTest {
   @Test
   public void geocodingApiServiceBuildsCorrectDtoObjectFromApiResponse() {
     mockServer
-        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
+        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=" + LIMIT))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
 
@@ -84,7 +86,7 @@ class GeocodingApiLocationDtoTest {
         new GeocodingApiRequestService(testRestClient);
 
     LocationAnswerDTO actualLocationAnswerDTO =
-        geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
+        geocodingApiRequestService.retrieveLocationsLonLat("Innsbruck", LIMIT).get(0);
 
     mockServer.verify();
     Assertions.assertEquals("Innsbruck", actualLocationAnswerDTO.name());
@@ -103,9 +105,10 @@ class GeocodingApiLocationDtoTest {
   public void geocodingApiServiceBuildsCorrectUrlAndDtoWithEncoding() {
     // Wörgl is being encoded to URL compatible message with UTF-8 as Base to W%C3%B6rgl
     String locationName = "Wörgl";
+
     String locationNameEncoded = URLEncoder.encode(locationName, StandardCharsets.UTF_8);
     mockServer
-        .expect(requestTo("/geo/1.0/direct?q=" + locationNameEncoded + "&limit=1"))
+        .expect(requestTo("/geo/1.0/direct?q=" + locationNameEncoded + "&limit=" + LIMIT))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringWoergl, MediaType.APPLICATION_JSON));
 
@@ -114,7 +117,7 @@ class GeocodingApiLocationDtoTest {
         new GeocodingApiRequestService(testRestClient);
 
     LocationAnswerDTO actualLocationAnswerDTO =
-        geocodingApiRequestService.retrieveLocationLonLat(locationName);
+        geocodingApiRequestService.retrieveLocationsLonLat(locationName, LIMIT).get(0);
 
     mockServer.verify();
     Assertions.assertEquals("Stadt Wörgl", actualLocationAnswerDTO.name());
@@ -123,4 +126,5 @@ class GeocodingApiLocationDtoTest {
     Assertions.assertEquals("AT", actualLocationAnswerDTO.country());
     Assertions.assertEquals("Tyrol", actualLocationAnswerDTO.state());
   }
+  // todo: add test for empty answer from api
 }
