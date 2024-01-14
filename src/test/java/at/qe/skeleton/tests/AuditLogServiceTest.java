@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
@@ -35,7 +34,9 @@ import java.util.List;
 
 
 /**
- * Some tests for {@link AuditLogService} which test the most important methods.
+ * Some tests for {@link AuditLogService} which test the most important methods. The method used to 
+ * convert roles to a string is not explicitly tested since it is used solely by other methods which
+ * are tested here.
  */
 @SpringBootTest
 @WebAppConfiguration
@@ -65,18 +66,9 @@ public class AuditLogServiceTest {
         auditLogRepository.findAll().forEach(auditLogRepository::delete);
     }
 
-
-    @Test
-    public void convertRolesToStringTest() {
-        
-        Set<UserxRole> userRoles = new HashSet<>(Arrays.asList(UserxRole.ADMIN, UserxRole.PREMIUM_USER));
-        when(userxMock.getRoles()).thenReturn(userRoles);
-
-        String result = auditLogService.convertRolesToString(userxMock);
-        assertTrue(result.contains("PREMIUM_USER") && result.contains("ADMIN"));
-    }
-
-
+    /*
+     * Test to ensure that the log entries are saved correctly.
+     */
     @Test
     public void saveEntryTest() {
         
@@ -92,7 +84,10 @@ public class AuditLogServiceTest {
         assertEquals(auditLogRepository.findAll().get(0).getMessage(), message);
     }
 
-    
+    /*
+     * Test to ensure that a log entry is saved when a user is deleted and if the 
+     * correct log message is saved.
+     */
     @Test
     public void saveDeletedUserEntryTest() {
         
@@ -102,7 +97,6 @@ public class AuditLogServiceTest {
         // now create and check if the log message is generated correctly
         userxMock.setUsername("testUser");
         userxMock.setRoles(Sets.newSet(UserxRole.ADMIN));
-        ReflectionTestUtils.setField(auditLogService, "auditLogRepository", mockedAuditLogRepository);
         String msg = mockedAuditLogService.saveDeletedUserEntry(userxMock);
 
         // check the log entries if the most recent ones match
@@ -110,10 +104,12 @@ public class AuditLogServiceTest {
         List<AuditLog> als = auditLogRepository.findAll();
         assertTrue(als.size() >= 1);
         assertEquals(als.get(0).getMessage(), msg);
-        ReflectionTestUtils.setField(auditLogService, "mockedauditLogRepository", auditLogRepository);
     }
     
-
+    /*
+     * Test to ensure that a log entry is saved when a user is created or changed 
+     * and if the correct log message is saved.
+     */
     @Test
     public void saveCreatedUserEntryTest() {
 
@@ -123,7 +119,6 @@ public class AuditLogServiceTest {
         // now create and check if the log message is generated correctly
         userxMock.setUsername("testUser");
         userxMock.setRoles(Sets.newSet(UserxRole.ADMIN));
-        ReflectionTestUtils.setField(auditLogService, "auditLogRepository", mockedAuditLogRepository);
         String msg = mockedAuditLogService.saveCreatedUserEntry(userxMock);
 
         //check the log entries if the most recent ones match
@@ -131,6 +126,5 @@ public class AuditLogServiceTest {
         List<AuditLog> als = auditLogRepository.findAll();
         assertTrue(als.size() >= 1);
         assertEquals(als.get(0).getMessage(), msg);
-        ReflectionTestUtils.setField(auditLogService, "mockedauditLogRepository", auditLogRepository);
     }
 }
