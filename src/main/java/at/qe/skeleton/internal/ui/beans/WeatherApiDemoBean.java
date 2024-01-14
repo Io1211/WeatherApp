@@ -89,6 +89,13 @@ public class WeatherApiDemoBean {
     this.favoriteService.toggleFavorite(user, favorite);
   }
 
+  public Boolean isFavorite() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    var user = this.userxService.loadUser(auth.getName());
+
+    return this.favoriteService.isFavorite(user, this.location);
+  }
+
   public String getSearchedWeather() {
     return searchedWeather;
   }

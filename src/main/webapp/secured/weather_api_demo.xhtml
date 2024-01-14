@@ -49,9 +49,11 @@
                 <div>
                     <h:outputText escape="false" value="#{weatherApiDemoBean.searchedWeather}"/>
                 </div>
-                <p:commandButton action="#{weatherApiDemoBean.toggleFavorite()}"
+                <p:commandButton id="toggleFavorite"
+                                 action="#{weatherApiDemoBean.toggleFavorite()}"
                                  rendered="#{weatherApiDemoBean.searchedWeather != null}" icon="pi pi-heart"
-                                 styleClass="rounded-button ui-button-help ui-button-outlined"/>
+                                 styleClass="#{weatherApiDemoBean.isFavorite() ? 'rounded-button ui-button-help' : 'rounded-button ui-button-help ui-button-outlined'}"
+                                 update="toggleFavorite"/>
             </p:panel>
         </h:form>
     </ui:define>

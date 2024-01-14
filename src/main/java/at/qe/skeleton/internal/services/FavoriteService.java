@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Favorite;
+import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.FavoriteRepository;
 import at.qe.skeleton.internal.repositories.UserxRepository;
@@ -38,5 +39,10 @@ public class FavoriteService {
       user.getFavorites().add(favorite);
     }
     userRepository.save(user);
+  }
+
+  public Boolean isFavorite(Userx user, Location location) {
+    return user.getFavorites().stream()
+        .anyMatch(x -> Objects.equals(x.getLocation().getId(), location.getId()));
   }
 }
