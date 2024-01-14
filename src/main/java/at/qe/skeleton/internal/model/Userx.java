@@ -4,15 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.domain.Persistable;
@@ -50,8 +43,11 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   private String lastName;
   private String email;
   private String phone;
-
   boolean enabled;
+
+  @OneToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "credit_card_id", referencedColumnName = "id")
+  private CreditCard creditCard;
 
   @ElementCollection(targetClass = UserxRole.class, fetch = FetchType.EAGER)
   @CollectionTable(name = "Userx_UserxRole")
@@ -152,6 +148,14 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   public void setUpdateDate(LocalDateTime updateDate) {
     this.updateDate = updateDate;
+  }
+
+  public CreditCard getCreditCard() {
+    return creditCard;
+  }
+
+  public void setCreditCard(CreditCard creditCard) {
+    this.creditCard = creditCard;
   }
 
   @Override

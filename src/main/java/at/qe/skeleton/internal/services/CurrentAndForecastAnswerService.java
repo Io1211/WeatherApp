@@ -23,15 +23,15 @@ public class CurrentAndForecastAnswerService {
   @Autowired private CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
   private static final Logger LOGGER =
-      LoggerFactory.getLogger(CurrentAndForecastAnswerService.class);
+          LoggerFactory.getLogger(CurrentAndForecastAnswerService.class);
 
   public CurrentAndForecastAnswerDTO callApi(double lon, double lat) throws FailedApiRequest {
     try {
       return this.weatherApiRequestService.retrieveCurrentAndForecastWeather(lat, lon);
     } catch (final Exception e) {
       String errorMessage =
-          "An error occurred in the CurrentAndForecastWeather api call with latitude: %s and longitude: %s"
-              .formatted(lat, lon);
+              "An error occurred in the CurrentAndForecastWeather api call with latitude: %s and longitude: %s"
+                      .formatted(lat, lon);
       LOGGER.error(errorMessage, e);
       throw new FailedApiRequest(errorMessage);
     }
