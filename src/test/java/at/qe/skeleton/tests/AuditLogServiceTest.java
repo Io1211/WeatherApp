@@ -58,7 +58,7 @@ public class AuditLogServiceTest {
     @AfterEach
     void resetMockito() {
         Mockito.reset(mockedAuditLogRepository);
-        Mockito.reset(auditLogRepository);
+        //Mockito.reset(AuditLogRepository);
         auditLogRepository.findAll().forEach(auditLogRepository::delete);
     }
 
@@ -89,9 +89,14 @@ public class AuditLogServiceTest {
 
 
     @Test
+    @WithMockUser(
+        username = "testuser", 
+        roles = {"ADMIN"},
+        authorities = {"ADMIN"}
+        )
     void saveDeletedUserEntryTest() {
-        userxMock.setUsername("testUser");
-        userxMock.setRoles(Sets.newSet(UserxRole.PREMIUM_USER));
+        //userxMock.setUsername("testUser");
+        //userxMock.setRoles(Sets.newSet(UserxRole.PREMIUM_USER));
 
         // this pretends that the user has been deleted and a save is triggered
         auditLogService.saveDeletedUserEntry(userxMock);
@@ -100,15 +105,21 @@ public class AuditLogServiceTest {
         userxService.deleteUser(userxMock);
 
         //check the log entries if the most recent ones match
+        // the test will fail if no element has been saved since get(0) cant be done on an empty list
         List<AuditLog> als = auditLogRepository.findAll();
         assertEquals(als.get(0), als.get(1));
     }
 
 
     @Test
+    @WithMockUser(
+        username = "testuser", 
+        roles = {"ADMIN"},
+        authorities = {"ADMIN"}
+        )
     void saveCreatedUserEntryTest() {
-        userxMock.setUsername("testUser");
-        userxMock.setRoles(Sets.newSet(UserxRole.ADMIN));
+        //userxMock.setUsername("testUser");
+        //userxMock.setRoles(Sets.newSet(UserxRole.ADMIN));
 
         // this pretends that the user has been saved
         auditLogService.saveCreatedUserEntry(userxMock);
@@ -117,6 +128,7 @@ public class AuditLogServiceTest {
         userxService.saveUser(userxMock);
 
         //check the log entries if the most recent ones match
+        // the test will fail if no element has been saved since get(0) cant be done on an empty list
         List<AuditLog> als = auditLogRepository.findAll();
         assertEquals(als.get(0), als.get(1));
     }
