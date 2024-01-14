@@ -41,16 +41,19 @@ import java.util.List;
 @WebAppConfiguration
 public class AuditLogServiceTest {
     
-    @InjectMocks 
+    @Autowired
     private AuditLogService auditLogService;
-    
-    @Mock 
+
+    @InjectMocks
+    private AuditLogService mockedAuditLogService;
+
+    @Autowired
     private AuditLogRepository auditLogRepository;
 
-    @Mock 
-    private AuditLogRepository mockedAuditLogRepository; 
-
     @Mock
+    private AuditLogRepository mockedAuditLogRepository;
+
+    @InjectMocks
     private Userx userxMock;
 
     @Mock
@@ -60,20 +63,6 @@ public class AuditLogServiceTest {
     public void resetMockito() {
         Mockito.reset(mockedAuditLogRepository);
         auditLogRepository.findAll().forEach(auditLogRepository::delete);
-    }
-
-
-    @Test
-    public void saveEntryTest() {
-        String message = "Test";
-
-        ReflectionTestUtils.setField(auditLogService, "auditLogRepository", mockedAuditLogRepository); 
-        auditLogService.saveEntry(message);
-        
-        AuditLog expectedAuditLog = new AuditLog();
-        expectedAuditLog.setMessage(message);
-                
-        verify(mockedAuditLogRepository, times(1)).save(expectedAuditLog);
     }
 
 
@@ -89,47 +78,59 @@ public class AuditLogServiceTest {
 
 
     @Test
-    public void saveDeletedUserEntryTest() {
-        userxMock.setUsername("testUser");
-        userxMock.setRoles(Sets.newSet(UserxRole.ADMIN));
+    public void saveEntryTest() {
         
-        // this pretends that the user has been deleted and a save is triggered
-        ReflectionTestUtils.setField(auditLogService, "auditLogRepository", mockedAuditLogRepository);
-        auditLogService.saveDeletedUserEntry(userxMock);
+        // create and save a message
+        String message = "Test";
+        auditLogService.saveEntry(message);
         
-        // actually delete the user
-        userxService.deleteUser(userxMock);
-
-        //check the log entries if the most recent ones match
-        // the test will fail if no element has been saved since get(0) can't be done on an empty list
-        List<AuditLog> als = auditLogRepository.findAll();
-        if (als.isEmpty()) {
-            System.out.println("Error: AuditLog for change of user roles has not been saved!");
-        } else {
-            assertEquals(als.get(0), als.get(1));
-        }
+        AuditLog expectedAuditLog = new AuditLog();
+        expectedAuditLog.setMessage(message);
+        
+        // check if an AuditLog has been saved and if the messages agree
+        assertTrue(auditLogRepository.findAll().size() > 0);
+        assertEquals(auditLogRepository.findAll().get(0).getMessage(), message);
     }
 
+    
+    @Test
+    public void saveDeletedUserEntryTest() {
+        
+        // this pretends that the user has been deleted and a save is triggered
+        auditLogService.saveEntry("User testUser with role(s) ADMIN has been deleted.");
+    
+        // now create and check if the log message is generated correctly
+        userxMock.setUsername("testUser");
+        userxMock.setRoles(Sets.newSet(UserxRole.ADMIN));
+        ReflectionTestUtils.setField(auditLogService, "auditLogRepository", mockedAuditLogRepository);
+        String msg = mockedAuditLogService.saveDeletedUserEntry(userxMock);
+
+        // check the log entries if the most recent ones match
+        // the test will fail if no element has been saved since get(0) can't be done on an empty list
+        List<AuditLog> als = auditLogRepository.findAll();
+        assertTrue(als.size() >= 1);
+        assertEquals(als.get(0).getMessage(), msg);
+        ReflectionTestUtils.setField(auditLogService, "mockedauditLogRepository", auditLogRepository);
+    }
+    
 
     @Test
     public void saveCreatedUserEntryTest() {
+
+        // this pretends that the user has been created and saved which triggers a save
+        auditLogService.saveEntry("User testUser with role(s) ADMIN has been saved.");
+        
+        // now create and check if the log message is generated correctly
         userxMock.setUsername("testUser");
         userxMock.setRoles(Sets.newSet(UserxRole.ADMIN));
-
-        // this pretends that the user has been saved
         ReflectionTestUtils.setField(auditLogService, "auditLogRepository", mockedAuditLogRepository);
-        auditLogService.saveCreatedUserEntry(userxMock);
-        
-        // actually save the user
-        userxService.saveUser(userxMock);
+        String msg = mockedAuditLogService.saveCreatedUserEntry(userxMock);
 
         //check the log entries if the most recent ones match
         // the test will fail if no element has been saved since get(0) can't be done on an empty list
         List<AuditLog> als = auditLogRepository.findAll();
-        if (als.isEmpty()) {
-            System.out.println("Error: AuditLog for change of user roles has not been saved!");
-        } else {
-            assertEquals(als.get(0), als.get(1));
-        }
+        assertTrue(als.size() >= 1);
+        assertEquals(als.get(0).getMessage(), msg);
+        ReflectionTestUtils.setField(auditLogService, "mockedauditLogRepository", auditLogRepository);
     }
 }

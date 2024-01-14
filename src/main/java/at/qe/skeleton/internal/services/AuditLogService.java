@@ -59,8 +59,10 @@ public class AuditLogService {
      * @param userx is the user which is being deleted.
      */
     @PreAuthorize("hasAuthority('ADMIN')")
-    public void saveDeletedUserEntry(Userx userx) {
-        saveEntry("User " + userx.getUsername() + " with role(s) " + convertRolesToString(userx) + " has been deleted.");
+    public String saveDeletedUserEntry(Userx userx) {
+        String msg = "User " + userx.getUsername() + " with role(s) " + convertRolesToString(userx) + " has been deleted."; 
+        saveEntry(msg);
+        return msg;
     }
 
     /**
@@ -69,8 +71,10 @@ public class AuditLogService {
      * @param userx is the user which has been created.
      */
     @PreAuthorize("hasAuthority('ADMIN')")
-    public void saveCreatedUserEntry(Userx userx) {
-        saveEntry("User " + userx.getUsername() + " with role(s) " + convertRolesToString(userx) + " has been saved.");
+    public String saveCreatedUserEntry(Userx userx) {
+        String msg = "User " + userx.getUsername() + " with role(s) " + convertRolesToString(userx) + " has been saved."; 
+        saveEntry(msg);
+        return msg;
     }
 
     /**
