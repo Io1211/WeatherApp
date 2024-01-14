@@ -55,7 +55,7 @@ public class WeatherApiDemoBean {
     this.locationSearchInput = locationSearchInput;
   }
 
-  public void performLocationSearch() {
+  public String performLocationSearch() {
     try {
       this.location = locationService.handleLocationSearch(locationSearchInput);
     } catch (FailedApiRequest e) {
@@ -67,7 +67,7 @@ public class WeatherApiDemoBean {
                   "There was an error in an api request: ",
                   e.getMessage()));
       LOGGER.error(e.getMessage());
-      return;
+      return null;
     } catch (GeocodingApiReturnedEmptyListException e) {
       FacesContext.getCurrentInstance()
           .addMessage(
@@ -77,11 +77,16 @@ public class WeatherApiDemoBean {
                   "",
                   "Sorry, we could´nt find a location with the name: `%s`"
                       .formatted(locationSearchInput)));
-      return;
+      return null;
     }
     this.weatherDTO =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
     this.isLocationAnswerDTOReady = true;
+    return "/secured/weather_api_demo.xhtml";
+  }
+
+  public String testRouting() {
+    return "/secured/weather_api_demo.xhtml";
   }
 
   public String getSunsetString() {

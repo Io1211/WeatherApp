@@ -9,6 +9,7 @@
 <body>
 <ui:composition>
     <h:form>
+
         <p:menubar>
             <p:submenu label="User Submenu 1" rendered="#{sessionInfoBean.hasRole('REGISTERED_USER')}">
                 <p:menuitem value="Registered User Action 1 - 1"/>
@@ -30,7 +31,23 @@
             <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
 
+            <p:menuitem>
+
+                <p:autoComplete id="locationSearchField" value="#{weatherApiDemoBean.locationSearchInput}"
+                                completeMethod="#{autoCompleteController.autoCompleteLocation}"
+                                style="margin-right: 10px;" emptyMessage="no results"/>
+
+                <p:commandButton value="Search" id="commitSearchRequest"
+                                 action="#{weatherApiDemoBean.performLocationSearch()}">
+                </p:commandButton>
+                <br/>
+                <p:messages id="message" showDetail="true"/>
+                <br/>
+            </p:menuitem>
+
         </p:menubar>
+
+
     </h:form>
 </ui:composition>
 </body>
