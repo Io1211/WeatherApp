@@ -58,7 +58,6 @@ public class AuditLogServiceTest {
     @AfterEach
     public void resetMockito() {
         Mockito.reset(mockedAuditLogRepository);
-        //Mockito.reset(AuditLogRepository);
         auditLogRepository.findAll().forEach(auditLogRepository::delete);
     }
 
@@ -87,17 +86,13 @@ public class AuditLogServiceTest {
         assertTrue(result.contains("PREMIUM_USER") && result.contains("ADMIN"));
     }
 
-/*
+
     @Test
-    @WithMockUser(
-        username = "testuser", 
-        roles = {"ADMIN"},
-        authorities = {"ADMIN"}
-        )
     public void saveDeletedUserEntryTest() {
         userxMock.setUsername("testUser");
-        userxMock.setRoles(Sets.newSet(UserxRole.PREMIUM_USER));
-
+        userxMock.setRoles(Sets.newSet(UserxRole.ADMIN));
+        userxMock.isEnabled();
+        
         // this pretends that the user has been deleted and a save is triggered
         auditLogService.saveDeletedUserEntry(userxMock);
         
@@ -105,12 +100,12 @@ public class AuditLogServiceTest {
         userxService.deleteUser(userxMock);
 
         //check the log entries if the most recent ones match
-        // the test will fail if no element has been saved since get(0) cant be done on an empty list
+        // the test will fail if no element has been saved since get(0) can't be done on an empty list
         List<AuditLog> als = auditLogRepository.findAll();
         assertEquals(als.get(0), als.get(1));
     }
 
-
+/*
     @Test
     @WithMockUser(
         username = "testuser", 
@@ -128,7 +123,7 @@ public class AuditLogServiceTest {
         userxService.saveUser(userxMock);
 
         //check the log entries if the most recent ones match
-        // the test will fail if no element has been saved since get(0) cant be done on an empty list
+        // the test will fail if no element has been saved since get(0) can't be done on an empty list
         List<AuditLog> als = auditLogRepository.findAll();
         assertEquals(als.get(0), als.get(1));
     }

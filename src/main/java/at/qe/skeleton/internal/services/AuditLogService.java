@@ -74,7 +74,7 @@ public class AuditLogService {
     }
 
     /**
-     * Displays alls audit logs saved.
+     * Displays all audit logs saved.
      *
      */
     @PreAuthorize("hasAuthority('ADMIN')")
