@@ -20,7 +20,8 @@ public class Location implements Persistable<LocationId>, Serializable {
 
   private String state;
 
-  @OneToOne(optional = false)
+  @OneToOne
+  @JoinColumn(name = "weather_id")
   private CurrentAndForecastAnswer weather;
 
   public String getCity() {

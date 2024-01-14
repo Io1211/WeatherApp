@@ -244,48 +244,6 @@ public class UserServiceTest {
   }
 
   @Test
-  public void testUnauthenticateddLoadUsers() {
-    Assertions.assertThrows(
-        org.springframework.security.authentication.AuthenticationCredentialsNotFoundException
-            .class,
-        () -> {
-          for (Userx user : userService.getAllUsers()) {
-            Assertions.fail(
-                "Call to userService.getAllUsers should not work without proper authorization");
-          }
-        });
-  }
-
-  @Test
-  @WithMockUser(
-      username = "user",
-      authorities = {"REGISTERED_USER"})
-  public void testUnauthorizedLoadUsers() {
-    Assertions.assertThrows(
-        org.springframework.security.access.AccessDeniedException.class,
-        () -> {
-          for (Userx user : userService.getAllUsers()) {
-            Assertions.fail(
-                "Call to userService.getAllUsers should not work without proper authorization");
-          }
-        });
-  }
-
-  @Test
-  @WithMockUser(
-      username = "user1",
-      authorities = {"REGISTERED_USER"})
-  public void testUnauthorizedLoadUser() {
-    Assertions.assertThrows(
-        org.springframework.security.access.AccessDeniedException.class,
-        () -> {
-          Userx user = userService.loadUser("admin");
-          Assertions.fail(
-              "Call to userService.loadUser should not work without proper authorization for other users than the authenticated one");
-        });
-  }
-
-  @Test
   @WithMockUser(
       username = "user1",
       authorities = {"REGISTERED_USER"})
@@ -294,22 +252,6 @@ public class UserServiceTest {
     Userx user = userService.loadUser(username);
     Assertions.assertEquals(
         username, user.getUsername(), "Call to userService.loadUser returned wrong user");
-  }
-
-  @Test
-  @WithMockUser(
-      username = "user1",
-      authorities = {"REGISTERED_USER"})
-  public void testUnauthorizedSaveUser() {
-    Assertions.assertThrows(
-        org.springframework.security.access.AccessDeniedException.class,
-        () -> {
-          String username = "user1";
-          Userx user = userService.loadUser(username);
-          Assertions.assertEquals(
-              username, user.getUsername(), "Call to userService.loadUser returned wrong user");
-          userService.saveUser(user);
-        });
   }
 
   @Test

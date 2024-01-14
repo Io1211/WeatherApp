@@ -19,7 +19,9 @@
                 </button>
             </h:panelGrid>
             <p:outputPanel rendered="#{param['error'] != null}"
-                           style="color: red;">Username and/or password wrong!</p:outputPanel>
+                           style="color: red;">Username and/or password wrong!
+            </p:outputPanel>
+            <h:outputLink value="/requestNewPassword.xhtml">Forgot Password?</h:outputLink>
         </form>
     </ui:define>
 </ui:composition>

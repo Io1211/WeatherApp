@@ -2,6 +2,7 @@ package at.qe.skeleton.tests;
 
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
 import at.qe.skeleton.external.services.GeocodingApiRequestService;
+import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
@@ -26,8 +27,11 @@ class GeocodingApiLocationDtoTest {
   private static MockRestServiceServer mockServer;
   private static final ObjectMapper mapper = new ObjectMapper();
   private static String apiResponseStringWoergl;
+
+  private static String emptyApiResponseString;
   private static String apiResponseStringIbk;
   private static GeocodingApiRequestService geocodingApiRequestService;
+  private static final int LIMIT = 1;
 
   @BeforeAll
   static void prepareApiTestEnvironment() throws Exception {
@@ -42,6 +46,11 @@ class GeocodingApiLocationDtoTest {
         new ClassPathResource("GeocodingResponseWörgl.json");
     JsonNode jsonNodeUmlaut = mapper.readTree(classPathResourceUmlaut.getInputStream());
     apiResponseStringWoergl = mapper.writeValueAsString(jsonNodeUmlaut);
+
+    ClassPathResource classPathResourceEmpty =
+        new ClassPathResource("emptyGeocodingApiResponse.json");
+    JsonNode jsonNodeEmptyResponse = mapper.readTree(classPathResourceEmpty.getInputStream());
+    emptyApiResponseString = mapper.writeValueAsString(jsonNodeEmptyResponse);
 
     // writing the Innsbruck json api response as String
     ClassPathResource classPathResourceIbk =
@@ -60,23 +69,26 @@ class GeocodingApiLocationDtoTest {
   }
 
   @Test
-  public void GeocodingApiServiceBuildsAndCallsCorrectURI() {
+  public void GeocodingApiServiceBuildsAndCallsCorrectURI()
+      throws GeocodingApiReturnedEmptyListException {
+
     // setting which call should be expected by Mockserver and how he responds.
     mockServer
-        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
+        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=" + LIMIT))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
     // naking the api-request
-    geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
+    geocodingApiRequestService.retrieveLocationsLonLat("Innsbruck", LIMIT);
 
     // the actual test: verifying if request reached the expected URI
     mockServer.verify();
   }
 
   @Test
-  public void geocodingApiServiceBuildsCorrectDtoObjectFromApiResponse() {
+  public void geocodingApiServiceBuildsCorrectDtoObjectFromApiResponse()
+      throws GeocodingApiReturnedEmptyListException {
     mockServer
-        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=1"))
+        .expect(requestTo("/geo/1.0/direct?q=Innsbruck&limit=" + LIMIT))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringIbk, MediaType.APPLICATION_JSON));
 
@@ -84,7 +96,7 @@ class GeocodingApiLocationDtoTest {
         new GeocodingApiRequestService(testRestClient);
 
     LocationAnswerDTO actualLocationAnswerDTO =
-        geocodingApiRequestService.retrieveLocationLonLat("Innsbruck");
+        geocodingApiRequestService.retrieveLocationsLonLat("Innsbruck", LIMIT).get(0);
 
     mockServer.verify();
     Assertions.assertEquals("Innsbruck", actualLocationAnswerDTO.name());
@@ -100,12 +112,14 @@ class GeocodingApiLocationDtoTest {
   // der apiConfiguration
   // verwenden.
   @Test
-  public void geocodingApiServiceBuildsCorrectUrlAndDtoWithEncoding() {
+  public void geocodingApiServiceBuildsCorrectUrlAndDtoWithEncoding()
+      throws GeocodingApiReturnedEmptyListException {
     // Wörgl is being encoded to URL compatible message with UTF-8 as Base to W%C3%B6rgl
     String locationName = "Wörgl";
+
     String locationNameEncoded = URLEncoder.encode(locationName, StandardCharsets.UTF_8);
     mockServer
-        .expect(requestTo("/geo/1.0/direct?q=" + locationNameEncoded + "&limit=1"))
+        .expect(requestTo("/geo/1.0/direct?q=" + locationNameEncoded + "&limit=" + LIMIT))
         .andExpect(method(HttpMethod.GET))
         .andRespond(withSuccess(apiResponseStringWoergl, MediaType.APPLICATION_JSON));
 
@@ -114,7 +128,7 @@ class GeocodingApiLocationDtoTest {
         new GeocodingApiRequestService(testRestClient);
 
     LocationAnswerDTO actualLocationAnswerDTO =
-        geocodingApiRequestService.retrieveLocationLonLat(locationName);
+        geocodingApiRequestService.retrieveLocationsLonLat(locationName, LIMIT).get(0);
 
     mockServer.verify();
     Assertions.assertEquals("Stadt Wörgl", actualLocationAnswerDTO.name());
@@ -122,5 +136,25 @@ class GeocodingApiLocationDtoTest {
     Assertions.assertEquals(12.07928067668956, actualLocationAnswerDTO.longitude());
     Assertions.assertEquals("AT", actualLocationAnswerDTO.country());
     Assertions.assertEquals("Tyrol", actualLocationAnswerDTO.state());
+  }
+
+  // todo: add test for empty answer from api
+  @Test
+  public void shouldThrowEmptyListException() {
+    String locationName = "thisIsNotARealLocationName";
+
+    mockServer
+        .expect(requestTo("/geo/1.0/direct?q=" + locationName + "&limit=" + LIMIT))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(withSuccess(emptyApiResponseString, MediaType.APPLICATION_JSON));
+
+    GeocodingApiRequestService geocodingApiRequestService =
+        new GeocodingApiRequestService(testRestClient);
+
+    Assertions.assertThrows(
+        GeocodingApiReturnedEmptyListException.class,
+        () -> geocodingApiRequestService.retrieveLocationsLonLat(locationName, LIMIT));
+
+    mockServer.verify();
   }
 }

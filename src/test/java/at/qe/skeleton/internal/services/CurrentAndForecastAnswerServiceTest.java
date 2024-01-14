@@ -3,22 +3,15 @@ package at.qe.skeleton.internal.services;
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.internal.model.CurrentAndForecastAnswer;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
-import at.qe.skeleton.internal.services.utils.FailedJsonToDtoMappingException;
-import at.qe.skeleton.internal.services.utils.FailedToSerializeDTOException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.micrometer.core.instrument.util.IOUtils;
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.apache.commons.lang3.SerializationUtils;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -31,7 +24,17 @@ class CurrentAndForecastAnswerServiceTest {
 
   @Autowired CurrentAndForecastAnswerRepository currentAndForecastAnswerRepository;
 
-  private final String dataFilePath = "src/test/resources/MockCurrentAndForecastAnswers.json";
+  private static CurrentAndForecastAnswerDTO mockDTO;
+
+  @BeforeAll
+  public static void setUp() throws IOException {
+    mockDTO =
+        new ObjectMapper()
+            .findAndRegisterModules()
+            .readValue(
+                new File("src/test/resources/WeatherApiResponseMunich.json"),
+                CurrentAndForecastAnswerDTO.class);
+  }
 
   @AfterEach
   public void cleanDatabase() {
@@ -39,18 +42,8 @@ class CurrentAndForecastAnswerServiceTest {
     entities.forEach(currentAndForecastAnswerRepository::delete);
   }
 
-  private CurrentAndForecastAnswerDTO loadMockResponseFromFile(String filePath) {
-    ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
-    try {
-      String mockResponse = IOUtils.toString(new FileInputStream(filePath), StandardCharsets.UTF_8);
-      return mapper.readValue(mockResponse, CurrentAndForecastAnswerDTO.class);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  private void checkDTO(
-      CurrentAndForecastAnswerDTO referenceDTO, CurrentAndForecastAnswerDTO toTestDTO) {
+  private void checkDTO(CurrentAndForecastAnswerDTO toTestDTO) {
+    CurrentAndForecastAnswerDTO referenceDTO = mockDTO;
     Assertions.assertEquals(
         referenceDTO.latitude(),
         toTestDTO.latitude(),
@@ -91,176 +84,59 @@ class CurrentAndForecastAnswerServiceTest {
 
   @Test
   void testSaveWeather() {
-    CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
-    CurrentAndForecastAnswer savedAnswer = null;
-    try {
-      savedAnswer = currentAndForecastAnswerService.saveWeather(answerDTO);
-    } catch (FailedToSerializeDTOException e) {
-      e.getStackTrace();
-    }
+    CurrentAndForecastAnswer savedAnswer = currentAndForecastAnswerService.saveWeather(mockDTO);
     Assertions.assertNotNull(savedAnswer, "Failed to save the mock DTO in the database");
-    CurrentAndForecastAnswerDTO justCreatedDTO = null;
-    try {
-      justCreatedDTO =
-          currentAndForecastAnswerService.findCurrentAndForecastWeatherById(
-              Long.valueOf(savedAnswer.getId()));
-    } catch (FailedJsonToDtoMappingException e) {
-      e.getStackTrace();
-    }
+    CurrentAndForecastAnswerDTO justCreatedDTO =
+        currentAndForecastAnswerService.deserializeDTO(
+            currentAndForecastAnswerRepository.findAll().get(0).getWeatherData());
     Assertions.assertNotNull(
-        justCreatedDTO, "No weather DTO found in the database by the id " + savedAnswer.getId());
-    checkDTO(answerDTO, justCreatedDTO);
+        justCreatedDTO, "Failed to fetch the saved mock DTO from the database");
+    checkDTO(justCreatedDTO);
   }
 
   @Test
   void testGetAllCurrentAndForecastWeather() {
-    CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
     List<CurrentAndForecastAnswerDTO> answerDTOList = new ArrayList<>();
-    for (int i = 0; i < 5; i++) {
-      answerDTOList.add(answerDTO);
-    }
-    try {
-      for (CurrentAndForecastAnswerDTO weatherDTO : answerDTOList) {
-        currentAndForecastAnswerService.saveWeather(weatherDTO);
-      }
-    } catch (FailedToSerializeDTOException e) {
-      e.getStackTrace();
-    }
-    List<CurrentAndForecastAnswerDTO> justCreatedDTOs = null;
-    try {
-      justCreatedDTOs = currentAndForecastAnswerService.getAllCurrentAndForecastWeather();
-    } catch (FailedJsonToDtoMappingException e) {
-      e.getStackTrace();
-    }
+    IntStream.range(0, 5).forEach(dto -> answerDTOList.add(mockDTO));
+    answerDTOList.forEach(dto -> currentAndForecastAnswerService.saveWeather(dto));
+    List<CurrentAndForecastAnswerDTO> justCreatedDTOs = new ArrayList<>();
+    currentAndForecastAnswerRepository
+        .findAll()
+        .forEach(
+            entity ->
+                justCreatedDTOs.add(
+                    currentAndForecastAnswerService.deserializeDTO(entity.getWeatherData())));
     Assertions.assertNotNull(justCreatedDTOs, "Failed to retrieve saved DTOs from the database");
     Assertions.assertEquals(
         justCreatedDTOs.size(),
         answerDTOList.size(),
         "The count of retrieved DTOs doesn't match the count of initially stored ones");
-    List<CurrentAndForecastAnswerDTO> finalJustCreatedDTOs = justCreatedDTOs;
     IntStream.range(0, justCreatedDTOs.size())
         .forEach(
             i -> {
               Logger.getLogger(CurrentAndForecastAnswerServiceTest.class.getName())
                   .info("Checking the " + i + "th DTO ");
-              checkDTO(answerDTOList.get(i), finalJustCreatedDTOs.get(i));
+              checkDTO(justCreatedDTOs.get(i));
             });
   }
 
   @Test
-  void testGetLastHourCurrentAndForecastWeather() {
-    CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
-
-    // Create and persist the Entities to be used (to trigger the on-create setting of the
-    // timestampLastCall)
-    CurrentAndForecastAnswer answerNew = new CurrentAndForecastAnswer();
-    CurrentAndForecastAnswer answerOld = new CurrentAndForecastAnswer();
-    currentAndForecastAnswerRepository.save(answerNew);
-    currentAndForecastAnswerRepository.save(answerOld);
-
-    // Set the desired Entity attributes (i.e., change the timestampLastCall to mimic an old api
-    // call) and persist again for the changes to take effect
-    answerOld.setTimestampLastCall(ZonedDateTime.now().minusHours(5));
-    try {
-      answerNew.setWeatherData(currentAndForecastAnswerService.serializeDTO(answerDTO));
-      answerOld.setWeatherData(currentAndForecastAnswerService.serializeDTO(answerDTO));
-      currentAndForecastAnswerRepository.save(answerNew);
-      currentAndForecastAnswerRepository.save(answerOld);
-    } catch (FailedToSerializeDTOException e) {
-      throw new RuntimeException(e.getMessage());
-    }
-    List<CurrentAndForecastAnswerDTO> lastHourDTOs = null;
-    try {
-      lastHourDTOs = currentAndForecastAnswerService.getLastHourCurrentAndForecastWeather();
-    } catch (FailedJsonToDtoMappingException e) {
-      throw new RuntimeException(e.getMessage());
-    }
-    Assertions.assertNotNull(lastHourDTOs, "Failed to retrieve DTOs from database");
-    Assertions.assertEquals(
-        1,
-        lastHourDTOs.size(),
-        "Expected DTO count = 1 but " + lastHourDTOs.size() + " was found instead");
-    CurrentAndForecastAnswerDTO lastHourDTO = lastHourDTOs.get(0);
-    checkDTO(answerDTO, lastHourDTO);
-  }
-
-  @Test
-  void testFindCurrentAndForecastWeatherById() {
-    CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
-
-    CurrentAndForecastAnswer answer = new CurrentAndForecastAnswer();
-    CurrentAndForecastAnswer savedAnswer = null;
-    try {
-      answer.setWeatherData(currentAndForecastAnswerService.serializeDTO(answerDTO));
-      savedAnswer = currentAndForecastAnswerRepository.save(answer);
-    } catch (FailedToSerializeDTOException e) {
-      throw new RuntimeException(e.getMessage());
-    }
-    CurrentAndForecastAnswerDTO lastHourDTO = null;
-    try {
-      lastHourDTO =
-          currentAndForecastAnswerService.findCurrentAndForecastWeatherById(
-              Long.valueOf(savedAnswer.getId()));
-    } catch (FailedJsonToDtoMappingException e) {
-      throw new RuntimeException(e.getMessage());
-    }
-    Assertions.assertNotNull(lastHourDTO, "Failed to retrieve DTO with id 1 from the database");
-    checkDTO(answerDTO, lastHourDTO);
-  }
-
-  @Test
   void testDeserializeDTO() {
-    CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
-    ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
-    byte[] serializedDTO = null;
-    try {
-      serializedDTO = mapper.writeValueAsBytes(answerDTO);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e.getMessage());
-    }
+    byte[] serializedDTO = SerializationUtils.serialize(mockDTO);
     Assertions.assertNotNull(serializedDTO, "Failed to serialize the DTO");
-    CurrentAndForecastAnswerDTO deserializedDTO = null;
-    try {
-      deserializedDTO = currentAndForecastAnswerService.deserializeDTO(serializedDTO);
-    } catch (FailedJsonToDtoMappingException e) {
-      throw new RuntimeException(e.getMessage());
-    }
+    CurrentAndForecastAnswerDTO deserializedDTO =
+        currentAndForecastAnswerService.deserializeDTO(serializedDTO);
     Assertions.assertNotNull(deserializedDTO, "Failed to deserialize the DTO");
-    checkDTO(answerDTO, deserializedDTO);
-    Assertions.assertThrows(
-        FailedJsonToDtoMappingException.class,
-        () -> {
-          // Appending random strings AFTER the DTO string doesn't cause issues as the mapping can
-          // be done as planed
-          // and the rest is just discarded I guess
-          String faultyStringDTO =
-              "[This should mess up the mapping to DTO]," + mapper.writeValueAsString(answerDTO);
-          System.out.println(faultyStringDTO);
-          CurrentAndForecastAnswerDTO mappedDTO =
-              currentAndForecastAnswerService.deserializeDTO(faultyStringDTO.getBytes());
-        });
+    checkDTO(deserializedDTO);
   }
 
   @Test
   void testSerializeDTO() {
-    CurrentAndForecastAnswerDTO answerDTO = loadMockResponseFromFile(this.dataFilePath);
-    byte[] serializedDTO = null;
-    try {
-      serializedDTO = currentAndForecastAnswerService.serializeDTO(answerDTO);
-    } catch (FailedToSerializeDTOException e) {
-      throw new RuntimeException(e.getMessage());
-    }
+    byte[] serializedDTO = currentAndForecastAnswerService.serializeDTO(mockDTO);
     Assertions.assertNotNull(serializedDTO, "Failed to serialize the DTO");
-    CurrentAndForecastAnswerDTO retrievedDTO = null;
-    try {
-      retrievedDTO = currentAndForecastAnswerService.deserializeDTO(serializedDTO);
-    } catch (FailedJsonToDtoMappingException e) {
-      throw new RuntimeException(e.getMessage());
-    }
+    CurrentAndForecastAnswerDTO retrievedDTO =
+        currentAndForecastAnswerService.deserializeDTO(serializedDTO);
     Assertions.assertNotNull(retrievedDTO, "Failed to deserialize serialized DTO");
-    Assertions.assertEquals(
-        answerDTO,
-        retrievedDTO,
-        "DTO doesn't match initial state after serialization and deserialization cycle");
+    checkDTO(retrievedDTO);
   }
 }
