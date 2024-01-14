@@ -110,6 +110,8 @@ class WeatherApiRequestServiceTest {
         () -> disconnectedApiRequestService.retrieveCurrentAndForecastWeather(0, 0));
   }
 
+  // todo: add test for empty list as answer
+
   // the following represents another approach for testing api calls with a MockWebServer from
   // okhttp3 library.
   // that is a "fake" server, which is actually located at the mockURL (see below) and handles the

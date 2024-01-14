@@ -30,6 +30,7 @@ public class ApiConfiguration {
 
   private static final String APIKEY_PARAMETER = "appid";
   private static final String UNITS_PARAMETER = "units";
+  // metric means: Api response will be in Celsius, not Fahrenheit.
   private static final String DEFAULT_UNITS = "metric";
 
   @Value("${api.key}")
@@ -72,11 +73,12 @@ public class ApiConfiguration {
     }
   }
 
-  @Bean
-  protected RestClient defaultRestClient() {
-    return RestClient.builder()
-        .baseUrl(baseUrl)
-        .requestInterceptor(new QueryAddingRequestInterceptor())
-        .build();
-  }
+    @Bean
+    protected RestClient defaultRestClient() {
+        return RestClient.builder()
+                .baseUrl(baseUrl)
+                .requestInterceptor(new QueryAddingRequestInterceptor())
+                .build();
+    }
+
 }
