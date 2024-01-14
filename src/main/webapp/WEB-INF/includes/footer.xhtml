@@ -43,7 +43,6 @@
 <ui:composition>
 
     <div class="footer-container">
-        <div class="brand">G8T2</div>
         <div class="status">
             <ui:fragment rendered="#{sessionInfoBean.loggedIn}">
                 Logged in as #{sessionInfoBean.currentUserName} [#{sessionInfoBean.currentUserRoles}]
@@ -52,6 +51,7 @@
                 Not logged in
             </ui:fragment>
         </div>
+        <div class="brand">WeatherApp - G8T2</div>
     </div>
 
 </ui:composition>

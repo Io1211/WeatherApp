@@ -10,16 +10,12 @@
 <body>
 <ui:composition>
     <h:form style="text-align: left;">
-        <p:menubar>
+        <p:menubar style="display: flex; justify-content: space-between; width: 100%;">
 
             <p:menuitem>
                 <p:outputLabel for="searchInput" value="Location: "/>
                 <p:inputText id="searchInput"/>
                 <p:commandButton value="Search" icon="pi pi-search"/>
-            </p:menuitem>
-
-            <p:menuitem>
-                <p:separator style="width: 400px;"/>
             </p:menuitem>
 
             <p:submenu label="Manager Submenu" rendered="#{sessionInfoBean.hasRole('MANAGER')}">
@@ -34,8 +30,8 @@
                 <p:menuitem value="Weather API Demo" url="/secured/weather_api_demo.xhtml"/>
             </p:submenu>
             <p:submenu label="Profile" rendered="#{sessionInfoBean.hasRole('REGISTERED_USER')}">
-                <p:menuitem value="Data"/>
-                <p:menuitem value="Configure Favorites"/>
+                <p:menuitem value="Overview" url="/profile/overview.xhtml"/>
+                <p:menuitem value="Configure Favorites" url="/profile/configure_favorites.xhtml"/>
             </p:submenu>
 
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
@@ -44,7 +40,6 @@
 
         </p:menubar>
     </h:form>
-
 </ui:composition>
 </body>
 </html>
