@@ -75,7 +75,7 @@
                 </div>
                 <p:commandButton id="toggleFavorite"
                                  action="#{weatherApiDemoBean.toggleFavorite()}"
-                                 rendered="#{weatherApiDemoBean.searchedWeather != null}" icon="pi pi-heart"
+                                 rendered="#{weatherApiDemoBean.weatherDTO != null}" icon="pi pi-heart"
                                  styleClass="#{weatherApiDemoBean.isFavorite() ? 'rounded-button ui-button-help' : 'rounded-button ui-button-help ui-button-outlined'}"
                                  update="toggleFavorite"/>
             </p:panel>

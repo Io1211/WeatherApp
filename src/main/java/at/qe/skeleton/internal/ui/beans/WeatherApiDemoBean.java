@@ -53,8 +53,6 @@ public class WeatherApiDemoBean {
     return isLocationAnswerDTOReady;
   }
 
-  private Location location;
-
   public String getLocationSearchInput() {
     return locationSearchInput;
   }
