@@ -1,7 +1,6 @@
 package at.qe.skeleton.internal.services;
 
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.core.token.Token;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
