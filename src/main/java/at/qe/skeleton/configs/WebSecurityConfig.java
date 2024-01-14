@@ -62,6 +62,8 @@ public class WebSecurityConfig {
                       .hasAnyAuthority("ADMIN")
                       .requestMatchers(new AntPathRequestMatcher("/secured/**"))
                       .hasAnyAuthority(ADMIN, MANAGER, PREMIUM_USER, REGISTERED_USER)
+                      .requestMatchers(new AntPathRequestMatcher("/premium/**"))
+                      .hasAnyAuthority(PREMIUM_USER)
                       .requestMatchers("/registration.xhtml")
                       .permitAll()
                       .requestMatchers("/resetPassword.xhtml")
