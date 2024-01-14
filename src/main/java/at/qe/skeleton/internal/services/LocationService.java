@@ -9,6 +9,7 @@ import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
+import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -47,9 +48,11 @@ public class LocationService {
    * @return List of {@link LocationAnswerDTO}.
    */
   public List<LocationAnswerDTO> callApi(@NotNull String locationName, @Min(1) @Max(5) int limit)
-      throws FailedApiRequest {
+      throws FailedApiRequest, GeocodingApiReturnedEmptyListException {
     try {
       return geocodingApiRequestService.retrieveLocationsLonLat(locationName, limit);
+    } catch (GeocodingApiReturnedEmptyListException e) {
+      throw e;
     } catch (final Exception e) {
       String errorMessage =
           "An error occurred in the Geocoding api call with %s as the searched location"
@@ -71,7 +74,8 @@ public class LocationService {
    * @param locationSearchString the name of the location
    * @return a location with weather-data not older than the last full hour.
    */
-  public Location handleLocationSearch(String locationSearchString) throws FailedApiRequest {
+  public Location handleLocationSearch(String locationSearchString)
+      throws FailedApiRequest, GeocodingApiReturnedEmptyListException {
     // This method covers 3 cases:
     // 1. The searched location is already persisted and has up-to-date weather data.
     // 2. The searched location is already persisted but the weather data is out of date.

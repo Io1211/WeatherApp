@@ -29,16 +29,18 @@
     <ui:define name="content">
         <h:form id="weatherForm">
             <p:panel header="Location Search">
+                <p:autoComplete id="locationSearch" value="#{weatherApiDemoBean.locationSearchInput}"
+                                completeMethod="#{autoCompleteController.autoCompleteLocation}"
+                                style="margin-right: 10px;" emptyMessage="no results"/>
 
-                <p:autoComplete id="LocationAutoComplete" value="#{weatherApiDemoBean.locationSearchInput}"
-                                completeMethod="#{autoCompleteController.autoCompleteLocation}"/>
+
+                <p:commandButton value="Search" id="commitSearchRequest"
+                                 action="#{weatherApiDemoBean.performLocationSearch()}"
+                                 update="weatherForm">
+                </p:commandButton>
                 <br/>
-                <p:messages id="messages" showDetail="true" closable="true"/>
+                <p:messages id="message" showDetail="true"/>
             </p:panel>
-            <p:commandButton value="CommitSearchRequest" id="commitSearchRequest"
-                             action="#{weatherApiDemoBean.performLocationSearch()}"
-                             update="weatherForm">
-            </p:commandButton>
 
             <p:panel header="Request" id="Request">
                 <div style="height: 50px">

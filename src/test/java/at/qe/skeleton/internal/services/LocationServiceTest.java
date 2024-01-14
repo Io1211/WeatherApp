@@ -11,6 +11,7 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.model.LocationId;
 import at.qe.skeleton.internal.repositories.CurrentAndForecastAnswerRepository;
 import at.qe.skeleton.internal.repositories.LocationRepository;
+import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import org.apache.commons.lang3.SerializationUtils;
+import org.junit.Before;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +78,17 @@ public class LocationServiceTest {
             CurrentAndForecastAnswerDTO.class);
   }
 
+  @BeforeEach
+  public void prepareMock() {
+    // inject mocked api services
+    ReflectionTestUtils.setField(
+        locationService, "geocodingApiRequestService", mockedGeocodingRequestService);
+    ReflectionTestUtils.setField(
+        currentAndForecastAnswerService,
+        "weatherApiRequestService",
+        mockedWeatherApiRequestService);
+  }
+
   /**
    * Takes a LocationAnswerDTO and builds a Mock Location out of it.
    *
@@ -117,13 +130,6 @@ public class LocationServiceTest {
 
   @Test
   public void handleLocationSearchTest() throws Exception {
-    // inject mocked api services
-    ReflectionTestUtils.setField(
-        locationService, "geocodingApiRequestService", mockedGeocodingRequestService);
-    ReflectionTestUtils.setField(
-        currentAndForecastAnswerService,
-        "weatherApiRequestService",
-        mockedWeatherApiRequestService);
 
     // setup search and mocking parameters
     String searchedLocationName = "Munich";
@@ -316,5 +322,18 @@ public class LocationServiceTest {
         "There should be exactly one location in the database at this point");
 
     locationAssertions(location, searchedLocationDTO);
+  }
+
+  @Test
+  public void callApiShouldThrowGeocodingEmptyListException()
+      throws GeocodingApiReturnedEmptyListException {
+    String locationSearchString = "notAValidLocation";
+    int limit = 5;
+    when(mockedGeocodingRequestService.retrieveLocationsLonLat(locationSearchString, limit))
+        .thenThrow(new GeocodingApiReturnedEmptyListException("geocodingApiReturnedEmptyList"));
+
+    Assertions.assertThrows(
+        GeocodingApiReturnedEmptyListException.class,
+        () -> locationService.callApi(locationSearchString, limit));
   }
 }

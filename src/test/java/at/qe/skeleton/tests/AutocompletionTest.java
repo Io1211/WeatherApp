@@ -1,14 +1,12 @@
 package at.qe.skeleton.tests;
 
-import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
-import at.qe.skeleton.internal.model.CurrentAndForecastAnswer;
-import at.qe.skeleton.internal.model.Location;
-import at.qe.skeleton.internal.services.CurrentAndForecastAnswerService;
+
 import at.qe.skeleton.internal.services.LocationService;
-import at.qe.skeleton.internal.services.LocationServiceTest;
+
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
-import at.qe.skeleton.internal.ui.beans.WeatherApiDemoBean;
+import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
+
 import at.qe.skeleton.internal.ui.controllers.AutoCompleteController;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,19 +14,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.Before;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.*;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.time.ZoneId;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -65,7 +59,8 @@ public class AutocompletionTest {
   // and country
   // of that Location
   @Test
-  public void autoCompleteLocationTest() throws FailedApiRequest {
+  public void autoCompleteLocationTest()
+      throws FailedApiRequest, GeocodingApiReturnedEmptyListException {
     String query = "Rom";
     String queryToLowerCase = query.toLowerCase();
 
