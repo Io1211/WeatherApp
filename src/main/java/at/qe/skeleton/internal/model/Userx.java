@@ -3,6 +3,7 @@ package at.qe.skeleton.internal.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import org.hibernate.annotations.CreationTimestamp;
@@ -37,7 +38,7 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   @UpdateTimestamp private LocalDateTime updateDate;
 
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
-  private Set<Favorite> favorites;
+  private List<Favorite> favorites;
 
   @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
   private FavoriteDataConfig favoriteDataConfig;
@@ -125,11 +126,11 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
     this.roles = roles;
   }
 
-  public Set<Favorite> getFavorites() {
+  public List<Favorite> getFavorites() {
     return favorites;
   }
 
-  public void setFavorites(Set<Favorite> favorites) {
+  public void setFavorites(List<Favorite> favorites) {
     this.favorites = favorites;
   }
 

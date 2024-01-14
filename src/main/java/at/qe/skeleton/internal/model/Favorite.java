@@ -74,5 +74,28 @@ public class Favorite implements Persistable<String>, Serializable {
     return (null == id);
   }
 
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 59 * hash + Objects.hashCode(this.id);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (!(obj instanceof Favorite other)) {
+      return false;
+    }
+    return Objects.equals(this.id, other.id);
+  }
+
+  @Override
+  public String toString() {
+    return "at.qe.skeleton.model.Favorite[ id=" + id + " ]";
+  }
+
   @Serial private static final long serialVersionUID = 1;
 }
