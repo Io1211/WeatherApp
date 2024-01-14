@@ -8,20 +8,52 @@
 
 <head>
     <title>Unused: Footer</title>
+    <style>
+        body {
+            font-family: 'MS UI Gothic', sans-serif;
+            margin: 0; /* Zurücksetzen des Seitenrandes */
+            padding: 0; /* Zurücksetzen des Seitenpolsters */
+        }
+
+        .footer-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f1f1f1;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            margin: 0;
+            padding: 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .status {
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 <ui:composition>
 
-    <div style="float: right;">
-        <ui:fragment rendered="#{sessionInfoBean.loggedIn}">
-            Logged in as #{sessionInfoBean.currentUserName} [#{sessionInfoBean.currentUserRoles}]
-        </ui:fragment>
-        <ui:fragment rendered="#{!sessionInfoBean.loggedIn}">
-            Not logged in
-        </ui:fragment>
+    <div class="footer-container">
+        <div class="brand">G8T2</div>
+        <div class="status">
+            <ui:fragment rendered="#{sessionInfoBean.loggedIn}">
+                Logged in as #{sessionInfoBean.currentUserName} [#{sessionInfoBean.currentUserRoles}]
+            </ui:fragment>
+            <ui:fragment rendered="#{!sessionInfoBean.loggedIn}">
+                Not logged in
+            </ui:fragment>
+        </div>
     </div>
 
 </ui:composition>
 </body>
 </html>
-
