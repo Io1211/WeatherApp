@@ -8,7 +8,8 @@
     <ui:define name="content">
         <h:form id="config_form">
             <p:orderList value="#{overviewConfigBean.favorites}" var="favorite"
-                         itemLabel="#{favorite.location.city}" itemValue="#{favorite}"/>
+                         itemLabel="#{favorite.location.city}" itemValue="#{favorite}"
+                         converter="#{favoriteConverter}"/>
             <p:commandButton id="submit" value="Save" action="#{overviewConfigBean.save}"/>
         </h:form>
     </ui:define>

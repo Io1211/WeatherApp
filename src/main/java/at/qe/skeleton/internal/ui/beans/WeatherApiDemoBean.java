@@ -31,6 +31,8 @@ public class WeatherApiDemoBean {
 
   @Autowired private UserxService userxService;
 
+  @Autowired private FavoriteService favoriteService;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
   private String searchedWeather;
@@ -84,7 +86,7 @@ public class WeatherApiDemoBean {
     var favorite = new Favorite();
     favorite.setLocation(this.location);
 
-    this.userxService.toggleFavorite(user, favorite);
+    this.favoriteService.toggleFavorite(user, favorite);
   }
 
   public String getSearchedWeather() {
