@@ -1,22 +1,21 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
-import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
+import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
@@ -75,7 +74,7 @@ public class WeatherApiDemoBean {
               new FacesMessage(
                   FacesMessage.SEVERITY_INFO,
                   "",
-                  "Sorry, we could´nt find a location with the name: `%s`"
+                  "Sorry, we couldn't find a location with the name: `%s`"
                       .formatted(locationSearchInput)));
       return;
     }
@@ -113,5 +112,3 @@ public class WeatherApiDemoBean {
     this.weatherDTO = weatherDTO;
   }
 }
-
-// todo: introduce error handling
