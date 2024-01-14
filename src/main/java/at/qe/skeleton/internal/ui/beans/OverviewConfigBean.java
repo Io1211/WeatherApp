@@ -4,6 +4,8 @@ import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.UserxService;
 import jakarta.annotation.PostConstruct;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
@@ -27,23 +29,36 @@ public class OverviewConfigBean {
 
   @PostConstruct
   private void init() {
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    this.user = userxService.loadUser(auth.getName());
+    try {
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      this.user = userxService.loadUser(auth.getName());
 
-    favorites =
-        user.getFavorites().stream()
-            .sorted(Comparator.comparingInt(Favorite::getPriority))
-            .toList();
+      favorites =
+          user.getFavorites().stream()
+              .sorted(Comparator.comparingInt(Favorite::getPriority))
+              .toList();
+    } catch (Exception e) {
+      this.addMessage("An error occurred while loading the favorites", FacesMessage.SEVERITY_ERROR);
+    }
   }
 
   public void save() {
-    for (int i = 0; i < favorites.size(); i++) {
-      // todo: fix this by creating a converter
-      //      System.out.println(favorites.get(i).getPriority());
-      favorites.get(i).setPriority(i);
+    try {
+      for (int i = 0; i < favorites.size(); i++) {
+        favorites.get(i).setPriority(i);
+      }
+      this.user.setFavorites(favorites);
+      userxService.saveUser(this.user);
+    } catch (Exception e) {
+      this.addMessage("An error occurred while saving the changes", FacesMessage.SEVERITY_ERROR);
+      return;
     }
-    this.user.setFavorites(favorites);
-    userxService.saveUser(this.user);
+
+    this.addMessage("Changes saved", FacesMessage.SEVERITY_INFO);
+  }
+
+  private void addMessage(String summary, FacesMessage.Severity severity) {
+    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
   }
 
   public List<Favorite> getFavorites() {

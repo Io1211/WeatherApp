@@ -2,15 +2,16 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:ng="http://xmlns.jcp.org/jsf/passthrough"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
         <h:form id="config_form">
+            <p:messages id="messages" showDetail="false" autoUpdate="true" closable="true"/>
             <p:orderList value="#{overviewConfigBean.favorites}" var="favorite"
                          itemLabel="#{favorite.location.city}" itemValue="#{favorite}"
-                         converter="#{favoriteConverter}"/>
-            <p:commandButton id="submit" value="Save" action="#{overviewConfigBean.save}"/>
+                         converter="#{favoriteConverter}" responsive="true"/>
+            <p:commandButton id="submit" value="Save" action="#{overviewConfigBean.save}" update="messages"
+                             style="margin-top: 10px;"/>
         </h:form>
     </ui:define>
 </ui:composition>
