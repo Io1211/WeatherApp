@@ -2,9 +2,11 @@ package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
+import at.qe.skeleton.internal.repositories.UserxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.mail.MailException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;
@@ -18,8 +20,9 @@ import java.util.Set;
 @Scope("application")
 public class RegistrationService {
 
-  @Autowired private UserxService userService;
+  @Autowired private UserxRepository userRepository;
 
+  @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private EmailService emailService;
 
   @Autowired private TokenService tokenService;
@@ -36,10 +39,10 @@ public class RegistrationService {
    * email is invalid. Sets the user's role to REGISTERED_USER and enabled to false.
    */
   public void registerUser(Userx user, String token) {
-    if (userService.loadUser(user.getUsername()) != null) {
+    if (userRepository.findFirstByUsername(user.getUsername()) != null) {
       throw new RuntimeException("Username already exists.");
     }
-    if (userService.loadUserByEmail(user.getEmail()) != null) {
+    if (userRepository.findFirstByEmail(user.getEmail()) != null) {
       throw new RuntimeException("Email already exists.");
     }
     user.setRoles(Set.of(UserxRole.REGISTERED_USER));
@@ -49,17 +52,41 @@ public class RegistrationService {
     } catch (MailException e) {
       throw new RuntimeException("Invalid Email.");
     }
-    userService.saveUser(user);
+    userRepository.save(user);
   }
 
   /** Confirms the registration of a user. Throws a RuntimeException if the token is invalid. */
   public void confirmRegistrationOfUser(String username, String token, String insertedToken) {
-    Userx user = userService.loadUser(username);
+    Userx user = userRepository.findFirstByUsername(username);
     if (tokenService.validateToken(insertedToken, token)) {
       user.setEnabled(true);
-      userService.saveUser(user);
+      user.setPassword(passwordEncoder.encode(user.getPassword()));
+      userRepository.save(user);
     } else {
       throw new RuntimeException("Invalid token.");
     }
+  }
+
+  public void resendRegistrationEmailToUser(String email, String token) {
+    Userx user = userRepository.findFirstByEmail(email);
+    if (user == null) {
+      throw new RuntimeException("Email does not exist.");
+    }
+    if (user.isEnabled()) {
+      throw new RuntimeException("User is already enabled.");
+    }
+    try {
+      sendRegistrationEmail(user.getEmail(), token);
+    } catch (MailException e) {
+      throw new RuntimeException("Invalid Email.");
+    }
+  }
+
+  public Userx loadUserByEmail(String email) {
+    return userRepository.findFirstByEmail(email);
+  }
+
+  public Userx loadUserByUsername(String username) {
+    return userRepository.findFirstByUsername(username);
   }
 }

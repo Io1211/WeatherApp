@@ -81,7 +81,7 @@ public class PasswordResetBean {
       addMessage("User not found for email " + getEmail(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
-    return "resetPassword";
+    return "reset_password";
   }
 
   public boolean validatePasswordResetToken() {
