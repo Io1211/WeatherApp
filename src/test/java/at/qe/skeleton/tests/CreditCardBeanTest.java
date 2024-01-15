@@ -1,6 +1,5 @@
 package at.qe.skeleton.tests;
 
-import at.qe.skeleton.internal.model.CardType;
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
@@ -81,4 +79,32 @@ public class CreditCardBeanTest {
             assertEquals("credit_card_details.xhtml", result);
         }
     }
+
+    @Test
+    public void updateCreditCard() {
+        try (MockedStatic<FacesContext> mockedFacesContext = Mockito.mockStatic(FacesContext.class)) {
+            FacesContext facesContextMock = Mockito.mock(FacesContext.class);
+            mockedFacesContext.when(FacesContext::getCurrentInstance).thenReturn(facesContextMock);
+
+            Userx mockedUser = mock(Userx.class);
+            when(sessionInfoBean.getCurrentUser()).thenReturn(mockedUser);
+            CreditCard testCreditCard = new CreditCard();
+            testCreditCard.setUserId(mockedUser);
+            when(sessionInfoBean.getCurrentUser()).thenReturn(mockedUser);
+
+            creditCardBean.setCreditCard(testCreditCard);
+
+            String result = creditCardBean.updateCreditCard();
+
+            verify(creditCardService, times(1)).saveCreditCard(testCreditCard);
+
+            verify(mockedUser, times(1)).setCreditCard(testCreditCard);
+
+            assertEquals("credit_card_details.xhtml", result);
+        }
+    }
+
+
+
+
 }

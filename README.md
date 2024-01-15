@@ -28,6 +28,13 @@ export SWA_API_KEY=<api-key>
 Alternatively you can use `.env`-files. In all cases, ensure that your 
 confidential API key never leaves your device unencrypted.
 
+For the email service to work, you need an email token that you can connect to 
+our email server with the email address group8weatherapp@gmail.com:
+
+```bash
+export SWA_EMAIL_PASSWORD=<email-token>
+```
+
 This project works with Java 17.
 Execute  "mvn spring-boot:run" to start the skeleton project and connect to
 http://localhost:8080/ to access the skeleton web application. You may login
