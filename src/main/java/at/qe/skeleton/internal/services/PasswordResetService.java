@@ -7,8 +7,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Random;
-
+/**
+ * Service for managing the password reset.
+ *
+ * <p>This service is used to send a password reset email to the user and to reset the password.
+ */
 @Component
 @Scope("application")
 public class PasswordResetService {

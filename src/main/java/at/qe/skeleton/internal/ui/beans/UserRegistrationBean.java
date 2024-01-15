@@ -1,19 +1,22 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.internal.model.Userx;
-import at.qe.skeleton.internal.model.UserxRole;
-import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.RegistrationService;
 import at.qe.skeleton.internal.services.TokenService;
-import at.qe.skeleton.internal.services.UserxService;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
-
+/**
+ * Bean for managing the registration of new users.{@link RegistrationService}
+ *
+ * <p>This bean is used to register a new user and to confirm the registration. The user is
+ * registered by entering the username, password and email address. The user is confirmed by
+ * entering the token that was sent to the user's email address. This class is used in the
+ * registration.xhtml and the confirm_registration.xhtml file.
+ */
 @Component
 @Scope("session")
 public class UserRegistrationBean {

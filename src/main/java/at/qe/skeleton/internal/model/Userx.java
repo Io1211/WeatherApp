@@ -52,6 +52,10 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   boolean enabled;
 
+  @OneToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "credit_card_id", referencedColumnName = "id")
+  private CreditCard creditCard;
+
   @ElementCollection(targetClass = UserxRole.class, fetch = FetchType.EAGER)
   @CollectionTable(name = "Userx_UserxRole")
   @Enumerated(EnumType.STRING)
@@ -172,6 +176,14 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   public void setUpdateDate(LocalDateTime updateDate) {
     this.updateDate = updateDate;
+  }
+
+  public CreditCard getCreditCard() {
+    return creditCard;
+  }
+
+  public void setCreditCard(CreditCard creditCard) {
+    this.creditCard = creditCard;
   }
 
   @Override

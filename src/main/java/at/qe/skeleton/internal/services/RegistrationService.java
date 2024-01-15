@@ -11,6 +11,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
+/**
+ * Service for managing the registration of new users.
+ *
+ * <p>This service is used to register a new user and to confirm the registration.
+ */
 @Component
 @Scope("application")
 public class RegistrationService {
@@ -29,6 +34,10 @@ public class RegistrationService {
         "\nYour token: " + token + "\n\nIf you did not register, please ignore this email.");
   }
 
+  /**
+   * Registers a new user. Throws a RuntimeException if the username or email already exists or
+   * email is invalid. Sets the user's role to REGISTERED_USER and enabled to false.
+   */
   public void registerUser(Userx user, String token) {
     if (userRepository.findFirstByUsername(user.getUsername()) != null) {
       throw new RuntimeException("Username already exists.");
@@ -46,6 +55,7 @@ public class RegistrationService {
     userRepository.save(user);
   }
 
+  /** Confirms the registration of a user. Throws a RuntimeException if the token is invalid. */
   public void confirmRegistrationOfUser(String username, String token, String insertedToken) {
     Userx user = userRepository.findFirstByUsername(username);
     if (tokenService.validateToken(insertedToken, token)) {
