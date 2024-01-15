@@ -16,93 +16,95 @@ import java.util.List;
 /**
  * Bean for managing the credit card details of the current user.{@link CreditCardService}
  *
- * <p> This bean is used to manage the credit card of the current user.
- * The credit card details are shown to the user in the input fields if there already exists one.
- * This class is used in the credit_card_details.xhtml file.
+ * <p>This bean is used to manage the credit card of the current user. The credit card details are
+ * shown to the user in the input fields if there already exists one. This class is used in the
+ * credit_card_details.xhtml file.
  */
 @Component
 @Scope("session")
 public class CreditCardBean {
 
-    private CreditCard creditCard;
+  private CreditCard creditCard;
 
-    @Autowired SessionInfoBean sessionInfoBean;
+  @Autowired SessionInfoBean sessionInfoBean;
 
-    @Autowired private CreditCardService creditCardService;
+  @Autowired private CreditCardService creditCardService;
 
-    @Autowired private CreditCardRepository creditCardRepository;
+  @Autowired private CreditCardRepository creditCardRepository;
 
-    private List<CardType> cardTypes;
+  private List<CardType> cardTypes;
 
-    /**
-     * Initializes the bean to show the current user's credit card details to the user in the input fields.
-     * If the user does not have a credit card yet, a new credit card is created and the fields are empty.
-     */
-    @PostConstruct
-    public void init() {
-        cardTypes = Arrays.asList(CardType.values());
-        loadCurrentUserCreditCard();
+  /**
+   * Initializes the bean to show the current user's credit card details to the user in the input
+   * fields. If the user does not have a credit card yet, a new credit card is created and the
+   * fields are empty.
+   */
+  @PostConstruct
+  public void init() {
+    cardTypes = Arrays.asList(CardType.values());
+    loadCurrentUserCreditCard();
+  }
+
+  /**
+   * Loads the credit card of the current user if it exists otherwise it returns a new credit card.
+   */
+  private void loadCurrentUserCreditCard() {
+    String username = sessionInfoBean.getCurrentUser().getUsername();
+    CreditCard existingCard = creditCardRepository.findByUserId_Username(username);
+    if (existingCard != null) {
+      this.creditCard = existingCard;
+    } else {
+      this.creditCard = new CreditCard();
     }
+  }
 
-    /**
-     * Loads the credit card of the current user if it exists otherwise it returns a new credit card.
-     */
-    private void loadCurrentUserCreditCard() {
-        String username = sessionInfoBean.getCurrentUser().getUsername();
-        CreditCard existingCard = creditCardRepository.findByUserId_Username(username);
-        if (existingCard != null) {
-            this.creditCard = existingCard;
-        } else {
-            this.creditCard = new CreditCard();
-        }
-    }
+  public List<CardType> getCardTypes() {
+    return cardTypes;
+  }
 
-    public List<CardType> getCardTypes() {
-        return cardTypes;
-    }
+  public CreditCard getCreditCard() {
+    return creditCard;
+  }
 
-    public CreditCard getCreditCard() {
-        return creditCard;
-    }
+  private void addMessage(String summary) {
+    FacesContext.getCurrentInstance()
+        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, "detail"));
+  }
 
-    private void addMessage(String summary) {
-        FacesContext.getCurrentInstance()
-                .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, "detail"));
+  /**
+   * Saves the credit card of the current user. If the credit card already exists, it is updated.
+   *
+   * @return the page to navigate to after saving the credit card.
+   */
+  public String saveCreditCard() {
+    try {
+      creditCard.setUserId(sessionInfoBean.getCurrentUser());
+      creditCardService.saveCreditCard(creditCard);
+      sessionInfoBean.getCurrentUser().setCreditCard(creditCard);
+      addMessage("Credit card saved.");
+    } catch (IllegalArgumentException e) {
+      addMessage(e.getMessage());
+      return null;
     }
+    return "credit_card_details.xhtml";
+  }
 
-    /**
-     * Saves the credit card of the current user.
-     * If the credit card already exists, it is updated.
-     * @return the page to navigate to after saving the credit card.
-     */
-    public String saveCreditCard() {
-        try {
-            creditCard.setUserId(sessionInfoBean.getCurrentUser());
-            creditCardService.saveCreditCard(creditCard);
-            sessionInfoBean.getCurrentUser().setCreditCard(creditCard);
-            addMessage("Credit card saved.");
-        } catch (IllegalArgumentException e) {
-            addMessage(e.getMessage());
-            return null;
-        }
-        return "credit_card_details.xhtml";
-    }
+  /**
+   * Update the credit card of the current user by deleting the old one and saving the new one..
+   *
+   * @return the page to navigate to after the update.
+   */
+  public String updateCreditCard() {
+    creditCardService.deleteCreditCardFromUser(sessionInfoBean.getCurrentUserName());
+    return saveCreditCard();
+  }
 
-    /**
-     * Update the credit card of the current user by deleting the old one and saving the new one..
-     * @return the page to navigate to after the update.
-     */
-    public String updateCreditCard() {
-        creditCardService.deleteCreditCardFromUser(sessionInfoBean.getCurrentUserName());
-        return saveCreditCard();
-    }
-
-    /**
-     * This methode is needed to test the class
-     *
-     * @param mockCard
-     */
-    public void setCreditCard(CreditCard mockCard) {
-        this.creditCard = mockCard;
-    }
+  /**
+   * This methode is needed to test the class
+   *
+   * @param mockCard
+   */
+  public void setCreditCard(CreditCard mockCard) {
+    this.creditCard = mockCard;
+  }
 }

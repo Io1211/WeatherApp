@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 /**
  * Service for managing the password reset.
  *
- * <p> This service is used to send a password reset email to the user and to reset the password.
- * */
+ * <p>This service is used to send a password reset email to the user and to reset the password.
+ */
 @Component
 @Scope("application")
 public class PasswordResetService {

@@ -12,9 +12,8 @@ import java.util.Set;
 /**
  * Service for managing the registration of new users.
  *
- * <p> This service is used to register a new user and to confirm the registration.
+ * <p>This service is used to register a new user and to confirm the registration.
  */
-
 @Component
 @Scope("application")
 public class RegistrationService {
@@ -33,11 +32,9 @@ public class RegistrationService {
   }
 
   /**
-   * Registers a new user.
-   * Throws a RuntimeException if the username or email already exists or email is invalid.
-   * Sets the user's role to REGISTERED_USER and enabled to false.
-   *
-   * */
+   * Registers a new user. Throws a RuntimeException if the username or email already exists or
+   * email is invalid. Sets the user's role to REGISTERED_USER and enabled to false.
+   */
   public void registerUser(Userx user, String token) {
     if (userService.loadUser(user.getUsername()) != null) {
       throw new RuntimeException("Username already exists.");
@@ -55,10 +52,7 @@ public class RegistrationService {
     userService.saveUser(user);
   }
 
-  /**
-   * Confirms the registration of a user.
-   * Throws a RuntimeException if the token is invalid.
-   */
+  /** Confirms the registration of a user. Throws a RuntimeException if the token is invalid. */
   public void confirmRegistrationOfUser(String username, String token, String insertedToken) {
     Userx user = userService.loadUser(username);
     if (tokenService.validateToken(insertedToken, token)) {

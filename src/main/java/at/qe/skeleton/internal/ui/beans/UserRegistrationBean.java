@@ -12,12 +12,11 @@ import org.springframework.stereotype.Component;
 /**
  * Bean for managing the registration of new users.{@link RegistrationService}
  *
- * <p> This bean is used to register a new user and to confirm the registration.
- * The user is registered by entering the username, password and email address.
- * The user is confirmed by entering the token that was sent to the user's email address.
- * This class is used in the registration.xhtml and the confirm_registration.xhtml file.
+ * <p>This bean is used to register a new user and to confirm the registration. The user is
+ * registered by entering the username, password and email address. The user is confirmed by
+ * entering the token that was sent to the user's email address. This class is used in the
+ * registration.xhtml and the confirm_registration.xhtml file.
  */
-
 @Component
 @Scope("session")
 public class UserRegistrationBean {

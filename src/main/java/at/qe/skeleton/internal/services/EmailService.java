@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 /**
  * Service for sending emails.
  *
- * <p> This service is used to send emails to the user.
- * The email server is configured in the application.properties file.
+ * <p>This service is used to send emails to the user. The email server is configured in the
+ * application.properties file.
  */
 @Component
 @Scope("application")
