@@ -1,11 +1,11 @@
 package at.qe.skeleton.internal.model;
 
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
-import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.domain.Persistable;
@@ -37,12 +37,19 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   @UpdateTimestamp private LocalDateTime updateDate;
 
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
+  private List<Favorite> favorites;
+
+  @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
+  private FavoriteDataConfig favoriteDataConfig;
+
   private String password;
 
   private String firstName;
   private String lastName;
   private String email;
   private String phone;
+
   boolean enabled;
 
   @OneToOne(cascade = CascadeType.ALL)
@@ -53,6 +60,11 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   @CollectionTable(name = "Userx_UserxRole")
   @Enumerated(EnumType.STRING)
   private Set<UserxRole> roles;
+
+  @PrePersist
+  public void onCreate() {
+    this.setFavoriteDataConfig(new FavoriteDataConfig());
+  }
 
   public String getUsername() {
     return username;
@@ -116,6 +128,22 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   public void setRoles(Set<UserxRole> roles) {
     this.roles = roles;
+  }
+
+  public List<Favorite> getFavorites() {
+    return favorites;
+  }
+
+  public void setFavorites(List<Favorite> favorites) {
+    this.favorites = favorites;
+  }
+
+  public FavoriteDataConfig getFavoriteDataConfig() {
+    return favoriteDataConfig;
+  }
+
+  public void setFavoriteDataConfig(FavoriteDataConfig favoriteDataConfig) {
+    this.favoriteDataConfig = favoriteDataConfig;
   }
 
   public Userx getCreateUser() {
