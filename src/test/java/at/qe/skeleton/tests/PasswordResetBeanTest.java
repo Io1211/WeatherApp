@@ -4,7 +4,6 @@ import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.PasswordResetService;
 import at.qe.skeleton.internal.services.TokenService;
 import at.qe.skeleton.internal.ui.beans.PasswordResetBean;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for the PasswordResetBean class. {@link PasswordResetBean} */
 public class PasswordResetBeanTest {
   @Mock private EmailService emailService;
 

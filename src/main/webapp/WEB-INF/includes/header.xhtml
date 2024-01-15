@@ -28,6 +28,10 @@
             <p:menuitem value="Configure overview" url="/secured/overview_config.xhtml"
                         rendered="#{sessionInfoBean.loggedIn}"/>
 
+            <p:submenu label="User Info" rendered="#{sessionInfoBean.loggedIn}">
+                <p:menuitem value="My Credit Card" url="/userInfo/credit_card_details.xhtml"/>
+            </p:submenu>
+
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
