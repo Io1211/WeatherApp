@@ -17,9 +17,7 @@ import java.io.Serializable;
 public class CreditCard implements Persistable<Long>, Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long
-      id; // Long is used for the ID because, because we need a wide range of values if we save a
-          // lot of credit cards.
+  private Long id; // Long is used for the ID because, because we need a wide range of values.
 
   /**
    * Gets the {@link Userx} entity associated with this credit card.
@@ -32,14 +30,13 @@ public class CreditCard implements Persistable<Long>, Serializable {
   private Userx userId;
 
   @Column(name = "number")
-  private String
-      number; // String is used for the card number because we don't need to do any calculations
-              // with it.
+  private String number; // String is used because we don't need to do any calculations with it.
 
   @Column(name = "expiration_date")
   private String
       expirationDate; // String is used for the expiration date because afterwards we don't need to
-                      // do any calculations with it.
+
+  // do any calculations with it.
 
   @Column(name = "cardtype")
   @Enumerated(EnumType.STRING)
