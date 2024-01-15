@@ -10,7 +10,7 @@ import org.springframework.data.domain.Persistable;
 
 /** Entity to persist a users favorite locations */
 @Entity
-public class Favorite implements Persistable<String>, Serializable {
+public class Favorite implements Persistable<Long>, Serializable {
 
   @Id @GeneratedValue private Long id;
 
@@ -65,8 +65,8 @@ public class Favorite implements Persistable<String>, Serializable {
   }
 
   @Override
-  public String getId() {
-    return String.valueOf(this.id);
+  public Long getId() {
+    return this.id;
   }
 
   @Override
