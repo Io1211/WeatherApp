@@ -1,9 +1,9 @@
 package at.qe.skeleton.tests;
 
 import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.repositories.UserxRepository;
 import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.PasswordResetService;
-import at.qe.skeleton.internal.services.UserxService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,11 +15,13 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for the PasswordResetService class. {@link PasswordResetService} */
 class PasswordResetServiceTest {
 
   @Mock private EmailService emailService;
 
-  @Mock private UserxService userxService;
+  @Mock private UserxRepository userxRepository;
 
   @InjectMocks private PasswordResetService passwordResetService;
 
@@ -33,7 +35,7 @@ class PasswordResetServiceTest {
     String email = "test@example.com";
     String token = "1234";
     Userx mockUser = new Userx();
-    when(userxService.loadUserByEmail(email)).thenReturn(mockUser);
+    when(userxRepository.findFirstByEmail(email)).thenReturn(mockUser);
     passwordResetService.sendPasswordResetEmailAndToken(email, token);
     verify(emailService).sendEmail(eq(email), eq("Reset your password"), contains("Your token"));
   }
@@ -42,7 +44,7 @@ class PasswordResetServiceTest {
   void testSendPasswordResetEmailWithInvalidEmail() {
     String email = "wrong@example.com";
     String token = "1234";
-    when(userxService.loadUserByEmail(email)).thenReturn(null);
+    when(userxRepository.findFirstByEmail(email)).thenReturn(null);
     assertThrows(
         IllegalArgumentException.class,
         () -> {

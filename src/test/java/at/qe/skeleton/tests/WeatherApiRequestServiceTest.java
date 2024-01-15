@@ -1,29 +1,25 @@
 package at.qe.skeleton.tests;
 
-import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
-import at.qe.skeleton.external.services.WeatherApiRequestService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-
-import org.junit.jupiter.api.*;
-
-import org.mockito.Mockito;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.MediaType;
-
-import org.springframework.test.web.client.MockRestServiceServer;
-
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
-import java.io.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+
+import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
+import at.qe.skeleton.external.services.WeatherApiRequestService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.*;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 
 class WeatherApiRequestServiceTest {
 
@@ -98,6 +94,7 @@ class WeatherApiRequestServiceTest {
     Assertions.assertEquals(287.29, actualDTOCreationResult.currentWeather().temperature());
     Assertions.assertEquals(
         "Rain", actualDTOCreationResult.hourlyWeather().get(0).weather().title());
+    Assertions.assertEquals(0.13, actualDTOCreationResult.hourlyWeather().get(0).rain());
   }
 
   // todo: hier vllt eher noch überlegen was bei einem timeout passiert?
@@ -112,6 +109,8 @@ class WeatherApiRequestServiceTest {
         Exception.class,
         () -> disconnectedApiRequestService.retrieveCurrentAndForecastWeather(0, 0));
   }
+
+  // todo: add test for empty list as answer
 
   // the following represents another approach for testing api calls with a MockWebServer from
   // okhttp3 library.

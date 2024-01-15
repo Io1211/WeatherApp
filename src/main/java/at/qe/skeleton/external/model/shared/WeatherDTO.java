@@ -2,6 +2,9 @@ package at.qe.skeleton.external.model.shared;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * This class is part of the skeleton project provided for students of the course "Software
  * Architecture" offered by Innsbruck University. <br>
@@ -16,4 +19,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @param icon of the weather (can be used to retrieve images)
  */
 public record WeatherDTO(
-    long id, @JsonProperty("main") String title, String description, String icon) {}
+    long id, @JsonProperty("main") String title, String description, String icon)
+    implements Serializable {
+
+  @Serial private static final long serialVersionUID = 1;
+}

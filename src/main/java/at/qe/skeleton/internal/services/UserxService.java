@@ -2,6 +2,8 @@ package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.UserxRepository;
+import at.qe.skeleton.internal.services.AuditLogService;
+import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -10,9 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.util.Collection;
 
 /**
  * Service for accessing and manipulating user data.
@@ -26,12 +25,14 @@ public class UserxService {
 
   @Autowired private UserxRepository userRepository;
   @Autowired private PasswordEncoder passwordEncoder;
+  @Autowired private AuditLogService auditLogService;
 
   /**
    * Returns a collection of all users.
    *
    * @return
    */
+  @PreAuthorize("hasAuthority('ADMIN')")
   public Collection<Userx> getAllUsers() {
     return userRepository.findAll();
   }
@@ -42,6 +43,7 @@ public class UserxService {
    * @param username the username to search for
    * @return the user with the given username
    */
+  @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #username")
   public Userx loadUser(String username) {
     return userRepository.findFirstByUsername(username);
   }
@@ -54,10 +56,7 @@ public class UserxService {
    * @param user the user to save
    * @return the updated user
    */
-  public Userx loadUserByEmail(String email) {
-    return userRepository.findFirstByEmail(email);
-  }
-
+  @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #username")
   public Userx saveUser(Userx user) throws JpaSystemException {
     if (user.isNew()) {
       user.setCreateUser(getAuthenticatedUser());
@@ -71,6 +70,7 @@ public class UserxService {
     } else {
       user.setUpdateUser(getAuthenticatedUser());
     }
+    auditLogService.saveCreatedUserEntry(user);
     return userRepository.save(user);
   }
 
@@ -87,7 +87,7 @@ public class UserxService {
   @PreAuthorize("hasAuthority('ADMIN')")
   public void deleteUser(Userx user) {
     userRepository.delete(user);
-    // :TODO: write some audit log stating who and when this user was permanently deleted.
+    auditLogService.saveDeletedUserEntry(user);
   }
 
   private Userx getAuthenticatedUser() {
