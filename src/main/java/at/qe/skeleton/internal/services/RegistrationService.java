@@ -82,7 +82,11 @@ public class RegistrationService {
     }
   }
 
-  public Userx loadUsereByEmail(String email) {
+  public Userx loadUserByEmail(String email) {
     return userRepository.findFirstByEmail(email);
+  }
+
+  public Userx loadUserByUsername(String username) {
+    return userRepository.findFirstByUsername(username);
   }
 }
