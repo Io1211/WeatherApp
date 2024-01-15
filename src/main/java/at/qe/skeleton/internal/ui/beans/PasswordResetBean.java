@@ -9,6 +9,14 @@ import org.springframework.stereotype.Component;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 
+/**
+ * Bean for managing the password reset. {@link PasswordResetService}
+ *
+ * <p>This bean is used to send a password reset email to the user and to reset the password. The is
+ * used to send a password reset email to the user and to reset the password. The user is identified
+ * by the email address. This class is used in the reset_password.xhtml and the reset_password.xhtml
+ * file.
+ */
 @Component
 @Scope("session")
 public class PasswordResetBean {
