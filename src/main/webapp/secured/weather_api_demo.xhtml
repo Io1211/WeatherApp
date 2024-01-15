@@ -73,6 +73,11 @@
                                 value="#{weatherApiDemoBean.sunsetString}"/>
                     </h:panelGrid>
                 </div>
+                <p:commandButton id="toggleFavorite"
+                                 action="#{weatherApiDemoBean.toggleFavorite()}"
+                                 rendered="#{weatherApiDemoBean.weatherDTO != null}" icon="pi pi-heart"
+                                 styleClass="#{weatherApiDemoBean.isFavorite() ? 'rounded-button ui-button-help' : 'rounded-button ui-button-help ui-button-outlined'}"
+                                 update="toggleFavorite"/>
             </p:panel>
         </h:form>
     </ui:define>
