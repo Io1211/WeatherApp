@@ -1,12 +1,13 @@
 package at.qe.skeleton.internal.repositories;
 
 import at.qe.skeleton.internal.model.CreditCard;
-import at.qe.skeleton.internal.model.LocationId;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.Optional;
-
+/**
+ * Repository for managing {@link CreditCard} entities.
+ *
+ */
 public interface CreditCardRepository extends AbstractRepository<CreditCard, String> {
 
     @Query("SELECT c FROM CreditCard c WHERE c.number = :number")

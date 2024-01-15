@@ -10,12 +10,13 @@ import jakarta.faces.context.FacesContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
-/** Some very basic tests for UserBean. */
+/**
+ * Some very basic tests for UserBean. {@link CreditCardBean}
+ */
 public class CreditCardBeanTest {
 
     @InjectMocks private CreditCardBean creditCardBean;

@@ -11,6 +11,11 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+        * Service for accessing and manipulating credit card data.
+        *
+        * <p>This class saves, load and deletes credit card data. It also validates the expiration date.
+        */
 @Component
 @Scope("application")
 public class CreditCardService {
