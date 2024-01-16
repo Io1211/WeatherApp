@@ -90,11 +90,11 @@ public class WeatherApiDemoBean {
     this.weatherDTO =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
     this.isLocationAnswerDTOReady = true;
-    return "/secured/weather_api_demo.xhtml";
+    return "/weatherForecast.xhtml";
   }
 
   public String testRouting() {
-    return "/secured/weather_api_demo.xhtml";
+    return "/weatherForecast.xhtml";
   }
 
   public String getSunsetString() {

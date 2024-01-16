@@ -27,7 +27,7 @@
     Therefore, any changes made in one method will be reflected in the other within the same view scope.
     -->
     <ui:define name="content">
-        <h:form id="weatherForm">
+        <h:form id="weatherForm" rendered="#{weatherApiDemoBean.weatherDTO != null}">
             <p:panel header="Response" id="Response">
                 <div>
                     <h4>
@@ -52,7 +52,7 @@
                 </div>
                 <p:commandButton id="toggleFavorite"
                                  action="#{weatherApiDemoBean.toggleFavorite()}"
-                                 rendered="#{weatherApiDemoBean.weatherDTO != null}" icon="pi pi-heart"
+                                 rendered="#{sessionInfoBean.loggedIn}" icon="pi pi-heart"
                                  styleClass="#{weatherApiDemoBean.isFavorite() ? 'rounded-button ui-button-help' : 'rounded-button ui-button-help ui-button-outlined'}"
                                  update="toggleFavorite"/>
             </p:panel>
