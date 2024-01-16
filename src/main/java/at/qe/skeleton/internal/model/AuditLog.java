@@ -8,18 +8,22 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Entity for an AuditLog.
+ * Entity for an AuditLog. The audit log stores a message (string) which is generated when a user is
+ * saved (modified) or deleted. It contains a date, message and id.
  *
 */
 @Entity
 public class AuditLog implements Persistable<Long>, Serializable {
 
+    // Generate an id (long) to be able to store the audit log.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // The message saved is a string which is built depending on the manipulation of the user. 
     private String message;
 
+    // A timestamp is added to organize the audit logs and track role changes in a meaningful way.
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime date;
 
