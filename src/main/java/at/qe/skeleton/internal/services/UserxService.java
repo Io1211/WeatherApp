@@ -1,9 +1,12 @@
 package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.repositories.UserxRepository;
 import at.qe.skeleton.internal.services.AuditLogService;
 import java.util.Collection;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -94,4 +97,19 @@ public class UserxService {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     return userRepository.findFirstByUsername(auth.getName());
   }
+
+  public void activatePremium(Userx user) {
+      user.setRoles(Set.of(UserxRole.PREMIUM_USER));
+      userRepository.save(user);
+  }
+
+  public void deactivatePremium(Userx user) {
+      user.setRoles(Set.of(UserxRole.REGISTERED_USER));
+      userRepository.save(user);
+  }
+
+  public boolean isPremium(Userx user) {
+      return user.getRoles().contains(UserxRole.PREMIUM_USER);
+  }
+
 }
