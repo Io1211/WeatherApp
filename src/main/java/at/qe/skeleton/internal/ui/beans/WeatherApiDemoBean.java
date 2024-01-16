@@ -6,6 +6,7 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
+import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.time.Instant;
@@ -45,7 +46,7 @@ public class WeatherApiDemoBean {
 
   private String searchedWeather;
 
-  private String locationSearchInput;
+  private String locationSearchInput = "Wien, AT";
 
   private Location location;
   private CurrentAndForecastAnswerDTO weatherDTO;
@@ -64,6 +65,7 @@ public class WeatherApiDemoBean {
     this.locationSearchInput = locationSearchInput;
   }
 
+  @PostConstruct
   public String performLocationSearch() {
     try {
       this.location = locationService.handleLocationSearch(locationSearchInput);
