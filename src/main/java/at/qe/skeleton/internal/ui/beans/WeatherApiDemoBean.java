@@ -6,6 +6,7 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
+import at.qe.skeleton.internal.ui.controllers.AutoCompleteController;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -41,6 +42,8 @@ public class WeatherApiDemoBean {
   @Autowired private UserxService userxService;
 
   @Autowired private FavoriteService favoriteService;
+
+  @Autowired private AutoCompleteController autoCompleteController;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
@@ -95,10 +98,6 @@ public class WeatherApiDemoBean {
     return "/weatherForecast.xhtml?faces-redirect=true";
   }
 
-  public String testRouting() {
-    return "/weatherForecast.xhtml";
-  }
-
   public boolean isWeatherForecastView() {
     FacesContext context = FacesContext.getCurrentInstance();
     String viewId = context.getViewRoot().getViewId();
@@ -115,6 +114,12 @@ public class WeatherApiDemoBean {
   }
 
   public String getLocationLabel() {
+    if (location.getState() == null) {
+      return String.format("%s, %s", location.getCity(), location.getCountry());
+    }
+    if (location.getCountry() == null) {
+      return String.format("%s, %s", location.getCountry(), location.getState());
+    }
     return String.format(
         "%s, %s, %s", location.getCity(), location.getCountry(), location.getState());
   }
