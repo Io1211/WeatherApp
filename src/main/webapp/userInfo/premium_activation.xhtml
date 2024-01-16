@@ -10,8 +10,10 @@
     <ui:define name="content">
         <h:form id="premiumActivationForm">
             <h:panelGrid columns="2">
-                <p:commandButton value="Activate Premium" action="#{subscriptionBean.activatePremiumSubscription}" update=":premiumActivationForm"/>
-                <p:commandButton value="Deactivate Premium" action="#{subscriptionBean.deactivatePremiumSubscription}" update=":premiumActivationForm"/>
+                <p:commandButton value="Activate Premium" action="#{subscriptionBean.activatePremiumSubscription}"
+                                 update=":premiumActivationForm"/>
+                <p:commandButton value="Deactivate Premium" action="#{subscriptionBean.deactivatePremiumSubscription}"
+                                 update=":premiumActivationForm"/>
             </h:panelGrid>
 
         </h:form>

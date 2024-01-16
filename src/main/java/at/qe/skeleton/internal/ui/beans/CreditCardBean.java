@@ -66,9 +66,14 @@ public class CreditCardBean {
     return creditCard;
   }
 
-  private void addMessage(String summary) {
+  private void addErrorMessage(String summary) {
     FacesContext.getCurrentInstance()
         .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, "detail"));
+  }
+
+  private void addMessage(String summary) {
+    FacesContext.getCurrentInstance()
+        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, summary, "detail"));
   }
 
   /**
@@ -80,10 +85,9 @@ public class CreditCardBean {
     try {
       creditCard.setUserId(sessionInfoBean.getCurrentUser());
       creditCardService.saveCreditCard(creditCard);
-      sessionInfoBean.getCurrentUser().setCreditCard(creditCard);
       addMessage("Credit card saved.");
     } catch (IllegalArgumentException e) {
-      addMessage(e.getMessage());
+      addErrorMessage(e.getMessage());
       return null;
     }
     return "credit_card_details.xhtml";
@@ -98,9 +102,8 @@ public class CreditCardBean {
     try {
       creditCard.setUserId(sessionInfoBean.getCurrentUser());
       creditCardService.saveCreditCard(creditCard);
-      sessionInfoBean.getCurrentUser().setCreditCard(creditCard);
     } catch (IllegalArgumentException e) {
-      addMessage(e.getMessage());
+      addErrorMessage(e.getMessage());
       return null;
     }
     return "premium_activation_cc.xhtml";
@@ -117,7 +120,8 @@ public class CreditCardBean {
   }
 
   /**
-   * Update the credit card in the premium activation context by deleting the old one and saving the new one.
+   * Update the credit card in the premium activation context by deleting the old one and saving the
+   * new one.
    *
    * @return the page to navigate to after the update.
    */
@@ -125,6 +129,7 @@ public class CreditCardBean {
     creditCardService.deleteCreditCardFromUser(sessionInfoBean.getCurrentUserName());
     return saveCreditCardPremium();
   }
+
   /**
    * This methode is needed to test the class
    *

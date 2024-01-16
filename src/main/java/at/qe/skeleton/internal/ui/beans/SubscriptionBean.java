@@ -10,25 +10,23 @@ import org.springframework.stereotype.Component;
 @Scope("session")
 public class SubscriptionBean {
 
-    @Autowired private SubscriptionService subscriptionService;
+  @Autowired private SubscriptionService subscriptionService;
 
-    @Autowired SessionInfoBean sessionInfoBean;
+  @Autowired SessionInfoBean sessionInfoBean;
 
-    public String activatePremiumSubscription(){
-        Userx user = sessionInfoBean.getCurrentUser();
-        try{
-            subscriptionService.activatePremiumSubscription(user);
-            System.out.println("Subscription activated");
-            return "/success_page";
-            }
-        catch (RuntimeException e){
-            return "add_credit_card_sub.xhtml";
-        }
+  public String activatePremiumSubscription() {
+    Userx user = sessionInfoBean.getCurrentUser();
+    try {
+      subscriptionService.activatePremiumSubscription(user);
+      System.out.println("Subscription activated");
+      return "/success_page";
+    } catch (RuntimeException e) {
+      return "add_credit_card_sub.xhtml";
     }
+  }
 
-    public void deactivatePremiumSubscription(){
-        Userx user = sessionInfoBean.getCurrentUser();
-        subscriptionService.deactivatePremiumSubscription(user);
-    }
-
+  public void deactivatePremiumSubscription() {
+    Userx user = sessionInfoBean.getCurrentUser();
+    subscriptionService.deactivatePremiumSubscription(user);
+  }
 }

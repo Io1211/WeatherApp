@@ -108,4 +108,11 @@ public class SessionInfoBean implements Serializable {
     }
     return false;
   }
+
+  public void reloadCurrentUser() {
+    String currentUserName = getCurrentUserName();
+    if (!currentUserName.isEmpty()) {
+      currentUser = userService.loadUser(currentUserName);
+    }
+  }
 }

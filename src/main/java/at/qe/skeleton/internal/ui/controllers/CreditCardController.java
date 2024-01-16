@@ -33,7 +33,7 @@ public class CreditCardController {
 
   private void addMessage(String summary) {
     FacesContext.getCurrentInstance()
-            .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, "detail"));
+        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, "detail"));
   }
 
   public void setCreditCard(CreditCard creditCard) {
@@ -54,5 +54,5 @@ public class CreditCardController {
     } catch (IllegalArgumentException e) {
       addMessage(e.getMessage());
     }
-    }
+  }
 }

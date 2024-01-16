@@ -99,17 +99,16 @@ public class UserxService {
   }
 
   public void activatePremium(Userx user) {
-      user.setRoles(Set.of(UserxRole.PREMIUM_USER));
-      userRepository.save(user);
+    user.setRoles(Set.of(UserxRole.PREMIUM_USER));
+    userRepository.save(user);
   }
 
   public void deactivatePremium(Userx user) {
-      user.setRoles(Set.of(UserxRole.REGISTERED_USER));
-      userRepository.save(user);
+    user.setRoles(Set.of(UserxRole.REGISTERED_USER));
+    userRepository.save(user);
   }
 
   public boolean isPremium(Userx user) {
-      return user.getRoles().contains(UserxRole.PREMIUM_USER);
+    return user.getRoles().contains(UserxRole.PREMIUM_USER);
   }
-
 }
