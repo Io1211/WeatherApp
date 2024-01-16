@@ -8,7 +8,7 @@
       xml:lang="en">
 <body>
 <ui:composition>
-    <h:form>
+    <h:form id="headerForm">
 
         <p:menubar>
             <p:submenu label="User Submenu 1" rendered="#{sessionInfoBean.hasRole('REGISTERED_USER')}">
@@ -44,16 +44,13 @@
                                 style="margin-right: 10px;" emptyMessage="no results"/>
 
                 <p:commandButton value="Search" id="commitSearchRequest"
-                                 action="#{weatherApiDemoBean.performLocationSearch()}">
+                                 action="#{weatherApiDemoBean.performLocationSearch()}"
+                                 update=":headerForm">
                 </p:commandButton>
-                <br/>
-                <p:messages id="message" showDetail="true"/>
-                <br/>
             </p:menuitem>
 
         </p:menubar>
-
-
+        <p:messages id="message" showDetail="true"/>
     </h:form>
 </ui:composition>
 </body>

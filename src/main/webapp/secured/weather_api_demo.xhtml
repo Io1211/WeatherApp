@@ -28,20 +28,11 @@
     -->
     <ui:define name="content">
         <h:form id="weatherForm">
-            <p:panel header="Request" id="Request">
-                <div style="height: 50px">
-
-                    resulting api call to weatherApi:
-                    https://api.openweathermap.org/data/3.0/onecall?lat=#{weatherApiDemoBean.location.id.latitude}&amp;lon=#{weatherApiDemoBean.location.id.longitude}&amp;appid=passwort
-                </div>
-            </p:panel>
-            <br/>
-            <p:panel header="Response" id="Response" rendered="#{weatherApiDemoBean.isLocationAnswerDTOReady}">
+            <p:panel header="Response" id="Response">
                 <div>
-                    <h4>Location searched for:
+                    <h4>
                         #{weatherApiDemoBean.location.city},
                         #{weatherApiDemoBean.location.country}
-                        <!-- check wether this gets rendered even when state is null-->
                         <h:outputText value=",#{weatherApiDemoBean.location.state}"
                                       rendered="#{not empty weatherApiDemoBean.location.state}"/>
                     </h4>

@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.SessionScope;
 
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Component;
  * Architecture" offered by Innsbruck University.
  */
 @Component
-@Scope("view")
+@SessionScope
 public class WeatherApiDemoBean {
 
   @Autowired private CurrentAndForecastAnswerService currentAndForecastAnswerService;
@@ -62,6 +63,7 @@ public class WeatherApiDemoBean {
   }
 
   public String performLocationSearch() {
+    isLocationAnswerDTOReady = false;
     try {
       this.location = locationService.handleLocationSearch(locationSearchInput);
     } catch (FailedApiRequest e) {
@@ -81,7 +83,7 @@ public class WeatherApiDemoBean {
               new FacesMessage(
                   FacesMessage.SEVERITY_INFO,
                   "",
-                  "Sorry, we couldn't find a location with the name: `%s`"
+                  "Sorry, we couldn't find a location with the name: %s"
                       .formatted(locationSearchInput)));
       return null;
     }
