@@ -58,58 +58,59 @@
                             styleClass="#{weatherBean.isFavorite() ? 'rounded-button ui-button-help' : 'rounded-button ui-button-help ui-button-outlined'}"
                             update="toggleFavorite"/>
                     </h4>
+
                     <br/>
 
                     <h:panelGroup layout="block" style="display: flex;">
 
-                        <h5 style="margin-top:0">Current hourly Weather</h5>
-                        <h:panelGrid columns="3">
+                        <h5 style="margin-top: 0;">Current weather</h5>
+                        <h:panelGrid columns="2" >
 
-                            <h:outputText value="Weather Description:"/>
-                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().weather().description()}"/>
-                            <!-- TODO: add icons of weather here -->
+                            <h:outputText value="Weather Description: #{weatherBean.weatherDTO.currentWeather().weather().description()}"/>
                             <h:graphicImage value="#imgUrl"/>
-
+                            
                             <h:outputText value="Temperature: "/>
-                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().temperature()}"/>
-                            <h:outputText value="C"/>
+                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().temperature()} C"/>
 
                             <h:outputText value="FeelsLikeTemperature: "/>
-                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().feelsLikeTemperature()}"/>
-                            <h:outputText value="C"/>
+                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().feelsLikeTemperature()} C"/>
 
                             <h:outputText value="Wind Speed: "/>
-                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().windSpeed()}"/>
-                            <h:outputText value="m/s"/>
+                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().windSpeed()} m/s"/>
 
                             <h:outputText value="Wind direction: "/>
-                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().windDirection()}"/>
-                            <h:outputText value="metrol. deg"/>
+                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().windDirection()} metrol. deg"/>
 
-                            <h:outputText value="Pop: "/>
-                            <h:outputText value="???"/>
-                            <h:outputText value=""/>
-
-                            <h:outputText value="Hourly Temp: "/>
-                            <h:outputText value="#{weatherBean.weatherDTO.hourlyWeather()}"/>
-                            <h:outputText value=""/>
-            
                         </h:panelGrid>
+                    
+
+                        <br/>
+
                     </h:panelGroup>
 
+                    <br/>
+                    
                     <h5 style="margin-top:0">Weather in the next 3 days</h5>
-                    <h:panelGrid columns="3">
+                    <h:panelGrid columns="2" >
 
                         <h:outputText value="Weather Description:"/>
-                        <h:outputText value="#{weatherBean.weatherDTO.currentWeather().weather().description()}"/>
-                        <!-- TODO: add icons of weather here -->
-                        <h:graphicImage value="undefined"/>
+                        <ui:repeat var="index" value="#{[0, 1, 2]}">
+                            <h:outputText value="#{weatherBean.weatherDTO.dailyWeather().get(index).weather().description()} " />
+                        </ui:repeat>
 
+                        <h:outputText value="Sunrise:"/>
+                        <ui:repeat var="index" value="#{[0, 1, 2]}">
+                            <h:outputText value="#{weatherBean.weatherDTO.dailyWeather().get(index).sunrise()} " />
+                        </ui:repeat>
+                        
+                        <h:outputText value="Sunset:"/>
+                        <ui:repeat var="index" value="#{[0, 1, 2]}">
+                            <h:outputText value="#{weatherBean.weatherDTO.dailyWeather().get(index).sunset()} " />
+                        </ui:repeat>
+                        
                     </h:panelGrid>
-
                 </div>
             </p:panel>
-
         </h:form>
     </ui:define>
 
