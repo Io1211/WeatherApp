@@ -6,13 +6,12 @@ import at.qe.skeleton.internal.services.LocationService;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /*
  * Handles the Location Auto Completion with a call to Geocoding Api.
@@ -51,7 +50,7 @@ public class AutoCompleteController {
       return locationAnswerDTOList.stream().map(this::retrieveLocationName).toList();
     }
     // todo: we already use this exact code piece twice, will need it probably more often,
-    // should make a seperate method for it, refactor it.
+    // should make a separate method for it, refactor it.
     catch (FailedApiRequest e) {
       FacesContext.getCurrentInstance()
           .addMessage(

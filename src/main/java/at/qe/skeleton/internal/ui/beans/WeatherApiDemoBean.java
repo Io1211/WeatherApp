@@ -1,22 +1,24 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
-import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
+import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
@@ -31,6 +33,10 @@ public class WeatherApiDemoBean {
   @Autowired private CurrentAndForecastAnswerService currentAndForecastAnswerService;
 
   @Autowired private LocationService locationService;
+
+  @Autowired private UserxService userxService;
+
+  @Autowired private FavoriteService favoriteService;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
@@ -75,7 +81,7 @@ public class WeatherApiDemoBean {
               new FacesMessage(
                   FacesMessage.SEVERITY_INFO,
                   "",
-                  "Sorry, we could´nt find a location with the name: `%s`"
+                  "Sorry, we couldn't find a location with the name: `%s`"
                       .formatted(locationSearchInput)));
       return null;
     }
@@ -106,6 +112,24 @@ public class WeatherApiDemoBean {
     return weatherDTO;
   }
 
+  // Todo: move this into the bean for the final location search
+  public void toggleFavorite() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    var user = this.userxService.loadUser(auth.getName());
+
+    var favorite = new Favorite();
+    favorite.setLocation(this.location);
+
+    this.favoriteService.toggleFavorite(user, favorite);
+  }
+
+  public Boolean isFavorite() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    var user = this.userxService.loadUser(auth.getName());
+
+    return this.favoriteService.isFavorite(user, this.location);
+  }
+
   public String getSearchedWeather() {
     return searchedWeather;
   }
@@ -118,5 +142,3 @@ public class WeatherApiDemoBean {
     this.weatherDTO = weatherDTO;
   }
 }
-
-// todo: introduce error handling

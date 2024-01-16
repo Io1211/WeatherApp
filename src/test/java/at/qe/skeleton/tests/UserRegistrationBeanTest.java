@@ -13,6 +13,8 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test class for the UserRegistrationBean class. {@link UserRegistrationBean} */
 class UserRegistrationBeanTest {
 
   @InjectMocks private UserRegistrationBean userRegistrationBean;
@@ -40,7 +42,7 @@ class UserRegistrationBeanTest {
 
     String result = userRegistrationBean.register();
 
-    assertEquals("confirmRegistration", result);
+    assertEquals("confirm_registration", result);
     verify(registrationService).registerUser(testUser, "12345");
   }
 
