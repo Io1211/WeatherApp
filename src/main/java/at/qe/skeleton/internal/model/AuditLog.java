@@ -51,7 +51,7 @@ public class AuditLog implements Persistable<Long>, Serializable {
         return id;
     }
 
-    // Allows you to check whether an audit log is new and has not yet been assigned an ID.
+    // Allows to check whether an audit log is new and no id has been set.
     @Override public boolean isNew() {
         return id == null;
     }
