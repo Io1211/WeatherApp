@@ -89,6 +89,11 @@ public class CreditCardBean {
     return "credit_card_details.xhtml";
   }
 
+  /**
+   * Saves the credit card of the current user in the premium activation context.
+   *
+   * @return the page to navigate to after saving the credit card.
+   */
   public String saveCreditCardPremium() {
     try {
       creditCard.setUserId(sessionInfoBean.getCurrentUser());
@@ -102,7 +107,7 @@ public class CreditCardBean {
   }
 
   /**
-   * Update the credit card of the current user by deleting the old one and saving the new one..
+   * Update the credit card of the current user by deleting the old one and saving the new one.
    *
    * @return the page to navigate to after the update.
    */
@@ -111,6 +116,15 @@ public class CreditCardBean {
     return saveCreditCard();
   }
 
+  /**
+   * Update the credit card in the premium activation context by deleting the old one and saving the new one.
+   *
+   * @return the page to navigate to after the update.
+   */
+  public String updateCreditCardPremium() {
+    creditCardService.deleteCreditCardFromUser(sessionInfoBean.getCurrentUserName());
+    return saveCreditCardPremium();
+  }
   /**
    * This methode is needed to test the class
    *
