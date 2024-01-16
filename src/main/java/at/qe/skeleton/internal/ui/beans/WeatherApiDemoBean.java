@@ -12,6 +12,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+
+import org.primefaces.PrimeFaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ import org.springframework.web.context.annotation.SessionScope;
  * Architecture" offered by Innsbruck University.
  */
 @Component
-@SessionScope
+@Scope("session")
 public class WeatherApiDemoBean {
 
   @Autowired private CurrentAndForecastAnswerService currentAndForecastAnswerService;
@@ -63,7 +65,6 @@ public class WeatherApiDemoBean {
   }
 
   public String performLocationSearch() {
-    isLocationAnswerDTOReady = false;
     try {
       this.location = locationService.handleLocationSearch(locationSearchInput);
     } catch (FailedApiRequest e) {
@@ -89,12 +90,17 @@ public class WeatherApiDemoBean {
     }
     this.weatherDTO =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
-    this.isLocationAnswerDTOReady = true;
-    return "/weatherForecast.xhtml";
+    return "/weatherForecast.xhtml?faces-redirect=true";
   }
 
   public String testRouting() {
     return "/weatherForecast.xhtml";
+  }
+
+  public boolean isWeatherForecastView() {
+    FacesContext context = FacesContext.getCurrentInstance();
+    String viewId = context.getViewRoot().getViewId();
+    return "weatherForecast.xhtml".equals(viewId);
   }
 
   public String getSunsetString() {
@@ -104,6 +110,11 @@ public class WeatherApiDemoBean {
     ZonedDateTime sunsetInDesiredZone = sunsetInstant.atZone(utcZoneId);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
     return sunsetInDesiredZone.format(formatter);
+  }
+
+  public String getLocationLabel() {
+    return String.format(
+        "%s, %s, %s", location.getCity(), location.getCountry(), location.getState());
   }
 
   public Location getLocation() {

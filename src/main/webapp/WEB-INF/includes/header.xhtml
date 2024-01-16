@@ -24,7 +24,6 @@
             </p:submenu>
             <p:submenu label="Test Submenu" rendered="#{sessionInfoBean.loggedIn}">
                 <p:menuitem value="Security Test" url="/secured/test.xhtml"/>
-                <p:menuitem value="Weather API Demo" url="/secured/weather_api_demo.xhtml"/>
             </p:submenu>
             <p:menuitem value="Configure overview" url="/secured/overview_config.xhtml"
                         rendered="#{sessionInfoBean.loggedIn}"/>
@@ -45,7 +44,7 @@
 
                 <p:commandButton value="Search" id="commitSearchRequest"
                                  action="#{weatherApiDemoBean.performLocationSearch()}"
-                                 update=":headerForm" oncomplete="c">
+                                 update="headerForm">
                 </p:commandButton>
             </p:menuitem>
 
