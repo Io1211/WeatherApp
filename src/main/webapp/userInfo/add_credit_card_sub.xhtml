@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="content">
+        <h:form id="addCreditCardForm">
+            <p:messages autoUpdate="true" closable="true"/>
+            <p:panel header="Add your Credit Card to activate Premium">
+                <h:panelGrid columns="2" cellpadding="5">
+                    <p:outputLabel for="cardNumber" value="Card Number:"/>
+                    <p:inputText id="cardNumber" value="#{creditCardBean.creditCard.cardnumber}" required="true"
+                                 requiredMessage="Card Number is required"/>
+
+                    <p:outputLabel for="expirationDate" value="Expiration Date:"/>
+                    <p:inputMask id="expirationDate" value="#{creditCardBean.creditCard.expirationDate}"
+                                 mask="99/9999" slotChar=" " required="true"
+                                 requiredMessage="Expiration Date is required">
+                    </p:inputMask>
+
+                    <p:outputLabel for="cardType" value="Card Type:"/>
+                    <p:selectOneMenu id="cardType" value="#{creditCardBean.creditCard.cardType}" required="true"
+                                     requiredMessage="Card Type is required">
+                        <f:selectItems value="#{creditCardBean.cardTypes}" var="type" itemValue="#{type}"
+                                       itemLabel="#{type}"/>
+                    </p:selectOneMenu>
+
+                    <p:commandButton value="Save" action="#{creditCardBean.saveCreditCardPremium}"
+                                     update=":addCreditCardForm"/>
+
+                </h:panelGrid>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>

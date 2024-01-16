@@ -89,6 +89,18 @@ public class CreditCardBean {
     return "credit_card_details.xhtml";
   }
 
+  public String saveCreditCardPremium() {
+    try {
+      creditCard.setUserId(sessionInfoBean.getCurrentUser());
+      creditCardService.saveCreditCard(creditCard);
+      sessionInfoBean.getCurrentUser().setCreditCard(creditCard);
+    } catch (IllegalArgumentException e) {
+      addMessage(e.getMessage());
+      return null;
+    }
+    return "premium_activation_cc.xhtml";
+  }
+
   /**
    * Update the credit card of the current user by deleting the old one and saving the new one..
    *

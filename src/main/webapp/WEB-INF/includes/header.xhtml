@@ -30,6 +30,7 @@
 
             <p:submenu label="User Info" rendered="#{sessionInfoBean.loggedIn}">
                 <p:menuitem value="My Credit Card" url="/userInfo/credit_card_details.xhtml"/>
+                <p:menuitem value="Premium Activation" url="/userInfo/premium_activation.xhtml"/>
             </p:submenu>
 
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
