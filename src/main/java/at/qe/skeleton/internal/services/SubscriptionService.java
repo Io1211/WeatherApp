@@ -2,8 +2,7 @@ package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
-import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
-import org.apache.catalina.User;
+import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,18 +13,14 @@ public class SubscriptionService {
 
   @Autowired CreditCardRepository creditCardRepository;
 
-  public void activatePremiumSubscription(Userx user) {
-      if (creditCardRepository.findByUserId_Username(user.getUsername()) == null) {
-      throw new RuntimeException("No credit card found");
+  public void activatePremiumSubscription(Userx user) throws NoCreditCardFoundException {
+    if (creditCardRepository.findByUserId_Username(user.getUsername()) == null) {
+      throw new NoCreditCardFoundException("No credit card found");
     }
     userxService.activatePremium(user);
   }
 
   public void deactivatePremiumSubscription(Userx user) {
     userxService.deactivatePremium(user);
-  }
-
-  public boolean checkPremiumStatus(Userx user) {
-    return userxService.isPremium(user);
   }
 }

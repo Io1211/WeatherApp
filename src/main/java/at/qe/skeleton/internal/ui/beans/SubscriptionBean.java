@@ -2,6 +2,9 @@ package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.SubscriptionService;
+import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -14,13 +17,15 @@ public class SubscriptionBean {
 
   @Autowired SessionInfoBean sessionInfoBean;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionBean.class);
+
   public String activatePremiumSubscription() {
     Userx user = sessionInfoBean.getCurrentUser();
     try {
       subscriptionService.activatePremiumSubscription(user);
-      System.out.println("Subscription activated");
+      LOGGER.info("Subscription activated");
       return "/success_page";
-    } catch (RuntimeException e) {
+    } catch (NoCreditCardFoundException e) {
       return "add_credit_card_sub.xhtml";
     }
   }
