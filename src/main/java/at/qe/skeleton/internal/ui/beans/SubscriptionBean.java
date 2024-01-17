@@ -24,6 +24,7 @@ public class SubscriptionBean {
     try {
       subscriptionService.activatePremiumSubscription(user);
       LOGGER.info("Subscription activated");
+      sessionInfoBean.reloadCurrentUser();
       return "/success_page";
     } catch (NoCreditCardFoundException e) {
       return "add_credit_card_sub.xhtml";
@@ -33,5 +34,6 @@ public class SubscriptionBean {
   public void deactivatePremiumSubscription() {
     Userx user = sessionInfoBean.getCurrentUser();
     subscriptionService.deactivatePremiumSubscription(user);
+    sessionInfoBean.reloadCurrentUser();
   }
 }
