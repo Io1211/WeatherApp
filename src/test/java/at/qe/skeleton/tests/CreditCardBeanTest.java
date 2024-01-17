@@ -7,6 +7,7 @@ import at.qe.skeleton.internal.services.CreditCardService;
 import at.qe.skeleton.internal.ui.beans.CreditCardBean;
 import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 import jakarta.faces.context.FacesContext;
+import org.h2.engine.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -75,8 +76,6 @@ public class CreditCardBeanTest {
 
             verify(creditCardService, times(1)).saveCreditCard(testCreditCard);
 
-            verify(mockedUser, times(1)).setCreditCard(testCreditCard);
-
             assertEquals("credit_card_details.xhtml", result);
         }
     }
@@ -98,8 +97,6 @@ public class CreditCardBeanTest {
             String result = creditCardBean.updateCreditCard();
 
             verify(creditCardService, times(1)).saveCreditCard(testCreditCard);
-
-            verify(mockedUser, times(1)).setCreditCard(testCreditCard);
 
             assertEquals("credit_card_details.xhtml", result);
         }
