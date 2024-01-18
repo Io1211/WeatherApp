@@ -1,32 +1,59 @@
 package at.qe.skeleton.internal.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-
+import jakarta.persistence.*;
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
+import org.antlr.v4.runtime.misc.Pair;
+import org.springframework.data.domain.Persistable;
 
 @Entity
-public class Subscription {
+public class Subscription implements Persistable<Long>, Serializable {
 
+  @Id @GeneratedValue private Long id;
 
-    @Id
-    private Long id;
+  @OneToOne private Userx userx;
 
-    @OneToOne
-    private Userx userx;
+  private Date startDate;
 
-    @Column(name = "startDate",nullable = false)
-    private Date startDate;
-    @Column(name = "duration")
-    private int duration;
+  @ElementCollection private List<Pair<LocalDate, LocalDate>> premiumPeriod;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  @Override
+  public Long getId() {
+    return this.id;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public Userx getUserx() {
+    return userx;
+  }
+
+  public void setUserx(Userx userx) {
+    this.userx = userx;
+  }
+
+  public Date getStartDate() {
+    return startDate;
+  }
+
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
+  }
+
+  public List<Pair<LocalDate, LocalDate>> getPremiumPeriod() {
+    return premiumPeriod;
+  }
+
+  public void setPremiumPeriod(List<Pair<LocalDate, LocalDate>> premiumPeriod) {
+    this.premiumPeriod = premiumPeriod;
+  }
+
+  @Override
+  public boolean isNew() {
+    return (null == startDate);
+  }
 }
