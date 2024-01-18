@@ -50,6 +50,9 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   private String email;
   private String phone;
 
+  @OneToOne(mappedBy = "userx", cascade = CascadeType.ALL)
+  private Subscription subscription;
+
   boolean enabled;
 
   @OneToOne(cascade = CascadeType.ALL)
@@ -227,5 +230,13 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   @Override
   public int compareTo(Userx o) {
     return this.username.compareTo(o.getUsername());
+  }
+
+  public Subscription getSubscription() {
+    return subscription;
+  }
+
+  public void setSubscription(Subscription subscription) {
+    this.subscription = subscription;
   }
 }
