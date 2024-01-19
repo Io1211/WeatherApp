@@ -5,6 +5,7 @@ import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.FavoriteRepository;
 import at.qe.skeleton.internal.repositories.SubscriptionRepository;
 import at.qe.skeleton.internal.repositories.UserxRepository;
+import at.qe.skeleton.internal.services.exceptions.NotYetAvailableException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
@@ -73,7 +74,7 @@ class SubscriptionServiceTest {
   }
 
   @Test
-  void premiumDaysInMonthTest() {
+  void premiumDaysInMonthTest() throws NotYetAvailableException {
     Userx user = new Userx();
     user.setId("Primus");
     Subscription subscription = new Subscription();
@@ -146,6 +147,19 @@ class SubscriptionServiceTest {
     expected = Month.MAY.length(Year.isLeap(2023)) - LocalDate.of(2023, 5, 5).getDayOfMonth();
     Assertions.assertEquals(
         expected, subscriptionService.premiumDaysInMonth(user, Month.MAY, 2023));
+
+    // case 8: search for the current or a future month
+    Userx finalUser = user;
+    Assertions.assertThrows(
+        NotYetAvailableException.class,
+        () -> {
+          Month thisMonth = LocalDate.now().getMonth();
+          int thisYear = LocalDate.now().getYear();
+          subscriptionService.premiumDaysInMonth(finalUser, thisMonth, thisYear);
+        });
+    Assertions.assertThrows(
+        NotYetAvailableException.class,
+        () -> subscriptionService.premiumDaysInMonth(finalUser, Month.JANUARY, 2025));
 
     // cleanup
     userxRepository.delete(user);
