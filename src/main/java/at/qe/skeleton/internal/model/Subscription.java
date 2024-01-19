@@ -3,7 +3,6 @@ package at.qe.skeleton.internal.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.data.domain.Persistable;
@@ -13,10 +12,11 @@ public class Subscription implements Persistable<Long>, Serializable {
 
   @Id @GeneratedValue private Long id;
 
-  @OneToOne private Userx userx;
+  private LocalDate signupDate;
 
-  private Date startDate;
-
+  // Premium period is a list of tuples, so that every time the service is activated/canceled start
+  // and stop of that period is stored in the same tuple. For every tuple (a, b), a is always the
+  // start date and b the cancellation date.
   @ElementCollection private List<Pair<LocalDate, LocalDate>> premiumPeriod;
 
   @Override
@@ -28,20 +28,13 @@ public class Subscription implements Persistable<Long>, Serializable {
     this.id = id;
   }
 
-  public Userx getUserx() {
-    return userx;
+  public LocalDate getSignupDate() {
+    return signupDate;
   }
 
-  public void setUserx(Userx userx) {
-    this.userx = userx;
-  }
-
-  public Date getStartDate() {
-    return startDate;
-  }
-
-  public void setStartDate(Date startDate) {
-    this.startDate = startDate;
+  @PrePersist
+  public void setStartDate() {
+    this.signupDate = LocalDate.now();
   }
 
   public List<Pair<LocalDate, LocalDate>> getPremiumPeriod() {
@@ -54,6 +47,6 @@ public class Subscription implements Persistable<Long>, Serializable {
 
   @Override
   public boolean isNew() {
-    return (null == startDate);
+    return (null == signupDate);
   }
 }
