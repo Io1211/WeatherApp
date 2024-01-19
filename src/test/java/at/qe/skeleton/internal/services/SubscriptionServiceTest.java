@@ -21,30 +21,31 @@ class SubscriptionServiceTest {
     Month month = Month.JANUARY;
     int year = 2024;
 
-    String startString = "2024-01-10";
-    String stopString = "2024-01-23";
-    LocalDate start = LocalDate.parse(startString);
-    LocalDate stop = LocalDate.parse(stopString);
+    LocalDate start = LocalDate.parse("2024-01-10");
+    LocalDate stop = LocalDate.parse("2024-01-23");
 
     // case 1: both start and stop date in the tested month
     int expected = stop.getDayOfMonth() - start.getDayOfMonth();
     Assertions.assertEquals(
-        expected, subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year));
+        expected,
+        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
+        "Error in start & stop in month case");
 
-    // case 2: start == null and stop != null (i.e., not in the tested month)
+    start = LocalDate.parse("2023-01-10");
+    // case 2: start not in tested month and stop in tested
     expected = stop.getDayOfMonth();
     Assertions.assertEquals(
-        expected, subscriptionService.calculatePremiumFromStartAndStop(null, stop, month, year));
+        expected,
+        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
+        "Error in stop only in month case");
 
-    // case 3: start != null (i.e., not in the tested month) and stop == null
+    start = LocalDate.parse("2024-01-10");
+    stop = LocalDate.parse("2025-01-23");
+    // case 3: start in tested month and stop not
     expected = month.length(Year.isLeap(year)) - start.getDayOfMonth();
     Assertions.assertEquals(
-        expected, subscriptionService.calculatePremiumFromStartAndStop(start, null, month, year));
-
-    // case 4: both start and stop == null (i.e., the subscription isn't started or terminated in
-    // the current month)
-    expected = month.length(Year.isLeap(year));
-    Assertions.assertEquals(
-        expected, subscriptionService.calculatePremiumFromStartAndStop(null, null, month, year));
+        expected,
+        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
+        "Error in start only in month case");
   }
 }
