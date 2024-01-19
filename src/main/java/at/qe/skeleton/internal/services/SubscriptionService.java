@@ -3,6 +3,7 @@ package at.qe.skeleton.internal.services;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
+import at.qe.skeleton.internal.services.exceptions.NotYetAvailableException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
@@ -35,14 +36,14 @@ public class SubscriptionService {
     userxService.deactivatePremium(user);
   }
 
-  public int premiumDaysInMonth(Userx user, Month month, int year) {
+  public int premiumDaysInMonth(Userx user, Month month, int year) throws NotYetAvailableException {
     // Assumes the start of a subscription period (pair<start, stop> cannot be null cuz it doesn't
     // make sense to have a subscription end but not start)
     if ((year >= ZonedDateTime.now().getYear())
         || ((year == ZonedDateTime.now().getYear())
             && month.getValue() >= ZonedDateTime.now().getMonthValue())) {
-      // TODO: define custom exception
-      throw new RuntimeException("Billing info is only available for the past months");
+      throw new NotYetAvailableException(
+          "Billing info is only available for past months. You are trying to access it for this or future months.");
     }
 
     if (user.getSubscription().getPremiumPeriod().isEmpty()) {
