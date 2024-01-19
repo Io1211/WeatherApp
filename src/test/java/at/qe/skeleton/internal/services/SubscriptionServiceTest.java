@@ -140,6 +140,13 @@ class SubscriptionServiceTest {
     Assertions.assertEquals(
         expected, subscriptionService.premiumDaysInMonth(user, Month.JUNE, 2023));
 
+    // case 7: start in month but stop not set (=null)
+    activePeriod = new ArrayList<>(List.of(new Pair<>(LocalDate.of(2023, 5, 5), null)));
+    subscription.setPremiumPeriod(activePeriod);
+    expected = Month.MAY.length(Year.isLeap(2023)) - LocalDate.of(2023, 5, 5).getDayOfMonth();
+    Assertions.assertEquals(
+        expected, subscriptionService.premiumDaysInMonth(user, Month.MAY, 2023));
+
     // cleanup
     userxRepository.delete(user);
   }
