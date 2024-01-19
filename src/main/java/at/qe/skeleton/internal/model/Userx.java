@@ -50,7 +50,7 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   private String email;
   private String phone;
 
-  @OneToOne(mappedBy = "userx", cascade = CascadeType.ALL)
+  @OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
   private Subscription subscription;
 
   boolean enabled;
