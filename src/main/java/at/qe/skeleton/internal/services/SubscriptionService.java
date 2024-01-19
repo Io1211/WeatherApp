@@ -41,6 +41,7 @@ public class SubscriptionService {
     if ((year >= ZonedDateTime.now().getYear())
         || ((year == ZonedDateTime.now().getYear())
             && month.getValue() >= ZonedDateTime.now().getMonthValue())) {
+      // TODO: define custom exception
       throw new RuntimeException("Billing info is only available for the past months");
     }
 
