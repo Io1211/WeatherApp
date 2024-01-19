@@ -89,6 +89,9 @@ public class SessionInfoBean implements Serializable {
     }
   }
 
+  public boolean isUserPremium() {
+    return getCurrentUser().isPremium();
+  }
   /**
    * Checks if the user for this session has the given role (c.f. {@link UserxRole}).
    *

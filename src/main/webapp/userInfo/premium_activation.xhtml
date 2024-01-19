@@ -13,7 +13,7 @@
                 <p:commandButton value="Activate Premium" action="#{subscriptionBean.activatePremiumSubscription}"
                                  update=":premiumActivationForm"/>
                 <p:commandButton value="Deactivate Premium" action="#{subscriptionBean.deactivatePremiumSubscription}"
-                                 update=":premiumActivationForm"/>
+                                 update=":premiumActivationForm" rendered="#{!sessionInfoBean.}"/>
             </h:panelGrid>
 
         </h:form>
