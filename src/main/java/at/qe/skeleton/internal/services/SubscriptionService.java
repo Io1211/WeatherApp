@@ -97,11 +97,20 @@ public class SubscriptionService {
     }
   }
 
+  /**
+   * Fetches the last subscription tuple with start date before the query month. This is used to
+   * determine whether the subscription was cancelled or not when the start/end date are outside the
+   * query month. subscriptionPeriods should be a mutable list, since it is sorted (throws error
+   * otherwise)!
+   *
+   * @param subscriptionPeriods All the subscription periods a user was signed up for.
+   * @param month The month for which to calculate the billing.
+   * @param year The year of the month for which to calculate the billing.
+   * @return The tuple with the subscription start that is closest to the query month but still
+   *     before it
+   */
   public Pair<LocalDate, LocalDate> getLastSubscriptionBeforeMonth(
       List<Pair<LocalDate, LocalDate>> subscriptionPeriods, Month month, int year) {
-    // Fetches the last subscription tuple with start date before the query month.
-    // This is used to determine whether the subscription was cancelled or not
-    // when the start/end date are outside the query month.
 
     if (subscriptionPeriods.size() == 1) {
       return subscriptionPeriods.get(0);
