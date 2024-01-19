@@ -21,6 +21,7 @@ public class SubscriptionService {
 
   @Autowired private CreditCardRepository creditCardRepository;
 
+  // TODO: add tests
   public void activatePremiumSubscription(Userx user) throws NoCreditCardFoundException {
     if (creditCardRepository.findByUserId_Username(user.getUsername()) == null) {
       throw new NoCreditCardFoundException("No credit card found");
@@ -30,15 +31,31 @@ public class SubscriptionService {
     userxService.activatePremium(user);
   }
 
+  // TODO: add tests
   public void deactivatePremiumSubscription(Userx user) {
     // TODO: set subscription end (get the list of subscriptionPeriod tuples and get the last one.
     // Set the date there)
     userxService.deactivatePremium(user);
   }
 
+  /**
+   * This method is the core of the billing calculation. It fetches the active subscription periods
+   * of a given user and calculates the count of days the membership was active in the query month
+   * of the query year. It assumes that the start of a subscription period A in a tuple (A, B) of
+   * dates can't be null because it doesn't make sense to have a subscription end that didn't even
+   * start.<br>
+   * Some of the calculation is outsourced to {@link #calculatePremiumFromStartAndStop(LocalDate,
+   * LocalDate, Month, int) calculatePremiumFromStartAndStop} and this method completes the
+   * calculation by covering additional scenarios that are documented in the code.
+   *
+   * @param user The user to calculate the billing for
+   * @param month The month to calculate the billing for
+   * @param year The year the of the month to calculate the billing for
+   * @return the number of days the membership was active in the query month for the selected user
+   * @throws NotYetAvailableException when the query i.e., month and year, is the current month or a
+   *     month further in the future. Billing is supported only for passed months.
+   */
   public int premiumDaysInMonth(Userx user, Month month, int year) throws NotYetAvailableException {
-    // Assumes the start of a subscription period (pair<start, stop> cannot be null cuz it doesn't
-    // make sense to have a subscription end but not start)
     if ((year >= ZonedDateTime.now().getYear())
         || ((year == ZonedDateTime.now().getYear())
             && month.getValue() >= ZonedDateTime.now().getMonthValue())) {
@@ -52,7 +69,7 @@ public class SubscriptionService {
 
     // This collects all the subscription tuples that start or stop in the queried month.
     // Makes it easy to calculate the premium period if such tuples are found.
-    // Otherwise, if no such tuples are found, the empty list is handled below.
+    // Otherwise, the empty list is handled below.
     List<Pair<LocalDate, LocalDate>> premiumPeriodInMonth =
         user.getSubscription().getPremiumPeriod().stream()
             .filter(pair -> isInMonth(pair.a, month, year) || isInMonth(pair.b, month, year))
@@ -66,11 +83,17 @@ public class SubscriptionService {
     if (premiumPeriodInMonth.isEmpty()) {
       Pair<LocalDate, LocalDate> lastSubscriptionBeforeMonth =
           getLastSubscriptionBeforeMonth(user.getSubscription().getPremiumPeriod(), month, year);
+      // Subscription doesn't have an end set, ergo is still active.
       if (lastSubscriptionBeforeMonth.b == null) {
         return month.length(Year.isLeap(year));
-      } else if (lastSubscriptionBeforeMonth.b.isAfter(LocalDate.of(year, month, 1))) {
+      }
+      // This means that the end date of the tuple is after the query month and year, ergo the
+      // subscription was still active in the query month and year.
+      else if (lastSubscriptionBeforeMonth.b.isAfter(LocalDate.of(year, month, 1))) {
         return month.length(Year.isLeap(year));
-      } else if (lastSubscriptionBeforeMonth.b.isBefore(LocalDate.of(year, month, 1))) {
+      }
+      // This means that the subscription was terminated before the query month and year.
+      else if (lastSubscriptionBeforeMonth.b.isBefore(LocalDate.of(year, month, 1))) {
         return 0;
       }
     }
@@ -82,6 +105,18 @@ public class SubscriptionService {
         .reduce(0, Integer::sum);
   }
 
+  /**
+   * Given a start date and a stop date as may be taken from a Pair for instance, this method
+   * calculates the days of premium subscription during the time period. This method does not cover
+   * the case where both start and stop are not in the query month. That case is handled in {@link
+   * #premiumDaysInMonth(Userx, Month, int) premiumDaysInMonth}.
+   *
+   * @param start Date of membership start
+   * @param stop Date of membership stop
+   * @param month Month to get the billing information for
+   * @param year Year of the month to get the billing information for
+   * @return the days of the selected month during which the membership was active
+   */
   public int calculatePremiumFromStartAndStop(
       LocalDate start, LocalDate stop, Month month, int year) {
 
@@ -111,6 +146,7 @@ public class SubscriptionService {
    * @return The tuple with the subscription start that is closest to the query month but still
    *     before it
    */
+  // TODO: add tests
   public Pair<LocalDate, LocalDate> getLastSubscriptionBeforeMonth(
       List<Pair<LocalDate, LocalDate>> subscriptionPeriods, Month month, int year) {
 
@@ -133,10 +169,25 @@ public class SubscriptionService {
     return lastSubscriptionBeforeMonth;
   }
 
+  /**
+   * Shorthand for a commonly used expression that checks if the date passed is in the month and
+   * year passed as parameters.
+   *
+   * @param date Date to check if it is in the given month and year
+   * @param month Month to check for
+   * @param year Year to check for
+   * @return Whether the date is in the month and year passed
+   */
+  // TODO: add tests
   public boolean isInMonth(LocalDate date, Month month, int year) {
     return date != null && date.getMonth() == month && date.getYear() == year;
   }
 
+  /**
+   * Comparator used to sort the tuples in the list that keeps track of a user's active premium
+   * periods. The tuples are sorted using the date of the membership start i.e., A in a tuple (A,
+   * B), in ascending order.
+   */
   static class DatePairComparator implements Comparator<Pair<LocalDate, LocalDate>> {
     @Override
     public int compare(Pair<LocalDate, LocalDate> pair1, Pair<LocalDate, LocalDate> pair2) {
