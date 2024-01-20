@@ -15,7 +15,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.primefaces.PrimeFaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.SessionScope;
 
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
@@ -43,22 +41,12 @@ public class WeatherApiDemoBean {
 
   @Autowired private FavoriteService favoriteService;
 
-  @Autowired private AutoCompleteController autoCompleteController;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
-
-  private String searchedWeather;
 
   private String locationSearchInput = "Wien, AT";
 
   private Location location;
   private CurrentAndForecastAnswerDTO weatherDTO;
-
-  private boolean isLocationAnswerDTOReady = false;
-
-  public boolean getIsLocationAnswerDTOReady() {
-    return isLocationAnswerDTOReady;
-  }
 
   public String getLocationSearchInput() {
     return locationSearchInput;
@@ -96,12 +84,6 @@ public class WeatherApiDemoBean {
     this.weatherDTO =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
     return "/weatherForecast.xhtml?faces-redirect=true";
-  }
-
-  public boolean isWeatherForecastView() {
-    FacesContext context = FacesContext.getCurrentInstance();
-    String viewId = context.getViewRoot().getViewId();
-    return "weatherForecast.xhtml".equals(viewId);
   }
 
   public String getSunsetString() {
@@ -148,14 +130,6 @@ public class WeatherApiDemoBean {
     var user = this.userxService.loadUser(auth.getName());
 
     return this.favoriteService.isFavorite(user, this.location);
-  }
-
-  public String getSearchedWeather() {
-    return searchedWeather;
-  }
-
-  public void setSearchedWeather(String searchedWeather) {
-    this.searchedWeather = searchedWeather;
   }
 
   public void setWeatherDTO(CurrentAndForecastAnswerDTO weatherDTO) {
