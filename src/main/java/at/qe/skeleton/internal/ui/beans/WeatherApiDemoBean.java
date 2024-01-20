@@ -6,12 +6,15 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
+import at.qe.skeleton.internal.ui.controllers.AutoCompleteController;
+import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +30,7 @@ import org.springframework.stereotype.Component;
  * Architecture" offered by Innsbruck University.
  */
 @Component
-@Scope("view")
+@Scope("session")
 public class WeatherApiDemoBean {
 
   @Autowired private CurrentAndForecastAnswerService currentAndForecastAnswerService;
@@ -40,18 +43,10 @@ public class WeatherApiDemoBean {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
-  private String searchedWeather;
-
-  private String locationSearchInput;
+  private String locationSearchInput = "Wien, AT";
 
   private Location location;
   private CurrentAndForecastAnswerDTO weatherDTO;
-
-  private boolean isLocationAnswerDTOReady = false;
-
-  public boolean getIsLocationAnswerDTOReady() {
-    return isLocationAnswerDTOReady;
-  }
 
   public String getLocationSearchInput() {
     return locationSearchInput;
@@ -61,7 +56,8 @@ public class WeatherApiDemoBean {
     this.locationSearchInput = locationSearchInput;
   }
 
-  public void performLocationSearch() {
+  @PostConstruct
+  public String performLocationSearch() {
     try {
       this.location = locationService.handleLocationSearch(locationSearchInput);
     } catch (FailedApiRequest e) {
@@ -73,7 +69,7 @@ public class WeatherApiDemoBean {
                   "There was an error in an api request: ",
                   e.getMessage()));
       LOGGER.error(e.getMessage());
-      return;
+      return null;
     } catch (GeocodingApiReturnedEmptyListException e) {
       FacesContext.getCurrentInstance()
           .addMessage(
@@ -81,13 +77,13 @@ public class WeatherApiDemoBean {
               new FacesMessage(
                   FacesMessage.SEVERITY_INFO,
                   "",
-                  "Sorry, we couldn't find a location with the name: `%s`"
+                  "Sorry, we couldn't find a location with the name: %s"
                       .formatted(locationSearchInput)));
-      return;
+      return null;
     }
     this.weatherDTO =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
-    this.isLocationAnswerDTOReady = true;
+    return "/weatherForecast.xhtml?faces-redirect=true";
   }
 
   public String getSunsetString() {
@@ -97,6 +93,17 @@ public class WeatherApiDemoBean {
     ZonedDateTime sunsetInDesiredZone = sunsetInstant.atZone(utcZoneId);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
     return sunsetInDesiredZone.format(formatter);
+  }
+
+  public String getLocationLabel() {
+    if (location.getState() == null) {
+      return String.format("%s, %s", location.getCity(), location.getCountry());
+    }
+    if (location.getCountry() == null) {
+      return String.format("%s, %s", location.getCountry(), location.getState());
+    }
+    return String.format(
+        "%s, %s, %s", location.getCity(), location.getCountry(), location.getState());
   }
 
   public Location getLocation() {
@@ -123,14 +130,6 @@ public class WeatherApiDemoBean {
     var user = this.userxService.loadUser(auth.getName());
 
     return this.favoriteService.isFavorite(user, this.location);
-  }
-
-  public String getSearchedWeather() {
-    return searchedWeather;
-  }
-
-  public void setSearchedWeather(String searchedWeather) {
-    this.searchedWeather = searchedWeather;
   }
 
   public void setWeatherDTO(CurrentAndForecastAnswerDTO weatherDTO) {
