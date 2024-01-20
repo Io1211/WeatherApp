@@ -1,6 +1,7 @@
 /*
 this is a css stylesheet. even though intellij might neither recognize the <h:head> nor the <h:outputStylesheet>
 in main.xhtml, this should to work. You can adress classes from your xhtml files here and customize their style.
+If styles are not applied, remember to clear your browser data to prevent caching.d
 
 
  */

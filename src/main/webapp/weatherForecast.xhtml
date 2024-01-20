@@ -16,7 +16,7 @@
                 <p:outputLabel value="#{weatherApiDemoBean.locationLabel}"/>
                 <br/>
                 <h5 style="margin-top:0">Current Weather</h5>
-                <img alt="Weather Icon" src="https://openweathermap.org/img/wn/11d@2x.png" width="70" height="70"/>
+                <img alt="Weather Icon" src="#{weatherApiDemoBean.icon}" width="70" height="70"/>
                 <h:panelGrid columns="2" columnClasses="custom-column">
                     <h:outputText value="Weather Description"/>
                     <h:outputText
