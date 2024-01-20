@@ -67,6 +67,85 @@
                                         rendered="#{favoriteOverviewBean.favoriteDataConfig.showPressure}"/>
 
 
+                                <h:outputText
+                                        value="Humidity"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showHumidity}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().humidity()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showHumidity}"/>
+
+                                <h:outputText
+                                        value="Dew-Point"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().dewPoint()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}"/>
+
+                                <h:outputText
+                                        value="UVI"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showUvi}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().uvi()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showUvi}"/>
+
+                                <h:outputText
+                                        value="Visibility"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showVisibility}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().visibility()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showVisibility}"/>
+
+                                <h:outputText
+                                        value="Wind Speed"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindSpeed}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windSpeed()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindSpeed}"/>
+
+                                <h:outputText
+                                        value="Wind Direction"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindDirection}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windDirection()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindDirection}"/>
+
+                                <h:outputText
+                                        value="Rain Amount"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showRain}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().rain()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showRain}"/>
+
+                                <h:outputText
+                                        value="Snow Amount"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().snow()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
+
+
+                                <h:outputText
+                                        value="Weather Icon"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showIcon}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showIcon}"/>
+
+                                <h:outputText
+                                        value="Feels Like"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().feelsLikeTemperature()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>
+
+                                <h:outputText
+                                        value="Weather"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showTitle}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().title()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showTitle}"/>
+
+
                             </h:panelGrid>
 
                             <!--                            <div class="location-weather-clouds"-->
