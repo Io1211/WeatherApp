@@ -11,6 +11,7 @@
                 border: solid;
                 padding: 10px;
                 margin: 15px;
+                justify-content: center;
             }
 
             .city {
@@ -24,7 +25,8 @@
             }
 
             .favorites-panelgrid {
-                width: 15em;
+                width: 100%;
+                max-width: 400px;
             }
         </style>
         <h:form id="favoritesOverview">
@@ -142,13 +144,7 @@
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showIcon}"/>
-
-                        <h:outputText
-                                value="Feels Like"
-                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>
-                        <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().feelsLikeTemperature()}"
-                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>
+                        
 
                         <h:outputText
                                 value="Weather"
