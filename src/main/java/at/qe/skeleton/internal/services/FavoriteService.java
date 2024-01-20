@@ -25,15 +25,18 @@ public class FavoriteService {
   }
 
   @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #user.username")
-  public void toggleFavorite(Userx user, Favorite favorite) {
+  public void toggleFavorite(Userx user, Location location) {
     var existingFavorite =
         user.getFavorites().stream()
-            .filter(x -> Objects.equals(x.getLocation().getId(), favorite.getLocation().getId()))
+            .filter(x -> Objects.equals(x.getLocation().getId(), location.getId()))
             .findAny();
 
     if (existingFavorite.isPresent()) {
       user.getFavorites().remove(existingFavorite.get());
     } else {
+      var favorite = new Favorite();
+      favorite.setLocation(location);
+
       // needed because of the bidirectional relationship
       favorite.setUser(user);
       user.getFavorites().add(favorite);
