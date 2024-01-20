@@ -8,7 +8,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
-    
+
     <ui:define name="content">
 
         <h:form id="weatherForm">
@@ -16,7 +16,8 @@
                 <p:outputLabel value="#{weatherApiDemoBean.locationLabel}"/>
                 <br/>
                 <h5 style="margin-top:0">Current Weather</h5>
-                <h:panelGrid columns="2">
+                <img alt="Weather Icon" src="https://openweathermap.org/img/wn/11d@2x.png" width="70" height="70"/>
+                <h:panelGrid columns="2" columnClasses="custom-column">
                     <h:outputText value="Weather Description"/>
                     <h:outputText
                             value="#{weatherApiDemoBean.weatherDTO.currentWeather().weather().description()}"/>
