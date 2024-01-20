@@ -80,7 +80,7 @@ public class FavoriteOverviewBean {
     return favorites;
   }
 
-    public List<CurrentAndForecastAnswerDTO> getCurrentAndForecastAnswerDTOS() {#
-        return currentAndForecastAnswerDTOS;
-    }
+  public List<CurrentAndForecastAnswerDTO> getCurrentAndForecastAnswerDTOS() {
+    return currentAndForecastAnswerDTOS;
+  }
 }
