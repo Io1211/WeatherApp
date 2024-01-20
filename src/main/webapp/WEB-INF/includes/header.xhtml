@@ -27,7 +27,8 @@
             </p:submenu>
             <p:menuitem value="Configure overview" url="/secured/overview_config.xhtml"
                         rendered="#{sessionInfoBean.loggedIn}"/>
-
+            <p:menuitem value="My Favorites" url="/secured/favoritesOverview.xhtml"
+                        rendered="#{sessionInfoBean.loggedIn}"/>
             <p:submenu label="User Info" rendered="#{sessionInfoBean.loggedIn}">
                 <p:menuitem value="My Credit Card" url="/userInfo/credit_card_details.xhtml"/>
             </p:submenu>

@@ -68,6 +68,11 @@ public class FavoriteOverviewBean {
     }
   }
 
+  public CurrentAndForecastAnswerDTO getCurrentWeather(Favorite favorite) {
+    byte[] serializedWeatherData = favorite.getLocation().getWeather().getWeatherData();
+    return currentAndForecastAnswerService.deserializeDTO(serializedWeatherData);
+  }
+
   private void addMessage(String summary, FacesMessage.Severity severity) {
     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
   }
