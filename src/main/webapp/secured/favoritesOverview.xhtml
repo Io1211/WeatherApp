@@ -1,5 +1,4 @@
 <ui:composition xmlns="http://www.w3c.org/1999/xhtml"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
@@ -16,80 +15,148 @@
 
                         <div class="favorite-list-detail">
                             <!-- use favorite-name-converter to prevent null values-->
-                            <div class="location-name">
+                            <h3 class="location-name">
                                 #{favoriteLocation.location.city},
                                 #{favoriteLocation.location.country},
                                 #{favoriteLocation.location.state}
-                            </div>
-                            <div class="location-weather-clouds"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().clouds()}
-                            </div>
-                            <div class="location-weather-dewPoint"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().dewPoint()}
-                            </div>
-                            <div class="location-weather-feelsLikeTemp"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().feelsLikeTemperature()}
-                            </div>
-                            <div class="location-weather-humidity"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showHumidity}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().humidity()}
-                            </div>
-                            <div class="location-weather-icon"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showIcon}">
-                                <!-- add icon Service-->
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()}
-                            </div>
-                            <div class="location-weather-pressure"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showPressure}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().pressure()}
-                            </div>
-                            <div class="location-weather-rain"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showRain}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().rain()}
-                            </div>
-                            <div class="location-weather-snow"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSnow}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().snow()}
-                            </div>
-                            <div class="location-weather-sunrise"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise()}
-                            </div>
-                            <div class="location-weather-detail-1"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset()}
-                            </div>
-                            <div class="location-weather-temperature"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().temperature()}
-                            </div>
-                            <div class="location-weather-title"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTitle}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().title()}
-                            </div>
-                            <div class="location-weather-uvi"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showUvi}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().uvi()}
-                            </div>
-                            <div class="location-weather-visibility"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showVisibility}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().visibility()}
-                            </div>
-                            <div class="location-weather-direction"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindDirection}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windDirection()}
-                            </div>
-                            <div class="location-weather-windGust"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindGust}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windGust()}
-                            </div>
-                            <div class="location-weather-windSpeed"
-                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindSpeed}">
-                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windSpeed()}
-                            </div>
+                            </h3>
+                            <h:panelGrid columns="2" cellpadding="5">
+
+                                <h:outputLabel value="Clouds:"
+                                               rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().clouds()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}"/>
+
+
+                                <h:outputText value="Temperature:"
+                                              rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().temperature()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}"/>
+
+                                <!--   USE TIME SERVICE CLASS FOR SUNRISE AND SUNSET  -->
+                                <h:outputText value="Sunrise"
+                                              rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
+
+
+                                <h:outputText
+                                        value="Sunset"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
+
+
+                                <h:outputText
+                                        value="Feels Like"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().feelsLikeTemperature()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>
+
+
+                                <h:outputText
+                                        value="Pressure"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showPressure}"/>
+                                <h:outputText
+                                        value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().pressure()}"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showPressure}"/>
+
+
+                            </h:panelGrid>
+
+                            <!--                            <div class="location-weather-clouds"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().clouds()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-dewPoint"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().dewPoint()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-feelsLikeTemp"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().feelsLikeTemperature()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-humidity"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showHumidity}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().humidity()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-icon"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showIcon}">-->
+                            <!--                                &lt;!&ndash; add icon Service&ndash;&gt;-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()}-->
+                            <!--                            </div>-->
+                            <!--                            <p:outputLabel-->
+                            <!--                                    value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().clouds()}"-->
+                            <!--                                    rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}"/>-->
+
+                            <!--                            <p:outputText-->
+                            <!--                                    value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().dewPoint()}"-->
+                            <!--                                    rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}"/>-->
+
+                            <!--                            <p:outputText-->
+                            <!--                                    value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().feelsLikeTemperature()}"-->
+                            <!--                                    rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>-->
+
+                            <!--                            <p:outputText-->
+                            <!--                                    value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().humidity()}"-->
+                            <!--                                    rendered="#{favoriteOverviewBean.favoriteDataConfig.showHumidity}"/>-->
+
+                            <!--                            <p:outputText-->
+                            <!--                                    value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()}"-->
+                            <!--                                    rendered="#{favoriteOverviewBean.favoriteDataConfig.showIcon}"/>-->
+                            <!--                            <div class="location-weather-pressure"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showPressure}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().pressure()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-rain"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showRain}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().rain()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-snow"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSnow}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().snow()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-sunrise"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-detail-1"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-temperature"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().temperature()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-title"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTitle}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().title()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-uvi"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showUvi}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().uvi()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-visibility"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showVisibility}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().visibility()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-direction"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindDirection}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windDirection()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-windGust"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindGust}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windGust()}-->
+                            <!--                            </div>-->
+                            <!--                            <div class="location-weather-windSpeed"-->
+                            <!--                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindSpeed}">-->
+                            <!--                                #{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windSpeed()}-->
+                            <!--                            </div>-->
                         </div>
                     </div>
                 </p:dataViewListItem>
