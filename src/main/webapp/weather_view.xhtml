@@ -89,26 +89,75 @@
                     </h:panelGroup>
 
                     <br/>
-                    
-                    <h5 style="margin-top:0">Weather in the next 3 days</h5>
-                    <h:panelGrid columns="2" >
 
-                        <h:outputText value="Weather Description:"/>
-                        <ui:repeat var="index" value="#{[0, 1, 2]}">
-                            <h:outputText value="#{weatherBean.weatherDTO.dailyWeather().get(index).weather().description()} " />
-                        </ui:repeat>
+                    <h5 style="margin-top:0" >Weather in the next 3 days:</h5>
+                    <h:form>
+                        <div class="card">
+                            <p:dataTable var="product" value="test2" style="font-size: 12px" >
+                                <p:column headerText="">
+                                </p:column>
+                            
+                                <p:column headerText="Day">
+                                    <!-- TO-DO: extract date from sunrise? -->
+                                    <h:outputText value="Tomorrow" />
+                                    <h:outputText value="Overmorrow" />
+                                    <h:outputText value="Overovermorrow" />
+                                </p:column>
 
-                        <h:outputText value="Sunrise:"/>
-                        <ui:repeat var="index" value="#{[0, 1, 2]}">
-                            <h:outputText value="#{weatherBean.weatherDTO.dailyWeather().get(index).sunrise()} " />
-                        </ui:repeat>
-                        
-                        <h:outputText value="Sunset:"/>
-                        <ui:repeat var="index" value="#{[0, 1, 2]}">
-                            <h:outputText value="#{weatherBean.weatherDTO.dailyWeather().get(index).sunset()} " />
-                        </ui:repeat>
-                        
-                    </h:panelGrid>
+                                <p:column headerText="Sunrise">
+                                    <h:outputText value="." />
+                                </p:column>
+
+                                <p:column headerText="Sunset">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+
+                                <p:column headerText="Temperature">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+
+                                <p:column headerText="min. Temperature">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+
+                                <p:column headerText="max. Temperature">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+
+                                <p:column headerText="FeelsLikeTemperature">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+
+                                <p:column headerText="windSpeed">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+
+                                <p:column headerText="windDirection">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+
+                                <p:column headerText="windGust">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+
+                                <p:column headerText="summary">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+
+                                <p:column headerText="Pop">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+
+                                <p:column headerText="Rain">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+
+                                <p:column headerText="Snow">
+                                    <h:outputText value="Wert 1" />
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </h:form>
                 </div>
             </p:panel>
         </h:form>
