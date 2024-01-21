@@ -73,7 +73,7 @@ Therefore, any changes made in one method will be reflected in the other within 
                             <h:outputText value="#{weatherBean.weatherDTO.currentWeather().feelsLikeTemperature()} C"/>
 
                             <h:outputText value="Wind Speed: "/>
-                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().windSpeed()} m/s"/>
+                            <h:outputText value="#{weatherBean.msToKmh(weatherBean.weatherDTO.currentWeather().windSpeed())} km/h"/>
 
                             <h:outputText value="Wind direction: "/>
                             <h:outputText value="#{weatherBean.degreesToCardinal(weatherBean.weatherDTO.currentWeather().windDirection())}"/>
@@ -107,8 +107,8 @@ Therefore, any changes made in one method will be reflected in the other within 
                                     <h:outputText value="#{hourlyWeatherEntries.feelsLikeTemperature()}" />
                                 </p:column>
 
-                                <p:column headerText="Wind speed [m/s]">
-                                    <h:outputText value="#{hourlyWeatherEntries.windSpeed()}" />
+                                <p:column headerText="Wind speed [km/h]">
+                                    <h:outputText value="#{weatherBean.msToKmh(hourlyWeatherEntries.windSpeed())}" />
                                 </p:column>
 
                                 <p:column headerText="Wind direction">
@@ -162,16 +162,16 @@ Therefore, any changes made in one method will be reflected in the other within 
                                     <h:outputText value="#{dailyWeatherEntries.feelsLikeTemperatureAggregation().dayTemperature()}" />
                                 </p:column>
 
-                                <p:column headerText="Wind speed [m/s]">
-                                    <h:outputText value="#{dailyWeatherEntries.windSpeed()}" />
+                                <p:column headerText="Wind speed [km/h]">
+                                    <h:outputText value="#{weatherBean.msToKmh(dailyWeatherEntries.windSpeed())}" />
                                 </p:column>
 
                                 <p:column headerText="Wind direction">
                                     <h:outputText value="#{weatherBean.degreesToCardinal(dailyWeatherEntries.windDirection())}" />
                                 </p:column>
 
-                                <p:column headerText="Wind gust [m/s]">
-                                    <h:outputText value="#{dailyWeatherEntries.windGust()}" />
+                                <p:column headerText="Wind gust">
+                                    <h:outputText value="#{weatherBean.msToKmh(dailyWeatherEntries.windGust())}" />
                                 </p:column>
 
                                 <p:column headerText="Pop [?]">

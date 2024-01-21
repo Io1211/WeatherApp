@@ -8,10 +8,6 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
-import internal.services.CurrentAndForecastAnswerService;
-import internal.services.FavoriteService;
-import internal.services.LocationService;
-import internal.services.UserxService;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.time.Instant;
@@ -159,8 +155,12 @@ public class WeatherBean {
    */
   public static String degreesToCardinal(Double degrees) {
       String[] directions = {"N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"};
-      int index = ((degrees + 11.25) % 360) / 22.5;
-      return directions[index];
+      Double dir = ((degrees + 11.25) % 360) / 22.5;
+      return directions[dir.intValue()];
+  }
+
+  public Long msToKmh(Double mps) {
+    return Math.round(mps*3.6);
   }
 
   public boolean getIsLocationAnswerDTOReady() {
