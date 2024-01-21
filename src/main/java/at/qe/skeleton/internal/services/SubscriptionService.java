@@ -23,7 +23,16 @@ public class SubscriptionService {
 
   @Autowired private CreditCardRepository creditCardRepository;
 
-  // TODO: add tests
+  /**
+   * This method activates a premium subscription. If the user wasn't premium before, it creates a
+   * new subscription for them and appends the list keeping track of the premium periods with the
+   * current date for the start and null for the end date (i.e., end not set). If they were premium
+   * before, the same operation is performed minus the creation of a new subscription entity.
+   *
+   * @param user The user who premium shall be activated for
+   * @throws NoCreditCardFoundException when the user in question doesn't have credit card info
+   *     associated to them
+   */
   public void activatePremiumSubscription(Userx user) throws NoCreditCardFoundException {
     if (user.getCreditCard() == null) {
       throw new NoCreditCardFoundException("No credit card found");

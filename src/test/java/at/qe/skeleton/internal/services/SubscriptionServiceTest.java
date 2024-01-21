@@ -2,11 +2,14 @@ package at.qe.skeleton.internal.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.model.Subscription;
 import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.repositories.FavoriteRepository;
 import at.qe.skeleton.internal.repositories.SubscriptionRepository;
 import at.qe.skeleton.internal.repositories.UserxRepository;
+import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
 import at.qe.skeleton.internal.services.exceptions.NotYetAvailableException;
 import java.time.LocalDate;
 import java.time.Month;
@@ -25,6 +28,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @WebAppConfiguration
 class SubscriptionServiceTest {
 
+  @Autowired CreditCardRepository creditCardRepository;
+
   @Autowired FavoriteRepository favoriteRepository;
 
   @Autowired UserxRepository userxRepository;
@@ -32,6 +37,53 @@ class SubscriptionServiceTest {
   @Autowired SubscriptionRepository subscriptionRepository;
 
   @Autowired SubscriptionService subscriptionService;
+
+  @Test
+  void activatePremiumSubscriptionTest() throws NoCreditCardFoundException {
+    Userx user = new Userx();
+    user.setId("Primus");
+
+    // case 1: throw custom exception when there is no credit card set for the user trying to get
+    // premium
+    Userx finalUser = user;
+    assertThrows(
+        NoCreditCardFoundException.class,
+        () -> {
+          subscriptionService.activatePremiumSubscription(finalUser);
+        });
+
+    // set credit card info to prevent exceptions in following tests
+    user.setCreditCard(new CreditCard());
+    user.getCreditCard().setUserId(user);
+    user.setFavorites(new ArrayList<>()); // necessary because of the rules of the user entity
+    user = userxRepository.save(user);
+
+    // case 2: no prior subscription on record
+    subscriptionService.activatePremiumSubscription(user);
+    assertNotNull(user.getSubscription());
+    assertNotNull(user.getSubscription().getPremiumPeriod());
+    assertEquals(1, user.getSubscription().getPremiumPeriod().size());
+    Pair<LocalDate, LocalDate> premiumPeriod = user.getSubscription().getPremiumPeriod().get(0);
+    // only compares date and not time so this should be fine
+    assertTrue(premiumPeriod.a.isEqual(LocalDate.now()));
+
+    // case 3: add to already existing list of premium periods
+    List<Pair<LocalDate, LocalDate>> premiumPeriods = new ArrayList<>();
+    premiumPeriods.add(new Pair<>(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 2, 1)));
+    premiumPeriods.add(new Pair<>(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 4, 1)));
+    premiumPeriods.add(new Pair<>(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 5)));
+    // overwrites the value from the previous test case
+    user.getSubscription().setPremiumPeriod(premiumPeriods);
+    userxRepository.save(user);
+
+    subscriptionService.activatePremiumSubscription(user);
+    // 3 entries created in setup + 1 that is set upon activation = 4 subscription periods expected
+    assertEquals(4, user.getSubscription().getPremiumPeriod().size());
+    Pair<LocalDate, LocalDate> lastPremiumPeriod =
+        user.getSubscription().getPremiumPeriod().get(premiumPeriods.size() - 1);
+    // only compares date and not time so this should be fine
+    assertTrue(lastPremiumPeriod.a.isEqual(LocalDate.now()));
+  }
 
   @Test
   void premiumDaysInMonthTest() throws NotYetAvailableException {
