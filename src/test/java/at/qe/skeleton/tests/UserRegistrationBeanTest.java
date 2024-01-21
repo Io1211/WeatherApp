@@ -13,8 +13,7 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Test class for the UserRegistrationBean class. {@link UserRegistrationBean} */
+/** Test class for the UserRegistrationBean class. {@link UserRegistrationBean} */
 class UserRegistrationBeanTest {
 
   @InjectMocks private UserRegistrationBean userRegistrationBean;

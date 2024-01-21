@@ -15,7 +15,7 @@ public class SubscriptionService {
   @Autowired CreditCardRepository creditCardRepository;
 
   public void activatePremiumSubscription(Userx user) {
-      if (creditCardRepository.findByUserId_Username(user.getUsername()) == null) {
+    if (creditCardRepository.findByUserId_Username(user.getUsername()) == null) {
       throw new RuntimeException("No credit card found");
     }
     userxService.activatePremium(user);
