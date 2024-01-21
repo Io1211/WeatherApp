@@ -3,10 +3,7 @@ package at.qe.skeleton.internal.services;
 import at.qe.skeleton.internal.model.Subscription;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
-import at.qe.skeleton.internal.services.exceptions.NoActivePremiumSubscriptionFoundException;
-import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
-import at.qe.skeleton.internal.services.exceptions.NoSubscriptionFoundException;
-import at.qe.skeleton.internal.services.exceptions.NotYetAvailableException;
+import at.qe.skeleton.internal.services.exceptions.*;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
@@ -37,7 +34,7 @@ public class SubscriptionService {
    *     associated to them
    */
   public void activatePremiumSubscription(Userx user) throws NoCreditCardFoundException {
-    if (user.getCreditCard() == null) {
+    if (creditCardRepository.findByUserId_Username(user.getUsername()) == null) {
       throw new NoCreditCardFoundException("No credit card found");
     }
     if (user.getSubscription() == null) {
@@ -68,7 +65,9 @@ public class SubscriptionService {
    */
   // TODO: add tests
   public void deactivatePremiumSubscription(Userx user)
-      throws NoSubscriptionFoundException, NoActivePremiumSubscriptionFoundException {
+      throws NoSubscriptionFoundException,
+          NoActivePremiumSubscriptionFoundException,
+          MoneyGlitchAvoidanceException {
     Subscription subscription = user.getSubscription();
     if (subscription == null) {
       throw new NoSubscriptionFoundException(user);
@@ -82,6 +81,13 @@ public class SubscriptionService {
     Pair<LocalDate, LocalDate> lastSubscription = premiumPeriods.get(premiumPeriods.size() - 1);
     if (lastSubscription.b != null) {
       throw new NoActivePremiumSubscriptionFoundException(user);
+    }
+
+    // If a user can activate and deactivate premium the same day they might get away with not
+    // paying for the membership.
+    if (lastSubscription.a.isEqual(LocalDate.now())) {
+      throw new MoneyGlitchAvoidanceException(
+          "Premium can't be deactivated the day it was activated");
     }
 
     Pair<LocalDate, LocalDate> canceledSubscription =

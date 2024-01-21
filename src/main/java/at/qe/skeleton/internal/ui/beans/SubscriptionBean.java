@@ -2,6 +2,7 @@ package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.SubscriptionService;
+import at.qe.skeleton.internal.services.exceptions.MoneyGlitchAvoidanceException;
 import at.qe.skeleton.internal.services.exceptions.NoActivePremiumSubscriptionFoundException;
 import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
 import at.qe.skeleton.internal.services.exceptions.NoSubscriptionFoundException;
@@ -45,11 +46,11 @@ public class SubscriptionBean {
                   FacesMessage.SEVERITY_INFO,
                   "Success",
                   "Premium activated successfully. Please login again to get access to premium features."));
-      LOGGER.info("Subscription activated");
+      LOGGER.info("Subscription activated for user %s", user);
       sessionInfoBean.reloadCurrentUser();
       return "/success_page";
     } catch (NoCreditCardFoundException e) {
-      return "/add_credit_card_sub";
+      return "/add_credit_card_sub.xhtml";
     }
   }
 
@@ -62,6 +63,11 @@ public class SubscriptionBean {
     // TODO: handle these exceptions appropriately (e.g., via primefacce message)
     catch (NoSubscriptionFoundException | NoActivePremiumSubscriptionFoundException e) {
       throw new RuntimeException(e);
+    } catch (MoneyGlitchAvoidanceException e) {
+      FacesContext.getCurrentInstance()
+          .addMessage(
+              null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning", e.getMessage()));
+      return "/home";
     }
     FacesContext.getCurrentInstance()
         .addMessage(

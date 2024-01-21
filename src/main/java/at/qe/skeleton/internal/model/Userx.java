@@ -50,7 +50,11 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   private String email;
   private String phone;
 
-  @OneToOne(optional = true, cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToOne(
+      optional = true,
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.EAGER)
   private Subscription subscription;
 
   boolean enabled;
@@ -240,9 +244,9 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
     return this.username.compareTo(o.getUsername());
   }
 
-    public boolean isPremium() {
-        return getRoles().contains(UserxRole.PREMIUM_USER);
-    }
+  public boolean isPremium() {
+    return getRoles().contains(UserxRole.PREMIUM_USER);
+  }
 
   public Subscription getSubscription() {
     return subscription;
