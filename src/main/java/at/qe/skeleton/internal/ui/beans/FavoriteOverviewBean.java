@@ -10,8 +10,12 @@ import at.qe.skeleton.internal.services.UserxService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import org.primefaces.model.ResponsiveOption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
@@ -31,6 +35,8 @@ public class FavoriteOverviewBean {
   private List<Favorite> favorites;
   private FavoriteDataConfig favoriteDataConfig;
   private Userx user;
+
+  private List<ResponsiveOption> responsiveOptions;
 
   @PostConstruct
   private void init() {
@@ -64,6 +70,10 @@ public class FavoriteOverviewBean {
 
   private void addMessage(String summary, FacesMessage.Severity severity) {
     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
+  }
+
+  public List<ResponsiveOption> getResponsiveOptions() {
+    return responsiveOptions;
   }
 
   public FavoriteDataConfig getFavoriteDataConfig() {

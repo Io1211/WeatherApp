@@ -10,10 +10,8 @@
             .favorites-card {
                 border: solid;
                 padding: 10px;
-                margin: 15px;
                 justify-content: center;
-                max-width: 350px; /* Set the maximum width as per your requirement */
-                width: 100%; /* Ensure it takes up 100% of the available width within the carousel */
+                max-width: 300px; /* Set the maximum width as per your requirement */
                 box-sizing: border-box; /* Ensure padding and border are included in the width */
             }
 
@@ -31,6 +29,14 @@
                 padding-top: 0;
             }
 
+            .ui-carousel-items-content {
+                display: flex;
+                justify-content: center;
+            }
+
+            .ui-carousel-item {
+                margin: 20px;
+            }
 
             .weather-icon {
                 display: inline;
@@ -55,7 +61,8 @@
             </p:panel>
 
             <p:carousel var="favoriteLocation" value="#{favoriteOverviewBean.favorites}" numVisible="4" numScroll="4"
-                        rendered="#{not empty favoriteOverviewBean.favorites}">
+                        rendered="#{not empty favoriteOverviewBean.favorites}"
+                        styleClass="ui-carousel-items-content ui-carousel-item">
                 <p:card styleClass="favorites-card">
 
                     <h:panelGrid columns="2" cellpadding="10" styleClass="favorites-panelgrid">
