@@ -126,10 +126,7 @@ public class WeatherApiDemoBean {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     var user = this.userxService.loadUser(auth.getName());
 
-    var favorite = new Favorite();
-    favorite.setLocation(this.location);
-
-    this.favoriteService.toggleFavorite(user, favorite);
+    this.favoriteService.toggleFavorite(user, this.location);
   }
 
   public Boolean isFavorite() {
