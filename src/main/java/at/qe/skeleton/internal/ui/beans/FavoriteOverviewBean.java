@@ -60,7 +60,7 @@ public class FavoriteOverviewBean {
   }
 
   public String removeFavorite(Favorite favorite) {
-    this.favoriteService.toggleFavorite(this.user, favorite);
+    this.favoriteService.toggleFavorite(this.user, favorite.getLocation());
     return "/secured/favoritesOverview.xhtml?faces-redirect=true";
   }
 
