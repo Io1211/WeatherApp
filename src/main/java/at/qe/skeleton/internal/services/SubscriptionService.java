@@ -1,5 +1,6 @@
 package at.qe.skeleton.internal.services;
 
+import at.qe.skeleton.internal.model.Subscription;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import org.antlr.v4.runtime.misc.Pair;
@@ -23,11 +25,22 @@ public class SubscriptionService {
 
   // TODO: add tests
   public void activatePremiumSubscription(Userx user) throws NoCreditCardFoundException {
-    if (creditCardRepository.findByUserId_Username(user.getUsername()) == null) {
+    if (user.getCreditCard() == null) {
       throw new NoCreditCardFoundException("No credit card found");
     }
-    // TODO: set subscription start (create a new subscriptionPeriod tuple and set the start date.
-    // The end stays null until set in deactivate)
+    if (user.getSubscription() == null) {
+      user.setSubscription(new Subscription());
+    }
+    Subscription subscription = user.getSubscription();
+    if (subscription.getPremiumPeriod() == null) {
+      user.getSubscription().setPremiumPeriod(new ArrayList<>());
+    }
+    List<Pair<LocalDate, LocalDate>> premiumPeriods = user.getSubscription().getPremiumPeriod();
+    System.out.println(premiumPeriods);
+    Pair<LocalDate, LocalDate> newPremiumPeriod = new Pair<>(LocalDate.now(), null);
+
+    premiumPeriods.add(newPremiumPeriod);
+    System.out.println(user.getSubscription().getPremiumPeriod());
     userxService.activatePremium(user);
   }
 
