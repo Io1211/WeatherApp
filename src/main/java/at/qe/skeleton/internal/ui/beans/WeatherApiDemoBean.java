@@ -6,7 +6,7 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
-import at.qe.skeleton.internal.ui.controllers.AutoCompleteController;
+import at.qe.skeleton.internal.ui.controllers.IconController;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
 
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
@@ -40,6 +41,8 @@ public class WeatherApiDemoBean {
   @Autowired private UserxService userxService;
 
   @Autowired private FavoriteService favoriteService;
+
+  @Autowired private IconController iconController;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
@@ -84,6 +87,11 @@ public class WeatherApiDemoBean {
     this.weatherDTO =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
     return "/weatherForecast.xhtml?faces-redirect=true";
+  }
+
+  public String getIcon() {
+    String iconId = this.weatherDTO.currentWeather().weather().icon();
+    return iconController.getIcon(iconId);
   }
 
   public String getSunsetString() {
