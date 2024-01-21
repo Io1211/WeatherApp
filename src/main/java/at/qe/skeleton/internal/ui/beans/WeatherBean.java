@@ -144,7 +144,7 @@ public class WeatherBean {
   public List<DailyWeatherEntry> getDailyWeatherEntries () {
     List<DailyWeatherEntry> dailyWeatherEntries = new ArrayList<>();
     
-    for (Integer index = 0; index <= 2; index++) {
+    for (Integer index = 0; index <= 3; index++) {
       dailyWeatherEntries.add(new DailyWeatherEntry(
         formatInstantToDate(weatherDTO.dailyWeather().get(index).sunrise(), ZoneId.of(weatherDTO.timezone())),
         formatInstantToHHMM(weatherDTO.dailyWeather().get(index).sunrise(), ZoneId.of(weatherDTO.timezone())),

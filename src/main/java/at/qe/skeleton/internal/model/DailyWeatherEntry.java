@@ -48,6 +48,7 @@ public class DailyWeatherEntry {
         Double rain,
         Double snow) {
 
+        this.date = date;
         this.sunrise = sunrise;
         this.sunset = sunset;
         this.dayTemperature = dayTemperature;
