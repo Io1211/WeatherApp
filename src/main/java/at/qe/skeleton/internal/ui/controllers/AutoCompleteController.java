@@ -66,7 +66,7 @@ public class AutoCompleteController {
     }
   }
 
-  private String retrieveLocationName(LocationAnswerDTO locationDTO) {
+  public String retrieveLocationName(LocationAnswerDTO locationDTO) {
     if (locationDTO.state() == null) {
       return String.format("%s, %s", locationDTO.name(), locationDTO.country());
     }

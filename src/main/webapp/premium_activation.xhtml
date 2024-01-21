@@ -11,9 +11,9 @@
         <h:form id="premiumActivationForm">
             <h:panelGrid columns="2">
                 <p:commandButton value="Activate Premium" action="#{subscriptionBean.activatePremiumSubscription}"
-                                 update=":premiumActivationForm"/>
+                                 update=":premiumActivationForm" rendered="#{!sessionInfoBean.userPremium}"/>
                 <p:commandButton value="Deactivate Premium" action="#{subscriptionBean.deactivatePremiumSubscription}"
-                                 update=":premiumActivationForm"/>
+                                 update=":premiumActivationForm" rendered="#{sessionInfoBean.userPremium}"/>
             </h:panelGrid>
 
         </h:form>

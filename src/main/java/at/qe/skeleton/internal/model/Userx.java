@@ -133,6 +133,14 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
     this.roles = roles;
   }
 
+  public void addRole(UserxRole role) {
+    this.roles.add(role);
+  }
+
+  public void removeRole(UserxRole role) {
+    this.roles.remove(role);
+  }
+
   public List<Favorite> getFavorites() {
     return favorites;
   }
@@ -231,6 +239,10 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   public int compareTo(Userx o) {
     return this.username.compareTo(o.getUsername());
   }
+
+    public boolean isPremium() {
+        return getRoles().contains(UserxRole.PREMIUM_USER);
+    }
 
   public Subscription getSubscription() {
     return subscription;

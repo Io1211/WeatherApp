@@ -8,7 +8,7 @@
       xml:lang="en">
 <body>
 <ui:composition>
-    <h:form>
+    <h:form id="headerForm">
         <p:menubar>
             <p:submenu label="User Submenu 1" rendered="#{sessionInfoBean.hasRole('REGISTERED_USER')}">
                 <p:menuitem value="Registered User Action 1 - 1"/>
@@ -30,14 +30,36 @@
 
             <p:submenu label="User Info" rendered="#{sessionInfoBean.loggedIn}">
                 <p:menuitem value="My Credit Card" url="/userInfo/credit_card_details.xhtml"/>
-                <p:menuitem value="Premium Activation" url="/userInfo/premium_activation.xhtml"/>
             </p:submenu>
 
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
-            <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
 
+            <p:menuitem value="Activate Premium"
+                        action="#{subscriptionBean.activatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and !sessionInfoBean.userPremium}"
+                        update="headerForm"/>
+            <p:menuitem value="Deactivate Premium"
+                        action="#{subscriptionBean.deactivatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and sessionInfoBean.userPremium}"
+                        update="headerForm"/>
+
+            <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
+
+            <p:menuitem>
+
+                <p:autoComplete id="locationSearchField" value="#{weatherApiDemoBean.locationSearchInput}"
+                                completeMethod="#{autoCompleteController.autoCompleteLocation}"
+                                style="margin-right: 10px;" emptyMessage="no results"/>
+
+                <p:commandButton value="Search" id="commitSearchRequest"
+                                 action="#{weatherApiDemoBean.performLocationSearch()}"
+                                 update="headerForm">
+                </p:commandButton>
+            </p:menuitem>
+
         </p:menubar>
+        <p:messages id="message" showDetail="true"/>
     </h:form>
 </ui:composition>
 </body>

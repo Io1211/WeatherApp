@@ -7,7 +7,6 @@ import at.qe.skeleton.internal.services.CreditCardService;
 import at.qe.skeleton.internal.ui.beans.CreditCardBean;
 import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 import jakarta.faces.context.FacesContext;
-import org.h2.engine.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -15,9 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
-/**
- * Some very basic tests for UserBean. {@link CreditCardBean}
- */
+/** Some very basic tests for UserBean. {@link CreditCardBean} */
 public class CreditCardBeanTest {
 
     @InjectMocks private CreditCardBean creditCardBean;

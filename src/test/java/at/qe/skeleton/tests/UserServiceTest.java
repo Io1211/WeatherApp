@@ -25,6 +25,7 @@ public class UserServiceTest {
   @Autowired UserxService userService;
 
   @Test
+  @DirtiesContext
   @WithMockUser(
           username = "admin",
           authorities = {"ADMIN"})
@@ -298,7 +299,7 @@ public class UserServiceTest {
 
   @Test
   @WithMockUser(
-          username = "user1",
+          username = "user2",
           authorities = {"REGISTERED_USER"})
   public void testUnauthorizedSaveUser() {
     Assertions.assertThrows(
