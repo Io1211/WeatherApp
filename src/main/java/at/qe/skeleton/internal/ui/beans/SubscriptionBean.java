@@ -2,7 +2,9 @@ package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.SubscriptionService;
+import at.qe.skeleton.internal.services.exceptions.NoActivePremiumSubscriptionFoundException;
 import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
+import at.qe.skeleton.internal.services.exceptions.NoSubscriptionFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,14 @@ public class SubscriptionBean {
 
   public void deactivatePremiumSubscription() {
     Userx user = sessionInfoBean.getCurrentUser();
-    subscriptionService.deactivatePremiumSubscription(user);
+    try {
+      subscriptionService.deactivatePremiumSubscription(user);
+    }
+    // TODO: handle these exceptions appropriately (e.g., via primefacce message)
+    catch (NoSubscriptionFoundException e) {
+      throw new RuntimeException(e);
+    } catch (NoActivePremiumSubscriptionFoundException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

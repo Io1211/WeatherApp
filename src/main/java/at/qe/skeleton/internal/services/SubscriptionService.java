@@ -52,9 +52,29 @@ public class SubscriptionService {
   }
 
   // TODO: add tests
-  public void deactivatePremiumSubscription(Userx user) {
-    // TODO: set subscription end (get the list of subscriptionPeriod tuples and get the last one.
-    // Set the date there)
+  public void deactivatePremiumSubscription(Userx user)
+      throws NoSubscriptionFoundException, NoActivePremiumSubscriptionFoundException {
+    Subscription subscription = user.getSubscription();
+    if (subscription == null) {
+      throw new NoSubscriptionFoundException(user);
+    }
+
+    List<Pair<LocalDate, LocalDate>> premiumPeriods = subscription.getPremiumPeriod();
+    if (premiumPeriods.isEmpty()) {
+      throw new NoActivePremiumSubscriptionFoundException(user);
+    }
+
+    Pair<LocalDate, LocalDate> lastSubscription = premiumPeriods.get(premiumPeriods.size() - 1);
+    if (lastSubscription.b != null) {
+      throw new NoActivePremiumSubscriptionFoundException(user);
+    }
+
+    Pair<LocalDate, LocalDate> canceledSubscription =
+        new Pair<>(lastSubscription.a, LocalDate.now());
+    premiumPeriods.remove(lastSubscription);
+    premiumPeriods.add(canceledSubscription);
+    user.getSubscription().setPremiumPeriod(premiumPeriods);
+
     userxService.deactivatePremium(user);
   }
 
