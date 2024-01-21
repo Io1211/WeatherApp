@@ -56,7 +56,7 @@ public class SubscriptionService {
    *     month further in the future. Billing is supported only for passed months.
    */
   public int premiumDaysInMonth(Userx user, Month month, int year) throws NotYetAvailableException {
-    if ((year >= ZonedDateTime.now().getYear())
+    if ((year > ZonedDateTime.now().getYear())
         || ((year == ZonedDateTime.now().getYear())
             && month.getValue() >= ZonedDateTime.now().getMonthValue())) {
       throw new NotYetAvailableException(

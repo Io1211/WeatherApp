@@ -9,6 +9,7 @@ import at.qe.skeleton.internal.services.exceptions.NotYetAvailableException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.antlr.v4.runtime.misc.Pair;
@@ -30,48 +31,6 @@ class SubscriptionServiceTest {
   @Autowired SubscriptionRepository subscriptionRepository;
 
   @Autowired SubscriptionService subscriptionService;
-
-  @Test
-  void calculatePremiumFromStartAndStopTest() {
-    Month month = Month.JANUARY;
-    int year = 2024;
-
-    LocalDate start = LocalDate.of(2024, 1, 10);
-    LocalDate stop = LocalDate.of(2024, 1, 23);
-
-    // case 1: both start and stop date in the tested month
-    int expected = stop.getDayOfMonth() - start.getDayOfMonth();
-    Assertions.assertEquals(
-        expected,
-        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
-        "Error in start & stop in month case");
-
-    // case 2: start not in tested month and stop in tested month
-    start = LocalDate.of(2023, 1, 10);
-    expected = stop.getDayOfMonth();
-    Assertions.assertEquals(
-        expected,
-        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
-        "Error in stop only in month case");
-
-    // case 3: start in tested month and stop not
-    start = LocalDate.of(2024, 1, 10);
-    stop = LocalDate.of(2025, 1, 23);
-    expected = month.length(Year.isLeap(year)) - start.getDayOfMonth();
-    Assertions.assertEquals(
-        expected,
-        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
-        "Error in start only in month case");
-
-    // case 4: start in month and stop not set
-    start = LocalDate.of(2024, 1, 10);
-    stop = null;
-    expected = month.length(Year.isLeap(year)) - start.getDayOfMonth();
-    Assertions.assertEquals(
-        expected,
-        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
-        "Error in start only in month case with (stop not set)");
-  }
 
   @Test
   void premiumDaysInMonthTest() throws NotYetAvailableException {
@@ -130,7 +89,7 @@ class SubscriptionServiceTest {
     Assertions.assertEquals(
         expected, subscriptionService.premiumDaysInMonth(user, Month.APRIL, 2023));
 
-    // case 6: subscription started and stopped (date outside the query month)
+    // case 6: subscription started and stopped (date before or after the query month)
     activePeriod =
         new ArrayList<>(
             List.of(
@@ -138,6 +97,12 @@ class SubscriptionServiceTest {
                 new Pair<>(LocalDate.of(2023, 8, 15), LocalDate.of(2023, 8, 27))));
     subscription.setPremiumPeriod(activePeriod);
     expected = 0;
+    Assertions.assertEquals(
+        expected, subscriptionService.premiumDaysInMonth(user, Month.JUNE, 2023));
+    activePeriod =
+        new ArrayList<>(List.of(new Pair<>(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 8, 10))));
+    subscription.setPremiumPeriod(activePeriod);
+    expected = Month.JUNE.length(Year.isLeap(2023));
     Assertions.assertEquals(
         expected, subscriptionService.premiumDaysInMonth(user, Month.JUNE, 2023));
 
@@ -148,7 +113,7 @@ class SubscriptionServiceTest {
     Assertions.assertEquals(
         expected, subscriptionService.premiumDaysInMonth(user, Month.MAY, 2023));
 
-    // case 8: search for the current or a future month
+    // case 8: search for the current or a future month doesn't work
     Userx finalUser = user;
     Assertions.assertThrows(
         NotYetAvailableException.class,
@@ -160,8 +125,71 @@ class SubscriptionServiceTest {
     Assertions.assertThrows(
         NotYetAvailableException.class,
         () -> subscriptionService.premiumDaysInMonth(finalUser, Month.JANUARY, 2025));
+    if (ZonedDateTime.now().getMonth()
+        != Month.JANUARY) { // this doesn't work for the first month of the year
+      Assertions.assertDoesNotThrow(
+          () -> {
+            Month previousMonth = LocalDate.now().getMonth().minus(1);
+            int thisYear = LocalDate.now().getYear();
+            finalUser
+                .getSubscription()
+                .setPremiumPeriod(
+                    new ArrayList<>(
+                        List.of(
+                            new Pair<LocalDate, LocalDate>(
+                                LocalDate.of(thisYear, previousMonth, 1),
+                                LocalDate.of(thisYear, previousMonth, 5)))));
+            subscriptionService.premiumDaysInMonth(finalUser, previousMonth, thisYear);
+          });
+    }
+
+    // case 9: user premium period is empty
+    user.getSubscription().setPremiumPeriod(new ArrayList<>());
+    Assertions.assertEquals(0, subscriptionService.premiumDaysInMonth(user, Month.JANUARY, 2023));
 
     // cleanup
     userxRepository.delete(user);
+  }
+
+  @Test
+  void calculatePremiumFromStartAndStopTest() {
+    Month month = Month.JANUARY;
+    int year = 2024;
+
+    LocalDate start = LocalDate.of(2024, 1, 10);
+    LocalDate stop = LocalDate.of(2024, 1, 23);
+
+    // case 1: both start and stop date in the tested month
+    int expected = stop.getDayOfMonth() - start.getDayOfMonth();
+    Assertions.assertEquals(
+        expected,
+        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
+        "Error in start & stop in month case");
+
+    // case 2: start not in tested month and stop in tested month
+    start = LocalDate.of(2023, 1, 10);
+    expected = stop.getDayOfMonth();
+    Assertions.assertEquals(
+        expected,
+        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
+        "Error in stop only in month case");
+
+    // case 3: start in tested month and stop not
+    start = LocalDate.of(2024, 1, 10);
+    stop = LocalDate.of(2025, 1, 23);
+    expected = month.length(Year.isLeap(year)) - start.getDayOfMonth();
+    Assertions.assertEquals(
+        expected,
+        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
+        "Error in start only in month case");
+
+    // case 4: start in month and stop not set
+    start = LocalDate.of(2024, 1, 10);
+    stop = null;
+    expected = month.length(Year.isLeap(year)) - start.getDayOfMonth();
+    Assertions.assertEquals(
+        expected,
+        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
+        "Error in start only in month case with (stop not set)");
   }
 }
