@@ -20,7 +20,7 @@ public class FavoriteService {
 
   @Autowired private UserxRepository userRepository;
 
-  public Favorite loadFavorite(String username, String city) {
+  public Favorite loadFavorite(String city, String username) {
     return this.favoriteRepository.findFavoriteByLocation_CityAndUser_Username(city, username);
   }
 
