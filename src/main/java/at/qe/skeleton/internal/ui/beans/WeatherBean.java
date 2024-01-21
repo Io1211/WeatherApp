@@ -5,7 +5,6 @@ import at.qe.skeleton.external.model.currentandforecast.misc.DailyWeatherDTO;
 import at.qe.skeleton.external.model.currentandforecast.misc.HourlyWeatherDTO;
 import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.Location;
-import at.qe.skeleton.internal.model.DailyWeatherEntry;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
@@ -145,55 +144,28 @@ public class WeatherBean {
     this.weatherDTO = weatherDTO;
   }
 
-  /*
-  public List<DailyWeatherEntry> getDailyWeatherEntries () {
-    List<DailyWeatherEntry> dailyWeatherEntries = new ArrayList<>();
-    
-    for (Integer index = 0; index <= 3; index++) {
-      dailyWeatherEntries.add(new DailyWeatherEntry(
-        formatInstantToDate(weatherDTO.dailyWeather().get(index).sunrise(), ZoneId.of(weatherDTO.timezone())),
-        formatInstantToHHMM(weatherDTO.dailyWeather().get(index).sunrise(), ZoneId.of(weatherDTO.timezone())),
-        formatInstantToHHMM(weatherDTO.dailyWeather().get(index).sunset(), ZoneId.of(weatherDTO.timezone())),
-        weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().dayTemperature(),
-        weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().minimumDailyTemperature(),
-        weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().maximumDailyTemperature(),
-        // TO-DO: cannot set the feels like temp correctly??
-        weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().dayTemperature(),
-        weatherDTO.dailyWeather().get(index).windSpeed(),
-        weatherDTO.dailyWeather().get(index).windDirection(),
-        weatherDTO.dailyWeather().get(index).windGust(),
-        weatherDTO.dailyWeather().get(index).summary(),
-        weatherDTO.dailyWeather().get(index).probabilityOfPrecipitation(),
-        weatherDTO.dailyWeather().get(index).rain(),
-        weatherDTO.dailyWeather().get(index).snow()
-      ));
-    }
-    return dailyWeatherEntries;
-  }
-   */
-
   public List<DailyWeatherDTO> getDailyWeatherEntries() {
-    return weatherDTO.dailyWeather();
+    return weatherDTO.dailyWeather().stream().limit(4).collect(Collectors.toList());
   }
 
   public List<HourlyWeatherDTO> getHourlyWeatherEntries() {
     return weatherDTO.hourlyWeather().stream().limit(24).collect(Collectors.toList());
   }
 
-  public static String formatInstantToHHMM(Instant timestamp, ZoneId zoneId) {
-    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, zoneId);
+  public static String formatInstantToHHMM(Instant timestamp) {
+    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
     return localDateTime.format(formatter);
   }
 
-  public static String formatInstantToHHMMWithoutTimezone(Instant timestamp) {
+  public static String formatInstantToHHMMWithDate(Instant timestamp) {
     LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.: HH:mm");
     return localDateTime.format(formatter);
-}
+  }
 
-  public static String formatInstantToDate(Instant timestamp, ZoneId zoneId) {
-    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, zoneId);
+  public static String formatInstantToDate(Instant timestamp) {
+    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     return localDateTime.format(formatter);
   }
