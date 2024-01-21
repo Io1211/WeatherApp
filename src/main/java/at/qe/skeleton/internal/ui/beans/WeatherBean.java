@@ -146,9 +146,9 @@ public class WeatherBean {
     
     for (Integer index = 0; index <= 2; index++) {
       dailyWeatherEntries.add(new DailyWeatherEntry(
-        formatInstantToDate(weatherDTO.dailyWeather().get(index).sunrise()),
-        formatInstantToHHMM(weatherDTO.dailyWeather().get(index).sunrise()),
-        formatInstantToHHMM(weatherDTO.dailyWeather().get(index).sunset()),
+        formatInstantToDate(weatherDTO.dailyWeather().get(index).sunrise(), ZoneId.of(weatherDTO.timezone())),
+        formatInstantToHHMM(weatherDTO.dailyWeather().get(index).sunrise(), ZoneId.of(weatherDTO.timezone())),
+        formatInstantToHHMM(weatherDTO.dailyWeather().get(index).sunset(), ZoneId.of(weatherDTO.timezone())),
         weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().dayTemperature(),
         weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().minimumDailyTemperature(),
         weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().maximumDailyTemperature(),
@@ -163,21 +163,22 @@ public class WeatherBean {
         weatherDTO.dailyWeather().get(index).snow()
       ));
     }
-
     return dailyWeatherEntries;
   }
 
-  public static String formatInstantToHHMM(Instant timestamp) {
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        String formattedTime = localDateTime.format(formatter);
-        return formattedTime;
+  public static String formatInstantToHHMM(Instant timestamp, ZoneId zoneId) {
+    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, zoneId);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    String formattedTime = localDateTime.format(formatter);
+
+    return formattedTime;
   }
 
-  public static LocalDate formatInstantToDate(Instant timestamp) {
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneId.systemDefault());
-        LocalDate localDate = localDateTime.toLocalDate();
-        return localDate;
+  public static String formatInstantToDate(Instant timestamp, ZoneId zoneId) {
+    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, zoneId);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    String formattedDate = localDateTime.format(formatter);
+    return formattedDate;
   }
 
 

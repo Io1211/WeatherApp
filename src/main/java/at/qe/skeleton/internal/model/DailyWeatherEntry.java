@@ -16,7 +16,7 @@ public class DailyWeatherEntry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    public LocalDate date;
+    public String date;
     public String sunrise;
     public String sunset;
     public Double dayTemperature;
@@ -33,7 +33,7 @@ public class DailyWeatherEntry {
 
 
     public DailyWeatherEntry(
-        LocalDate date,
+        String date,
         String sunrise,
         String sunset,
         Double dayTemperature,
@@ -63,7 +63,7 @@ public class DailyWeatherEntry {
         this.snow = snow;
     }
 
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
