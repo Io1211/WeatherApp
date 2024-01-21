@@ -44,12 +44,10 @@ public class SubscriptionService {
     if (subscription.getPremiumPeriod() == null) {
       user.getSubscription().setPremiumPeriod(new ArrayList<>());
     }
-    List<Pair<LocalDate, LocalDate>> premiumPeriods = user.getSubscription().getPremiumPeriod();
-    System.out.println(premiumPeriods);
-    Pair<LocalDate, LocalDate> newPremiumPeriod = new Pair<>(LocalDate.now(), null);
 
+    List<Pair<LocalDate, LocalDate>> premiumPeriods = user.getSubscription().getPremiumPeriod();
+    Pair<LocalDate, LocalDate> newPremiumPeriod = new Pair<>(LocalDate.now(), null);
     premiumPeriods.add(newPremiumPeriod);
-    System.out.println(user.getSubscription().getPremiumPeriod());
     userxService.activatePremium(user);
   }
 
