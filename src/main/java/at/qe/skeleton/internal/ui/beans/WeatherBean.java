@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,7 +170,7 @@ public class WeatherBean {
   }
 
   public List<HourlyWeatherDTO> getHourlyWeatherEntries() {
-    return weatherDTO.hourlyWeather();
+    return weatherDTO.hourlyWeather().stream().limit(24).collect(Collectors.toList());
   }
 
   public static String formatInstantToHHMM(Instant timestamp, ZoneId zoneId) {
