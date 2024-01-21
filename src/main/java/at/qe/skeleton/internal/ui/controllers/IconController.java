@@ -1,11 +1,11 @@
 package at.qe.skeleton.internal.ui.controllers;
 
-import at.qe.skeleton.external.model.shared.WeatherDTO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
+
 
 @Component
 @Scope("view")
@@ -16,7 +16,7 @@ public class IconController {
   public String getIcon(String iconId) {
 
     String uriResult = URI.concat(iconId).concat("@2x.png");
-    LOGGER.info("retrieving icon from: " + uriResult);
+    LOGGER.info("retrieving icon from: {}", uriResult);
     return uriResult;
   }
 }
