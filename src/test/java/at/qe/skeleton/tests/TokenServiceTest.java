@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Test class for the TokenService class. {@link TokenService} */
+/** Test class for the TokenService class. {@link TokenService} */
 public class TokenServiceTest {
 
   private TokenService tokenService;

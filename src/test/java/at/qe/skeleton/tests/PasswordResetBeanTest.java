@@ -14,8 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-/**
- * Test class for the PasswordResetBean class. {@link PasswordResetBean} */
+/** Test class for the PasswordResetBean class. {@link PasswordResetBean} */
 public class PasswordResetBeanTest {
   @Mock private EmailService emailService;
 

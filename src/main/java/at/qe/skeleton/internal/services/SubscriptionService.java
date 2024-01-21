@@ -18,9 +18,13 @@ public class SubscriptionService {
       throw new NoCreditCardFoundException("No credit card found");
     }
     userxService.activatePremium(user);
-
   }
+
   public void deactivatePremiumSubscription(Userx user) {
     userxService.deactivatePremium(user);
+  }
+
+  public boolean checkPremiumStatus(Userx user) {
+    return userxService.isPremium(user);
   }
 }
