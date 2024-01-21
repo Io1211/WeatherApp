@@ -58,27 +58,28 @@ Therefore, any changes made in one method will be reflected in the other within 
 
                     <br/>
 
-                    <h:panelGroup layout="block" style="display: flex;">
+                    <h:panelGroup layout="block" style="display: flex; font-size: 14px;">
 
-                        <h5 style="margin-top: 0;">Current weather</h5>
-                        <h:panelGrid columns="2" >
-
-                            <h:outputText value="Weather Description: #{weatherBean.weatherDTO.currentWeather().weather().description()}"/>
-                            <h:graphicImage value="#imgUrl"/>
+                        <h:panelGrid columns="2" styleClass="weather-info">
+                            <h:outputText value="Current Weather" style="font-weight: bold; font-size: 16px;"/>
+                            <h:outputText value=""/>
                             
-                            <h:outputText value="Temperature: "/>
-                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().temperature()} C"/>
-
-                            <h:outputText value="FeelsLikeTemperature: "/>
-                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().feelsLikeTemperature()} C"/>
-
-                            <h:outputText value="Wind Speed: "/>
+                            <h:outputText value="Description:" style="font-weight: bold;"/>
+                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().weather().description()}"/>
+                            
+                            <h:outputText value="Temperature:" style="font-weight: bold;"/>
+                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().temperature()} °C"/>
+                            
+                            <h:outputText value="Feels Like Temperature:" style="font-weight: bold;"/>
+                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().feelsLikeTemperature()} °C"/>
+                            
+                            <h:outputText value="Wind Speed:" style="font-weight: bold;"/>
                             <h:outputText value="#{weatherBean.msToKmh(weatherBean.weatherDTO.currentWeather().windSpeed())} km/h"/>
-
-                            <h:outputText value="Wind direction: "/>
+                            
+                            <h:outputText value="Wind Direction:" style="font-weight: bold;"/>
                             <h:outputText value="#{weatherBean.degreesToCardinal(weatherBean.weatherDTO.currentWeather().windDirection())}"/>
-
                         </h:panelGrid>
+
                     
                         <br/>
 
