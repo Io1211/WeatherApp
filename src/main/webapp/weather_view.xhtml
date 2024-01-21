@@ -51,9 +51,11 @@ Therefore, any changes made in one method will be reflected in the other within 
                                       rendered="#{not empty weatherBean.location.state}"/>
                         <p:commandButton id="toggleFavorite"
                             action="#{weatherBean.toggleFavorite()}"
-                            rendered="#{weatherBean.weatherDTO != null}" icon="pi pi-heart"
+                            rendered="#{weatherBean.weatherDTO != null}" 
+                            icon="pi pi-heart"
                             styleClass="#{weatherBean.isFavorite() ? 'rounded-button ui-button-help' : 'rounded-button ui-button-help ui-button-outlined'}"
-                            update="toggleFavorite"/>
+                            update="toggleFavorite"
+                            style="margin-left: 20px"/>
                     </h4>
 
                     <br/>
@@ -90,7 +92,7 @@ Therefore, any changes made in one method will be reflected in the other within 
                     <h5 style="margin-top:0" >Weather for the next 24 hours:</h5>
                     <h:form>
                         <div class="card">
-                            <p:dataTable var="hourlyWeatherEntries" value="#{weatherBean.getHourlyWeatherEntries()}" style="font-size: 14px" >
+                            <p:dataTable var="hourlyWeatherEntries" value="#{weatherBean.getHourlyWeatherEntries()}" style="font-size: 14px" paginator="true" paginatorPosition="bottom" rows="10">
                             
                                 <p:column headerText="Time">
                                     <h:outputText value="#{weatherBean.formatInstantToDateTime(hourlyWeatherEntries.timestamp(), 'dd.MM.yyyy: HH:mm')}" />
@@ -116,7 +118,7 @@ Therefore, any changes made in one method will be reflected in the other within 
                                     <h:outputText value="#{weatherBean.degreesToCardinal(hourlyWeatherEntries.windDirection())}" />
                                 </p:column>
 
-                                <p:column headerText="Pop [?]">
+                                <p:column headerText="Pop">
                                     <h:outputText value="#{hourlyWeatherEntries.probabilityOfPrecipitation()}" />
                                 </p:column>
 
@@ -140,7 +142,7 @@ Therefore, any changes made in one method will be reflected in the other within 
                                 </p:column>
 
                                 <p:column headerText="Sunrise">
-                                    <h:outputText value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunrise(), 'HH.mm')}" />
+                                    <h:outputText value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunrise(), 'HH:mm')}" />
                                 </p:column>
 
                                 <p:column headerText="Sunset">
@@ -175,15 +177,15 @@ Therefore, any changes made in one method will be reflected in the other within 
                                     <h:outputText value="#{weatherBean.msToKmh(dailyWeatherEntries.windGust())}" />
                                 </p:column>
 
-                                <p:column headerText="Pop [?]">
+                                <p:column headerText="Pop">
                                     <h:outputText value="#{dailyWeatherEntries.probabilityOfPrecipitation()}" />
                                 </p:column>
 
-                                <p:column headerText="Rain [%]">
+                                <p:column headerText="Rain [mm/h]">
                                     <h:outputText value="#{dailyWeatherEntries.rain()}" />
                                 </p:column>
 
-                                <p:column headerText="Snow [%]">
+                                <p:column headerText="Snow [mm/h]">
                                     <h:outputText value="#{dailyWeatherEntries.snow()}" />
                                 </p:column>
                             </p:dataTable>
