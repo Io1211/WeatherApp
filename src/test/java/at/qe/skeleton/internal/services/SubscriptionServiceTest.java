@@ -21,6 +21,7 @@ import org.antlr.v4.runtime.misc.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 /** SubscriptionServiceTest */
@@ -38,6 +39,7 @@ class SubscriptionServiceTest {
 
   @Autowired SubscriptionService subscriptionService;
 
+  @DirtiesContext
   @Test
   void activatePremiumSubscriptionTest() throws NoCreditCardFoundException {
     Userx user = new Userx();
@@ -85,6 +87,7 @@ class SubscriptionServiceTest {
     assertTrue(lastPremiumPeriod.a.isEqual(LocalDate.now()));
   }
 
+  @DirtiesContext
   @Test
   void premiumDaysInMonthTest() throws NotYetAvailableException {
     Userx user = new Userx();
