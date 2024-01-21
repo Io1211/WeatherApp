@@ -83,10 +83,26 @@
 
                         </h:panelGrid>
                     
-
                         <br/>
 
                     </h:panelGroup>
+
+                    <br/>
+
+                    <h5 style="margin-top:0" >Test table:</h5>
+                    <h:form>
+                        <div class="card">
+                            <p:dataTable var="dailyWeatherEntries" value="#{weatherBean.getDailyWeatherEntries()}" style="font-size: 12px" >
+                                <p:column headerText="">
+                                </p:column>
+                            
+                                <p:column headerText="Temperature">
+                                    <h:outputText value="#{dailyWeatherEntries.dayTemperature}" />
+                                </p:column>
+
+                            </p:dataTable>
+                        </div>
+                    </h:form>
 
                     <br/>
 
@@ -99,13 +115,11 @@
                             
                                 <p:column headerText="Day">
                                     <!-- TO-DO: extract date from sunrise? -->
-                                    <h:outputText value="Tomorrow" />
-                                    <h:outputText value="Overmorrow" />
-                                    <h:outputText value="Overovermorrow" />
+                                    <h:outputText value="Wert 1" />
                                 </p:column>
 
                                 <p:column headerText="Sunrise">
-                                    <h:outputText value="." />
+                                    <h:outputText value="Wert 1" />
                                 </p:column>
 
                                 <p:column headerText="Sunset">
@@ -164,3 +178,14 @@
     </ui:define>
 
 </ui:composition>
+
+<!-- 
+
+<h:outputText value="Hourly weather: "/>
+<h:outputText value="#{weatherBean.weatherDTO.hourlyWeather().get(0)}"/>
+
+<h:outputText value="Daily weather: "/>
+<h:outputText value="#{weatherBean.weatherDTO.dailyWeather().get(0)}"/>
+
+
+-->

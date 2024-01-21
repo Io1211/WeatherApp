@@ -3,6 +3,7 @@ package at.qe.skeleton.internal.ui.beans;
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.Location;
+import at.qe.skeleton.internal.model.DailyWeatherEntry;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
@@ -12,6 +13,9 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,4 +138,31 @@ public class WeatherBean {
   public void setWeatherDTO(CurrentAndForecastAnswerDTO weatherDTO) {
     this.weatherDTO = weatherDTO;
   }
+
+  public List<DailyWeatherEntry> getDailyWeatherEntries () {
+    List<DailyWeatherEntry> dailyWeatherEntries = new ArrayList<>();
+    
+    for (Integer index = 0; index <= 2; index++) {
+      dailyWeatherEntries.add(new DailyWeatherEntry(
+        weatherDTO.dailyWeather().get(index).sunrise(),
+        weatherDTO.dailyWeather().get(index).sunset(),
+        weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().dayTemperature(),
+        weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().minimumDailyTemperature(),
+        weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().maximumDailyTemperature(),
+        // TO-DO: cannot set the feels like temp correctly, super weird...
+        weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().dayTemperature(),
+        weatherDTO.dailyWeather().get(index).windSpeed(),
+        weatherDTO.dailyWeather().get(index).windDirection(),
+        weatherDTO.dailyWeather().get(index).windGust(),
+        weatherDTO.dailyWeather().get(index).summary(),
+        weatherDTO.dailyWeather().get(index).probabilityOfPrecipitation(),
+        weatherDTO.dailyWeather().get(index).rain(),
+        weatherDTO.dailyWeather().get(index).snow()
+      ));
+    }
+
+    return dailyWeatherEntries;
+  }
+
+
 }
