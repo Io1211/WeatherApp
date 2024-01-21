@@ -21,7 +21,7 @@ public class FavoriteConverter implements Converter<Favorite> {
   public Favorite getAsObject(FacesContext facesContext, UIComponent uiComponent, String value) {
     if (value != null && !value.trim().isEmpty()) {
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      return favoriteService.loadFavorite(auth.getName(), value);
+      return favoriteService.loadFavorite(value, auth.getName());
     } else {
       return null;
     }
