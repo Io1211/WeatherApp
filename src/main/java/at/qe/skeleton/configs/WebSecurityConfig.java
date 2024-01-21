@@ -15,6 +15,8 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -32,10 +34,16 @@ public class WebSecurityConfig {
   private static final String PREMIUM_USER = UserxRole.PREMIUM_USER.name();
   private static final String REGISTERED_USER = UserxRole.REGISTERED_USER.name();
   private static final String LOGIN = "/login.xhtml";
+
+  private static final String WEATHERFORECAST = "/weatherForecast.xhtml";
   private static final String ACCESSDENIED = "/error/access_denied.xhtml";
 
   @Autowired DataSource dataSource;
 
+  @Bean
+  public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+    return new ChangeSessionIdAuthenticationStrategy();
+  }
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -72,6 +80,8 @@ public class WebSecurityConfig {
                       .permitAll()
                       .requestMatchers("/confirm_registration.xhtml")
                       .permitAll()
+                      .requestMatchers(WEATHERFORECAST)
+                      .permitAll()
                       .anyRequest()
                       .authenticated())
           .formLogin(
@@ -85,11 +95,11 @@ public class WebSecurityConfig {
           .logout(
               logout ->
                   logout
-                      .logoutSuccessUrl(LOGIN)
+                      .logoutSuccessUrl(WEATHERFORECAST)
                       .deleteCookies("JSESSIONID")
                       .invalidateHttpSession(true)
                       .logoutRequestMatcher(new AntPathRequestMatcher("/logout")))
-          .sessionManagement(session -> session.invalidSessionUrl("/error/invalid_session.xhtml"));
+          .sessionManagement(session -> session.invalidSessionUrl(WEATHERFORECAST));
 
       return http.build();
     } catch (Exception ex) {

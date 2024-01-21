@@ -228,4 +228,8 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   public int compareTo(Userx o) {
     return this.username.compareTo(o.getUsername());
   }
+
+    public boolean isPremium() {
+        return getRoles().contains(UserxRole.PREMIUM_USER);
+    }
 }

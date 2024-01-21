@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="content">
+
+        <h:form id="weatherForm">
+            <p:panel header="Response" id="Response">
+                <p:outputLabel value="#{weatherApiDemoBean.locationLabel}"/>
+                <br/>
+                <h5 style="margin-top:0">Current Weather</h5>
+                <img alt="Weather Icon" src="#{weatherApiDemoBean.icon}" width="70" height="70"/>
+                <h:panelGrid columns="2" columnClasses="custom-column">
+                    <h:outputText value="Weather Description"/>
+                    <h:outputText
+                            value="#{weatherApiDemoBean.weatherDTO.currentWeather().weather().description()}"/>
+                    <h:outputText value="Temperature"/>
+                    <h:outputText
+                            value="#{weatherApiDemoBean.weatherDTO.currentWeather().temperature()}"/>
+                    <h:outputText value="Sunset"/>
+                    <h:outputText
+                            value="#{weatherApiDemoBean.sunsetString}"/>
+                </h:panelGrid>
+                <p:commandButton id="toggleFavorite"
+                                 action="#{weatherApiDemoBean.toggleFavorite()}"
+                                 rendered="#{sessionInfoBean.loggedIn}" icon="pi pi-heart"
+                                 styleClass="#{weatherApiDemoBean.isFavorite() ? 'rounded-button ui-button-help' : 'rounded-button ui-button-help ui-button-outlined'}"
+                                 update="toggleFavorite"/>
+            </p:panel>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
