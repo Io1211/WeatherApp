@@ -9,6 +9,7 @@
 <body>
 <ui:composition>
     <h:form>
+        <p:growl id="growl" showDetail="true" life="8000"/>
         <p:menubar>
             <p:submenu label="User Submenu 1" rendered="#{sessionInfoBean.hasRole('REGISTERED_USER')}">
                 <p:menuitem value="Registered User Action 1 - 1"/>
@@ -30,13 +31,20 @@
 
             <p:submenu label="User Info" rendered="#{sessionInfoBean.loggedIn}">
                 <p:menuitem value="My Credit Card" url="/userInfo/credit_card_details.xhtml"/>
-                <p:menuitem value="Premium Activation" url="/userInfo/premium_activation.xhtml"/>
             </p:submenu>
 
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
 
+            <p:menuitem value="Activate Premium"
+                        action="#{subscriptionBean.activatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and !sessionInfoBean.userPremium}"
+                        update="growl"/>
+            <p:menuitem value="Deactivate Premium"
+                        action="#{subscriptionBean.deactivatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and sessionInfoBean.userPremium}"
+                        update="growl"/>
         </p:menubar>
     </h:form>
 </ui:composition>
