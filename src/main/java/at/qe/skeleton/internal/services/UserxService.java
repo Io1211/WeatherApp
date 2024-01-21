@@ -2,7 +2,6 @@ package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.UserxRepository;
-import at.qe.skeleton.internal.services.AuditLogService;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -56,7 +55,7 @@ public class UserxService {
    * @param user the user to save
    * @return the updated user
    */
-  @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #username")
+  @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #user.username")
   public Userx saveUser(Userx user) throws JpaSystemException {
     if (user.isNew()) {
       user.setCreateUser(getAuthenticatedUser());

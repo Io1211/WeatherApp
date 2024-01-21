@@ -23,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
  * <br>
@@ -82,7 +81,7 @@ public class WeatherApiDemoBean {
                   "Sorry, we couldn't find a location with the name: %s"
                       .formatted(locationSearchInput),
                   "details"));
-      return;
+      return null;
     }
     this.weatherDTO =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
