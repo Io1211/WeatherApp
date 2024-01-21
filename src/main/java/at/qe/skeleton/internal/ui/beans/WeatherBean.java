@@ -152,21 +152,9 @@ public class WeatherBean {
     return weatherDTO.hourlyWeather().stream().limit(24).collect(Collectors.toList());
   }
 
-  public static String formatInstantToHHMM(Instant timestamp) {
+  public static String formatInstantToDateTime(Instant timestamp, String format) {
     LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-    return localDateTime.format(formatter);
-  }
-
-  public static String formatInstantToHHMMWithDate(Instant timestamp) {
-    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.: HH:mm");
-    return localDateTime.format(formatter);
-  }
-
-  public static String formatInstantToDate(Instant timestamp) {
-    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
     return localDateTime.format(formatter);
   }
 

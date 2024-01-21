@@ -95,7 +95,7 @@
                             <p:dataTable var="hourlyWeatherEntries" value="#{weatherBean.getHourlyWeatherEntries()}" style="font-size: 14px" >
                             
                                 <p:column headerText="Time">
-                                    <h:outputText value="#{weatherBean.formatInstantToHHMMWithDate(hourlyWeatherEntries.timestamp())}" />
+                                    <h:outputText value="#{weatherBean.formatInstantToDateTime(hourlyWeatherEntries.timestamp(), 'dd.MM.yyyy: HH:mm')}" />
                                 </p:column>
 
                                 <p:column headerText="Weather" style="width: 12%;">
@@ -134,7 +134,7 @@
                             <p:dataTable var="dailyWeatherEntries" value="#{weatherBean.getDailyWeatherEntries()}" style="font-size: 14px" >
                             
                                 <p:column headerText="Day">
-                                    <h:outputText value="#{weatherBean.formatInstantToDate(dailyWeatherEntries.timestamp())}" />
+                                    <h:outputText value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.timestamp(), 'dd.MM.yyyy')}" />
                                 </p:column>
 
                                 <p:column headerText="Summary" style="width: 12%;">
@@ -142,11 +142,11 @@
                                 </p:column>
 
                                 <p:column headerText="Sunrise">
-                                    <h:outputText value="#{weatherBean.formatInstantToHHMM(dailyWeatherEntries.sunrise())}" />
+                                    <h:outputText value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunrise(), 'HH.mm')}" />
                                 </p:column>
 
                                 <p:column headerText="Sunset">
-                                    <h:outputText value="#{weatherBean.formatInstantToHHMM(dailyWeatherEntries.sunset())}" />
+                                    <h:outputText value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunset(), 'HH:mm')}" />
                                 </p:column>
 
                                 <p:column headerText="Temperature [C]">
