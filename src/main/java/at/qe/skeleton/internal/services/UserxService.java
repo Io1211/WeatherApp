@@ -60,7 +60,7 @@ public class UserxService {
    * @param user the user to save
    * @return the updated user
    */
-  @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #username")
+  @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #user.username")
   public Userx saveUser(Userx user) throws JpaSystemException {
     if (user.isNew()) {
       user.setCreateUser(getAuthenticatedUser());
@@ -100,12 +100,12 @@ public class UserxService {
   }
 
   public void activatePremium(Userx user) {
-    user.setRoles(Set.of(UserxRole.PREMIUM_USER));
+    user.addRole(UserxRole.PREMIUM_USER);
     userRepository.save(user);
   }
 
   public void deactivatePremium(Userx user) {
-    user.setRoles(Set.of(UserxRole.REGISTERED_USER));
+    user.removeRole(UserxRole.PREMIUM_USER);
     userRepository.save(user);
   }
 

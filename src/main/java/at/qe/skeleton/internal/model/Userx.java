@@ -130,6 +130,14 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
     this.roles = roles;
   }
 
+  public void addRole(UserxRole role) {
+    this.roles.add(role);
+  }
+
+  public void removeRole(UserxRole role) {
+    this.roles.remove(role);
+  }
+
   public List<Favorite> getFavorites() {
     return favorites;
   }
