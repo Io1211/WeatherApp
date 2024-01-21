@@ -8,7 +8,7 @@
       xml:lang="en">
 <body>
 <ui:composition>
-    <h:form>
+    <h:form id="headerForm">
         <p:growl id="growl" showDetail="true" life="8000"/>
         <p:menubar>
             <p:submenu label="User Submenu 1" rendered="#{sessionInfoBean.hasRole('REGISTERED_USER')}">
@@ -37,6 +37,18 @@
             <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
 
+            <p:menuitem>
+
+                <p:autoComplete id="locationSearchField" value="#{weatherApiDemoBean.locationSearchInput}"
+                                completeMethod="#{autoCompleteController.autoCompleteLocation}"
+                                style="margin-right: 10px;" emptyMessage="no results"/>
+
+                <p:commandButton value="Search" id="commitSearchRequest"
+                                 action="#{weatherApiDemoBean.performLocationSearch()}"
+                                 update="headerForm">
+                </p:commandButton>
+            </p:menuitem>
+
             <p:menuitem value="Activate Premium"
                         action="#{subscriptionBean.activatePremiumSubscription}"
                         rendered="#{sessionInfoBean.loggedIn and !sessionInfoBean.userPremium}"
@@ -46,6 +58,7 @@
                         rendered="#{sessionInfoBean.loggedIn and sessionInfoBean.userPremium}"
                         update="growl"/>
         </p:menubar>
+        <p:messages id="message" showDetail="true"/>
     </h:form>
 </ui:composition>
 </body>
