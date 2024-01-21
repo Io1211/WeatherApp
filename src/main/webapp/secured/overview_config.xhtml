@@ -7,11 +7,67 @@
     <ui:define name="content">
         <h:form id="config_form">
             <p:messages id="messages" showDetail="false" autoUpdate="true" closable="true"/>
-            <p:orderList value="#{overviewConfigBean.favorites}" var="favorite"
-                         itemLabel="#{favorite.location.city}" itemValue="#{favorite}"
-                         converter="#{favoriteConverter}" responsive="true"/>
-            <p:commandButton id="submit" value="Save" action="#{overviewConfigBean.save}" update="messages"
-                             style="margin-top: 10px;"/>
+            <div style="text-align: center">
+                <p:commandButton id="submit" value="Save" action="#{overviewConfigBean.save}" update="messages"
+                                 style="margin-top: 10px; width: 200px; float: center"/>
+            </div>
+            <p:panelGrid columns="#{sessionInfoBean.hasRole('PREMIUM_USER') ? 2 : 1}">
+                <p:orderList value="#{overviewConfigBean.favorites}" var="favorite"
+                             itemLabel="#{favorite.location.city}" itemValue="#{favorite}"
+                             converter="#{favoriteConverter}" responsive="true"/>
+                <p:panelGrid columns="2" rendered="#{sessionInfoBean.hasRole('PREMIUM_USER')}"
+                             style="width: 50%" columnClasses="row-height, row-height">
+                    <h:outputText value="Clouds: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showClouds}" onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Temperature: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showTemperature}"
+                                           onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Sunrise: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showSunrise}" onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Sunset: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showSunset}" onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Feels like: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showFeelsLikeTemperature}"
+                                           onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Pressure: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showPressure}" onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Humidity: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showHumidity}" onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Dew-Point: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showDewPoint}" onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="UVI: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showUvi}" onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Visibility: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showVisibility}"
+                                           onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Wind Speed: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showWindSpeed}" onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Wind Direction: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showWindDirection}"
+                                           onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Rain Amount: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showRain}" onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Snow Amount: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showSnow}" onLabel="Show"
+                                           offLabel="Hide"/>
+                    <h:outputText value="Weather: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showTitle}" onLabel="Show"
+                                           offLabel="Hide"/>
+                </p:panelGrid>
+            </p:panelGrid>
         </h:form>
     </ui:define>
 </ui:composition>

@@ -20,10 +20,22 @@ public class FavoriteService {
 
   @Autowired private UserxRepository userRepository;
 
+  /**
+   * Loads a single favorite identified by its username and city.
+   *
+   * @param city the city of the location saved by the favorite
+   * @param username the username of the user who has the favorite
+   */
   public Favorite loadFavorite(String city, String username) {
     return this.favoriteRepository.findFavoriteByLocation_CityAndUser_Username(city, username);
   }
 
+  /**
+   * Enables or disables the favorite for the given user depending on the current state.
+   *
+   * @param user the user who should get/remove the favorite
+   * @param location the location to enable/disable as favorite
+   */
   @PreAuthorize("hasAuthority('ADMIN') or principal.username eq #user.username")
   public void toggleFavorite(Userx user, Location location) {
     var existingFavorite =
@@ -44,6 +56,7 @@ public class FavoriteService {
     userRepository.save(user);
   }
 
+  /** Checks if the given user has the given location saved as favorite. */
   public Boolean isFavorite(Userx user, Location location) {
     return user.getFavorites().stream()
         .anyMatch(x -> Objects.equals(x.getLocation().getId(), location.getId()));
