@@ -23,7 +23,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 class FavoriteTest {
   @Autowired private UserxService userxService;
   @Autowired private FavoriteService favoriteService;
-  @Autowired private FavoriteRepository favoriteRepository;
   @Autowired private LocationRepository locationRepository;
 
   private static Location location1;
@@ -53,8 +52,7 @@ class FavoriteTest {
 
     Assertions.assertEquals(1, user.getFavorites().size(), "User should have one favorite");
     Assertions.assertNotNull(
-        favoriteRepository.findFavoriteByLocation_CityAndUser_Username(
-            location1.getCity(), "user1"),
+        favoriteService.loadFavorite(location1.getCity(), "user1"),
         "Favorite should exist after toggle");
 
     favoriteService.toggleFavorite(user, location1);
@@ -95,13 +93,12 @@ class FavoriteTest {
     // location needs to be in database for toggleFavorite to work
     locationRepository.save(location1);
     favoriteService.toggleFavorite(user, location1);
-    Favorite favorite =
-        favoriteRepository.findFavoriteByLocation_CityAndUser_Username("Innsbruck", "user1");
+    Favorite favorite = favoriteService.loadFavorite("Innsbruck", "user1");
     Assertions.assertNotNull(favorite, "Favorite should exist after toggle");
 
     userxService.deleteUser(user);
     Assertions.assertNull(
-        favoriteRepository.findFavoriteByLocation_CityAndUser_Username("Innsbruck", "user1"),
+        favoriteService.loadFavorite("Innsbruck", "user1"),
         "Favorite should be deleted when user is deleted");
   }
 }
