@@ -4,44 +4,13 @@
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
-<!--
-Explanation of sequence of Events in frontend:
-Here's a simplified sequence of events:
-
-1. User clicks the "CommitSearchRequest" button.
-2. The performLocationSearch method is invoked, updating the latitude and longitude values in weatherBean.
-3. The performWeatherApiRequest method is called directly within the commandButton action, and it can access the updated latitude and longitude values from weatherBean.
-4. Both methods execute within the same request-response cycle, so the bean state is available and consistent throughout.
-
-Since the view scope keeps the bean alive for the duration of the user's interaction with a specific view,
-both methods (performLocationSearch and performWeatherApiRequest) will operate on the same instance of the bean
-during the same view lifecycle.
-Therefore, any changes made in one method will be reflected in the other within the same view scope.
--->
 
     <ui:define name="content">
         <h:form id="weatherForm">
-            <p:panel header="Search for a location:">
-                <p:autoComplete id="locationSearch" value="#{weatherBean.locationSearchInput}"
-                                completeMethod="#{autoCompleteController.autoCompleteLocation}"
-                                style="margin-right: 10px;" emptyMessage="no results"/>
-
-
-                <p:commandButton value="Search" id="commitSearchRequest"
-                                 action="#{weatherBean.performLocationSearch()}"
-                                 update="weatherForm">
-                </p:commandButton>
-                <br/>
-                <p:messages id="message" showDetail="true"/>
-            </p:panel>
-
-            <br/>
-            
-            <p:panel header="Weather overview for the next few days:" id="Response" rendered="#{weatherBean.isLocationAnswerDTOReady}">
+            <p:panel header="Weather overview for the next few days:" id="Response">
                 <div>
                     <h4>Location searched for:
                         #{weatherBean.location.city},
@@ -50,12 +19,12 @@ Therefore, any changes made in one method will be reflected in the other within 
                         <h:outputText value=",#{weatherBean.location.state}"
                                       rendered="#{not empty weatherBean.location.state}"/>
                         <p:commandButton id="toggleFavorite"
-                            action="#{weatherBean.toggleFavorite()}"
-                            rendered="#{weatherBean.weatherDTO != null}" 
-                            icon="pi pi-heart"
-                            styleClass="#{weatherBean.isFavorite() ? 'rounded-button ui-button-help' : 'rounded-button ui-button-help ui-button-outlined'}"
-                            update="toggleFavorite"
-                            style="margin-left: 20px"/>
+                                         action="#{weatherBean.toggleFavorite()}"
+                                         rendered="#{sessionInfoBean.loggedIn}"
+                                         icon="pi pi-heart"
+                                         styleClass="#{weatherBean.isFavorite() ? 'rounded-button ui-button-help' : 'rounded-button ui-button-help ui-button-outlined'}"
+                                         update="toggleFavorite"
+                                         style="margin-left: 20px"/>
                     </h4>
 
                     <br/>
@@ -65,61 +34,67 @@ Therefore, any changes made in one method will be reflected in the other within 
                         <h:panelGrid columns="2" styleClass="weather-info">
                             <h:outputText value="Current Weather" style="font-weight: bold; font-size: 16px;"/>
                             <h:outputText value=""/>
-                            
+
                             <h:outputText value="Description:" style="font-weight: bold;"/>
                             <h:outputText value="#{weatherBean.weatherDTO.currentWeather().weather().description()}"/>
-                            
+
                             <h:outputText value="Temperature:" style="font-weight: bold;"/>
                             <h:outputText value="#{weatherBean.weatherDTO.currentWeather().temperature()} °C"/>
-                            
+
                             <h:outputText value="Feels Like Temperature:" style="font-weight: bold;"/>
                             <h:outputText value="#{weatherBean.weatherDTO.currentWeather().feelsLikeTemperature()} °C"/>
-                            
+
                             <h:outputText value="Wind Speed:" style="font-weight: bold;"/>
-                            <h:outputText value="#{weatherBean.msToKmh(weatherBean.weatherDTO.currentWeather().windSpeed())} km/h"/>
-                            
+                            <h:outputText
+                                    value="#{weatherBean.msToKmh(weatherBean.weatherDTO.currentWeather().windSpeed())} km/h"/>
+
                             <h:outputText value="Wind Direction:" style="font-weight: bold;"/>
-                            <h:outputText value="#{weatherBean.degreesToCardinal(weatherBean.weatherDTO.currentWeather().windDirection())}"/>
+                            <h:outputText
+                                    value="#{weatherBean.degreesToCardinal(weatherBean.weatherDTO.currentWeather().windDirection())}"/>
                         </h:panelGrid>
 
-                    
+
                         <br/>
 
                     </h:panelGroup>
 
                     <br/>
 
-                    <h5 style="margin-top:0" >Weather for the next 24 hours:</h5>
+                    <h5 style="margin-top:0">Weather for the next 24 hours:</h5>
                     <h:form>
                         <div class="card">
-                            <p:dataTable var="hourlyWeatherEntries" value="#{weatherBean.getHourlyWeatherEntries()}" style="font-size: 14px" paginator="true" paginatorPosition="bottom" rows="10">
-                            
+                            <p:dataTable var="hourlyWeatherEntries" value="#{weatherBean.getHourlyWeatherEntries()}"
+                                         style="font-size: 14px" paginator="true" paginatorPosition="bottom" rows="10">
+
                                 <p:column headerText="Time">
-                                    <h:outputText value="#{weatherBean.formatInstantToDateTime(hourlyWeatherEntries.timestamp(), 'dd.MM.yyyy: HH:mm')}" />
+                                    <h:outputText
+                                            value="#{weatherBean.formatInstantToDateTime(hourlyWeatherEntries.timestamp(), 'dd.MM.yyyy: HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Weather" style="width: 12%;">
-                                    <h:outputText value="#{hourlyWeatherEntries.weather().description()}" style="font-size: 12px"/>
+                                    <h:outputText value="#{hourlyWeatherEntries.weather().description()}"
+                                                  style="font-size: 12px"/>
                                 </p:column>
 
                                 <p:column headerText="Temperature [C]">
-                                    <h:outputText value="#{hourlyWeatherEntries.temperature()}" />
+                                    <h:outputText value="#{hourlyWeatherEntries.temperature()}"/>
                                 </p:column>
 
                                 <p:column headerText="Feels Like Temperature [C]">
-                                    <h:outputText value="#{hourlyWeatherEntries.feelsLikeTemperature()}" />
+                                    <h:outputText value="#{hourlyWeatherEntries.feelsLikeTemperature()}"/>
                                 </p:column>
 
                                 <p:column headerText="Wind speed [km/h]">
-                                    <h:outputText value="#{weatherBean.msToKmh(hourlyWeatherEntries.windSpeed())}" />
+                                    <h:outputText value="#{weatherBean.msToKmh(hourlyWeatherEntries.windSpeed())}"/>
                                 </p:column>
 
                                 <p:column headerText="Wind direction">
-                                    <h:outputText value="#{weatherBean.degreesToCardinal(hourlyWeatherEntries.windDirection())}" />
+                                    <h:outputText
+                                            value="#{weatherBean.degreesToCardinal(hourlyWeatherEntries.windDirection())}"/>
                                 </p:column>
 
                                 <p:column headerText="Pop">
-                                    <h:outputText value="#{hourlyWeatherEntries.probabilityOfPrecipitation()}" />
+                                    <h:outputText value="#{hourlyWeatherEntries.probabilityOfPrecipitation()}"/>
                                 </p:column>
 
                             </p:dataTable>
@@ -128,13 +103,15 @@ Therefore, any changes made in one method will be reflected in the other within 
 
                     <br/>
 
-                    <h5 style="margin-top:0" >Weather for today and the next 3 days:</h5>
+                    <h5 style="margin-top:0">Weather for today and the next 3 days:</h5>
                     <h:form>
                         <div class="card">
-                            <p:dataTable var="dailyWeatherEntries" value="#{weatherBean.getDailyWeatherEntries()}" style="font-size: 14px" >
-                            
+                            <p:dataTable var="dailyWeatherEntries" value="#{weatherBean.getDailyWeatherEntries()}"
+                                         style="font-size: 14px">
+
                                 <p:column headerText="Day">
-                                    <h:outputText value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.timestamp(), 'dd.MM.yyyy')}" />
+                                    <h:outputText
+                                            value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.timestamp(), 'dd.MM.yyyy')}"/>
                                 </p:column>
 
                                 <p:column headerText="Summary" style="width: 12%;">
@@ -142,51 +119,58 @@ Therefore, any changes made in one method will be reflected in the other within 
                                 </p:column>
 
                                 <p:column headerText="Sunrise">
-                                    <h:outputText value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunrise(), 'HH:mm')}" />
+                                    <h:outputText
+                                            value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunrise(), 'HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Sunset">
-                                    <h:outputText value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunset(), 'HH:mm')}" />
+                                    <h:outputText
+                                            value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunset(), 'HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Temperature [C]">
-                                    <h:outputText value="#{dailyWeatherEntries.dailyTemperatureAggregation().dayTemperature()}" />
+                                    <h:outputText
+                                            value="#{dailyWeatherEntries.dailyTemperatureAggregation().dayTemperature()}"/>
                                 </p:column>
 
                                 <p:column headerText="min. Temperature [C]">
-                                    <h:outputText value="#{dailyWeatherEntries.dailyTemperatureAggregation().minimumDailyTemperature()}" />
+                                    <h:outputText
+                                            value="#{dailyWeatherEntries.dailyTemperatureAggregation().minimumDailyTemperature()}"/>
                                 </p:column>
 
                                 <p:column headerText="max. Temperature [C]">
-                                    <h:outputText value="#{dailyWeatherEntries.dailyTemperatureAggregation().maximumDailyTemperature()}" />
+                                    <h:outputText
+                                            value="#{dailyWeatherEntries.dailyTemperatureAggregation().maximumDailyTemperature()}"/>
                                 </p:column>
 
                                 <p:column headerText="Feels Like Temperature [C]">
-                                    <h:outputText value="#{dailyWeatherEntries.feelsLikeTemperatureAggregation().dayTemperature()}" />
+                                    <h:outputText
+                                            value="#{dailyWeatherEntries.feelsLikeTemperatureAggregation().dayTemperature()}"/>
                                 </p:column>
 
                                 <p:column headerText="Wind speed [km/h]">
-                                    <h:outputText value="#{weatherBean.msToKmh(dailyWeatherEntries.windSpeed())}" />
+                                    <h:outputText value="#{weatherBean.msToKmh(dailyWeatherEntries.windSpeed())}"/>
                                 </p:column>
 
                                 <p:column headerText="Wind direction">
-                                    <h:outputText value="#{weatherBean.degreesToCardinal(dailyWeatherEntries.windDirection())}" />
+                                    <h:outputText
+                                            value="#{weatherBean.degreesToCardinal(dailyWeatherEntries.windDirection())}"/>
                                 </p:column>
 
                                 <p:column headerText="Wind gust">
-                                    <h:outputText value="#{weatherBean.msToKmh(dailyWeatherEntries.windGust())}" />
+                                    <h:outputText value="#{weatherBean.msToKmh(dailyWeatherEntries.windGust())}"/>
                                 </p:column>
 
                                 <p:column headerText="Pop">
-                                    <h:outputText value="#{dailyWeatherEntries.probabilityOfPrecipitation()}" />
+                                    <h:outputText value="#{dailyWeatherEntries.probabilityOfPrecipitation()}"/>
                                 </p:column>
 
                                 <p:column headerText="Rain [mm/h]">
-                                    <h:outputText value="#{dailyWeatherEntries.rain()}" />
+                                    <h:outputText value="#{dailyWeatherEntries.rain()}"/>
                                 </p:column>
 
                                 <p:column headerText="Snow [mm/h]">
-                                    <h:outputText value="#{dailyWeatherEntries.snow()}" />
+                                    <h:outputText value="#{dailyWeatherEntries.snow()}"/>
                                 </p:column>
                             </p:dataTable>
                         </div>

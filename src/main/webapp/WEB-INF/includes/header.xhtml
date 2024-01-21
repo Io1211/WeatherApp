@@ -39,12 +39,12 @@
 
             <p:menuitem>
 
-                <p:autoComplete id="locationSearchField" value="#{weatherApiDemoBean.locationSearchInput}"
+                <p:autoComplete id="locationSearchField" value="#{weatherBean.locationSearchInput}"
                                 completeMethod="#{autoCompleteController.autoCompleteLocation}"
                                 style="margin-right: 10px;" emptyMessage="no results"/>
 
                 <p:commandButton value="Search" id="commitSearchRequest"
-                                 action="#{weatherApiDemoBean.performLocationSearch()}"
+                                 action="#{weatherBean.performLocationSearch()}"
                                  update="headerForm">
                 </p:commandButton>
             </p:menuitem>

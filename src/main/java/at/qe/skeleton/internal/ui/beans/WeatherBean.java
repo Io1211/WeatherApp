@@ -3,21 +3,18 @@ package at.qe.skeleton.internal.ui.beans;
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.external.model.currentandforecast.misc.DailyWeatherDTO;
 import at.qe.skeleton.external.model.currentandforecast.misc.HourlyWeatherDTO;
-import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
+import at.qe.skeleton.internal.ui.controllers.IconController;
+import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,38 +27,33 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
- * Responsible for retrieving and preprocessing all weather data for the UI. 
- * To retrieve the weather data, the bean can perform a location search using the location search api.
- * Additionally, a user can add (toggle) favourites which will be saved to the user.     
- * 
- * Based on 
- * @see WeatherApiDemoBean
+ * Responsible for retrieving and preprocessing all weather data for the UI. To retrieve the weather
+ * data, the bean can perform a location search using the location search api. Additionally, a user
+ * can add (toggle) favourites which will be saved to the user.
  */
 @Component
-@Scope("view")
+@Scope("session")
 public class WeatherBean {
 
   @Autowired private CurrentAndForecastAnswerService currentAndForecastAnswerService;
   @Autowired private LocationService locationService;
   @Autowired private UserxService userxService;
   @Autowired private FavoriteService favoriteService;
+  @Autowired private IconController iconController;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherBean.class);
 
-  private String searchedWeather;
-  private String locationSearchInput;
+  private String locationSearchInput = "Vienna, AT";
   private Location location;
   private CurrentAndForecastAnswerDTO weatherDTO;
-  private boolean isLocationAnswerDTOReady = false;
-
 
   /**
-   * Performs a location search using the provided location search input.
-   * Error messages will be logged and displayed in case of failed requests.
-   * If the request is sucessfull, the wether data blob will be deserialized and converted to an weatherDTO.
-   * Lastly isLocationAnswerDTOReady is set to true to confirm the state if the weatherDTO. 
+   * Performs a location search using the provided location search input. Error messages will be
+   * logged and displayed in case of failed requests. If the request is successful, the weather data
+   * blob will be deserialized and converted to an weatherDTO.
    */
-  public void performLocationSearch() {
+  @PostConstruct
+  public String performLocationSearch() {
     try {
       this.location = locationService.handleLocationSearch(locationSearchInput);
     } catch (FailedApiRequest e) {
@@ -70,10 +62,10 @@ public class WeatherBean {
               null,
               new FacesMessage(
                   FacesMessage.SEVERITY_ERROR,
-                  "There was an error in an API request: ",
+                  "There was an error in an api request: ",
                   e.getMessage()));
       LOGGER.error(e.getMessage());
-      return;
+      return null;
     } catch (GeocodingApiReturnedEmptyListException e) {
       FacesContext.getCurrentInstance()
           .addMessage(
@@ -81,26 +73,40 @@ public class WeatherBean {
               new FacesMessage(
                   FacesMessage.SEVERITY_INFO,
                   "",
-                  "Sorry, we couldn't find a location with the name: `%s`".formatted(locationSearchInput)));
-      return;
+                  "Sorry, we couldn't find a location with the name: %s"
+                      .formatted(locationSearchInput)));
+      return null;
     }
     this.weatherDTO =
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
-    this.isLocationAnswerDTOReady = true;
+    return "/weather_view.xhtml?faces-redirect=true";
   }
 
-  // Todo: move this into the bean for the final location search
-  /**
-   * Toggles the favorite status for the current location.
-   */
+  // todo: refactor - for inspiration look at favorite-overview
+  public String getIcon() {
+    String iconId = this.weatherDTO.currentWeather().weather().icon();
+    return iconController.getIcon(iconId);
+  }
+
+  // todo: think about how to display location (with state or without? what about null values?)
+  //
+  //  public String getLocationLabel() {
+  //    if (location.getState() == null) {
+  //      return String.format("%s, %s", location.getCity(), location.getCountry());
+  //    }
+  //    if (location.getCountry() == null) {
+  //      return String.format("%s, %s", location.getCountry(), location.getState());
+  //    }
+  //    return String.format(
+  //            "%s, %s, %s", location.getCity(), location.getCountry(), location.getState());
+  //  }
+
+  /** Toggles the favorite status for the current location. */
   public void toggleFavorite() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     var user = this.userxService.loadUser(auth.getName());
 
-    var favorite = new Favorite();
-    favorite.setLocation(this.location);
-
-    this.favoriteService.toggleFavorite(user, favorite);
+    this.favoriteService.toggleFavorite(user, this.location);
   }
 
   /**
@@ -111,6 +117,7 @@ public class WeatherBean {
   public Boolean isFavorite() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     var user = this.userxService.loadUser(auth.getName());
+
     return this.favoriteService.isFavorite(user, this.location);
   }
 
@@ -133,38 +140,37 @@ public class WeatherBean {
   }
 
   /**
-   * Formats an instant timestamp to a date-time string using a given specified format.
-   * Used to convert mutliple occurences of timestamps (Type Instant) in the weather details
-   * table to the desired formats.
+   * Formats an instant timestamp to a date-time string using a given specified format. Used to
+   * convert mutliple occurences of timestamps (Type Instant) in the weather details table to the
+   * desired formats.
    *
    * @param timestamp Instant timestamp.
    * @param format Desired date-time format so e.g. "HH:mm" or "dd.MM.yyyy - HH:mm".
    * @return A formatted date-time string.
    */
-  public static String formatInstantToDateTime(Instant timestamp, String format) {
+  public String formatInstantToDateTime(Instant timestamp, String format) {
     LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
     return localDateTime.format(formatter);
   }
 
   /**
-   * Converts a direction in metrological degrees to a cardinal direction string. 
+   * Converts a direction in metrological degrees to a cardinal direction string.
    *
    * @param degrees Direction in metrological degrees, from 0 to 360.
    * @return a string for the cardinal direction
    */
-  public static String degreesToCardinal(Double degrees) {
-      String[] directions = {"N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"};
-      Double dir = ((degrees + 11.25) % 360) / 22.5;
-      return directions[dir.intValue()];
+  public String degreesToCardinal(double degrees) {
+    String[] directions = {
+      "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW",
+      "NNW"
+    };
+    int dir = (int) (((degrees + 11.25) % 360) / 22.5);
+    return directions[dir];
   }
 
   public Long msToKmh(Double mps) {
-    return Math.round(mps*3.6);
-  }
-
-  public boolean getIsLocationAnswerDTOReady() {
-    return isLocationAnswerDTOReady;
+    return Math.round(mps * 3.6);
   }
 
   public String getLocationSearchInput() {
@@ -183,16 +189,7 @@ public class WeatherBean {
     return weatherDTO;
   }
 
-  public String getSearchedWeather() {
-    return searchedWeather;
-  }
-
-  public void setSearchedWeather(String searchedWeather) {
-    this.searchedWeather = searchedWeather;
-  }
-
   public void setWeatherDTO(CurrentAndForecastAnswerDTO weatherDTO) {
     this.weatherDTO = weatherDTO;
   }
 }
-
