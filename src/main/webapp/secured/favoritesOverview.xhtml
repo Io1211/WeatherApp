@@ -25,19 +25,6 @@
                 margin-top: 10px;
             }
 
-            .ui-card {
-                padding-top: 0;
-            }
-
-            .ui-carousel-items-content {
-                display: flex;
-                justify-content: center;
-            }
-
-            .ui-carousel-item {
-                margin: 20px;
-            }
-
             .weather-icon {
                 display: inline;
                 width: 100px;
@@ -62,15 +49,16 @@
 
             <p:carousel var="favoriteLocation" value="#{favoriteOverviewBean.favorites}" numVisible="4" numScroll="4"
                         rendered="#{not empty favoriteOverviewBean.favorites}"
-                        styleClass="ui-carousel-items-content ui-carousel-item">
+                        styleClass="ui-carousel-items-content">
                 <p:card styleClass="favorites-card">
-
                     <h:panelGrid columns="2" cellpadding="10" styleClass="favorites-panelgrid">
                         <div class="city-country-div">
                             <h2 class="city">#{favoriteLocation.location.city}</h2>
                             <h5 class="country">#{favoriteLocation.location.country}</h5>
                         </div>
-                        <h:graphicImage alt="Weather Icon" url="#{weatherApiDemoBean.icon}"
+                        <h:graphicImage alt="Weather Icon" url="#{iconController.getIcon(
+                        favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()
+                        )}"
                                         styleClass="weather-icon"/>
 
                         <h:outputLabel value="Clouds:"
