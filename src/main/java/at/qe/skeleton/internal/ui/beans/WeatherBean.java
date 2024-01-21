@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
+import at.qe.skeleton.external.model.currentandforecast.misc.DailyWeatherDTO;
 import at.qe.skeleton.external.model.currentandforecast.misc.HourlyWeatherDTO;
 import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.Location;
@@ -144,6 +145,7 @@ public class WeatherBean {
     this.weatherDTO = weatherDTO;
   }
 
+  /*
   public List<DailyWeatherEntry> getDailyWeatherEntries () {
     List<DailyWeatherEntry> dailyWeatherEntries = new ArrayList<>();
     
@@ -167,6 +169,11 @@ public class WeatherBean {
       ));
     }
     return dailyWeatherEntries;
+  }
+   */
+
+  public List<DailyWeatherDTO> getDailyWeatherEntries() {
+    return weatherDTO.dailyWeather();
   }
 
   public List<HourlyWeatherDTO> getHourlyWeatherEntries() {

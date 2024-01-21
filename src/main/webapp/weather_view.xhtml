@@ -134,59 +134,59 @@
                             <p:dataTable var="dailyWeatherEntries" value="#{weatherBean.getDailyWeatherEntries()}" style="font-size: 14px" >
                             
                                 <p:column headerText="Day">
-                                    <h:outputText value="#{dailyWeatherEntries.date}" />
+                                    <h:outputText value="#{formatInstantToDate(dailyWeatherEntries.sunrise(), 0)}" />
                                 </p:column>
 
                                 <p:column headerText="Summary" style="width: 12%;">
-                                    <h:outputText value="#{dailyWeatherEntries.summary}" style="font-size: 12px"/>
+                                    <h:outputText value="#{dailyWeatherEntries.summary()}" style="font-size: 12px"/>
                                 </p:column>
 
                                 <p:column headerText="Sunrise">
-                                    <h:outputText value="#{dailyWeatherEntries.sunrise}" />
+                                    <h:outputText value="#{dailyWeatherEntries.sunrise()}" />
                                 </p:column>
 
                                 <p:column headerText="Sunset">
-                                    <h:outputText value="#{dailyWeatherEntries.sunset}" />
+                                    <h:outputText value="#{dailyWeatherEntries.sunset()}" />
                                 </p:column>
 
                                 <p:column headerText="Temperature [C]">
-                                    <h:outputText value="#{dailyWeatherEntries.dayTemperature}" />
+                                    <h:outputText value="#{dailyWeatherEntries.dailyTemperatureAggregation().dayTermperature()}" />
                                 </p:column>
 
                                 <p:column headerText="min. Temperature [C]">
-                                    <h:outputText value="#{dailyWeatherEntries.minTemperature}" />
+                                    <h:outputText value="#{dailyWeatherEntries.dailyTemperatureAggregation().minimumDailyTemperature()}" />
                                 </p:column>
 
                                 <p:column headerText="max. Temperature [C]">
-                                    <h:outputText value="#{dailyWeatherEntries.maxTemperature}" />
+                                    <h:outputText value="#{dailyWeatherEntries.dailyTemperatureAggregation().maximumDailyTemperature()}" />
                                 </p:column>
 
                                 <p:column headerText="Feels Like Temperature [C]">
-                                    <h:outputText value="#{dailyWeatherEntries.feelsLikeTemperature}" />
+                                    <h:outputText value="#{dailyWeatherEntries.feelsLikeTemperatureAggregation().dayTemperature()}" />
                                 </p:column>
 
                                 <p:column headerText="Wind speed [m/s]">
-                                    <h:outputText value="#{dailyWeatherEntries.windSpeed}" />
+                                    <h:outputText value="#{dailyWeatherEntries.windSpeed()}" />
                                 </p:column>
 
                                 <p:column headerText="Wind direction [metrol. deg]">
-                                    <h:outputText value="#{dailyWeatherEntries.windDeg}" />
+                                    <h:outputText value="#{dailyWeatherEntries.windDirection()}" />
                                 </p:column>
 
                                 <p:column headerText="Wind gust [m/s]">
-                                    <h:outputText value="#{dailyWeatherEntries.windGust}" />
+                                    <h:outputText value="#{dailyWeatherEntries.windGust()}" />
                                 </p:column>
 
                                 <p:column headerText="Pop [?]">
-                                    <h:outputText value="#{dailyWeatherEntries.pop}" />
+                                    <h:outputText value="#{dailyWeatherEntries.probabilityOfPrecipitation()}" />
                                 </p:column>
 
                                 <p:column headerText="Rain [%]">
-                                    <h:outputText value="#{dailyWeatherEntries.rain}" />
+                                    <h:outputText value="#{dailyWeatherEntries.rain()}" />
                                 </p:column>
 
                                 <p:column headerText="Snow [%]">
-                                    <h:outputText value="#{dailyWeatherEntries.snow}" />
+                                    <h:outputText value="#{dailyWeatherEntries.snow()}" />
                                 </p:column>
                             </p:dataTable>
                         </div>
