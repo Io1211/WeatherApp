@@ -74,7 +74,7 @@ public class WebSecurityConfig {
                       .permitAll()
                       .requestMatchers("/confirm_registration.xhtml")
                       .permitAll()
-                      .requestMatchers("/weatherForecast.xhtml")
+                      .requestMatchers(WEATHERFORECAST)
                       .permitAll()
                       .anyRequest()
                       .authenticated())

@@ -6,7 +6,6 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
-import at.qe.skeleton.internal.ui.controllers.AutoCompleteController;
 import at.qe.skeleton.internal.ui.controllers.IconController;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
@@ -16,7 +15,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.primefaces.PrimeFaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +22,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.SessionScope;
 
-import javax.swing.*;
 
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
@@ -50,18 +46,10 @@ public class WeatherApiDemoBean {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherApiDemoBean.class);
 
-  private String searchedWeather;
-
   private String locationSearchInput = "Wien, AT";
 
   private Location location;
   private CurrentAndForecastAnswerDTO weatherDTO;
-
-  private boolean isLocationAnswerDTOReady = false;
-
-  public boolean getIsLocationAnswerDTOReady() {
-    return isLocationAnswerDTOReady;
-  }
 
   public String getLocationSearchInput() {
     return locationSearchInput;
@@ -150,14 +138,6 @@ public class WeatherApiDemoBean {
     var user = this.userxService.loadUser(auth.getName());
 
     return this.favoriteService.isFavorite(user, this.location);
-  }
-
-  public String getSearchedWeather() {
-    return searchedWeather;
-  }
-
-  public void setSearchedWeather(String searchedWeather) {
-    this.searchedWeather = searchedWeather;
   }
 
   public void setWeatherDTO(CurrentAndForecastAnswerDTO weatherDTO) {
