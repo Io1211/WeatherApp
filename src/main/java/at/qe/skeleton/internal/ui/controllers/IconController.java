@@ -1,11 +1,9 @@
 package at.qe.skeleton.internal.ui.controllers;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 
 @Component
 @Scope("view")
