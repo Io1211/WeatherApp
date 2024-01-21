@@ -9,7 +9,6 @@
 <body>
 <ui:composition>
     <h:form id="headerForm">
-        <p:growl id="growl" showDetail="true" life="8000"/>
         <p:menubar>
             <p:submenu label="User Submenu 1" rendered="#{sessionInfoBean.hasRole('REGISTERED_USER')}">
                 <p:menuitem value="Registered User Action 1 - 1"/>
@@ -34,8 +33,18 @@
             </p:submenu>
 
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
-            <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
+
+            <p:menuitem value="Activate Premium"
+                        action="#{subscriptionBean.activatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and !sessionInfoBean.userPremium}"
+                        update="headerForm"/>
+            <p:menuitem value="Deactivate Premium"
+                        action="#{subscriptionBean.deactivatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and sessionInfoBean.userPremium}"
+                        update="headerForm"/>
+
+            <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
 
             <p:menuitem>
 
@@ -49,14 +58,6 @@
                 </p:commandButton>
             </p:menuitem>
 
-            <p:menuitem value="Activate Premium"
-                        action="#{subscriptionBean.activatePremiumSubscription}"
-                        rendered="#{sessionInfoBean.loggedIn and !sessionInfoBean.userPremium}"
-                        update="growl"/>
-            <p:menuitem value="Deactivate Premium"
-                        action="#{subscriptionBean.deactivatePremiumSubscription}"
-                        rendered="#{sessionInfoBean.loggedIn and sessionInfoBean.userPremium}"
-                        update="growl"/>
         </p:menubar>
         <p:messages id="message" showDetail="true"/>
     </h:form>

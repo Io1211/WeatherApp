@@ -22,7 +22,7 @@ public class SubscriptionBean {
 
   @Autowired private SubscriptionService subscriptionService;
 
-  @Autowired SessionInfoBean sessionInfoBean;
+  @Autowired private SessionInfoBean sessionInfoBean;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionBean.class);
 
@@ -37,7 +37,7 @@ public class SubscriptionBean {
     Userx user = sessionInfoBean.getCurrentUser();
     try {
       subscriptionService.activatePremiumSubscription(user);
-      FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Premium activated successfully. Please login again to get access to premium features"));
+      FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Premium activated successfully. Please login again to get access to premium features."));
       LOGGER.info("Subscription activated");
       sessionInfoBean.reloadCurrentUser();
       return "/success_page";
@@ -53,7 +53,7 @@ public class SubscriptionBean {
   public String deactivatePremiumSubscription() {
     Userx user = sessionInfoBean.getCurrentUser();
     subscriptionService.deactivatePremiumSubscription(user);
-    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Premium deactivated successfully"));
+    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Success", "Premium deactivated successfully."));
     sessionInfoBean.reloadCurrentUser();
     return "/success_page";
   }
