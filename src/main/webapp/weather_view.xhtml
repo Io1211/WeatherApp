@@ -89,7 +89,7 @@
 
                     <br/>
 
-                    <h5 style="margin-top:0" >Weather in the next 3 days:</h5>
+                    <h5 style="margin-top:0" >Weather for today and the next 3 days:</h5>
                     <h:form>
                         <div class="card">
                             <p:dataTable var="dailyWeatherEntries" value="#{weatherBean.getDailyWeatherEntries()}" style="font-size: 12px" >
@@ -108,31 +108,31 @@
                                     <h:outputText value="#{dailyWeatherEntries.sunset}" />
                                 </p:column>
 
-                                <p:column headerText="Temperature">
+                                <p:column headerText="Temperature [C]">
                                     <h:outputText value="#{dailyWeatherEntries.dayTemperature}" />
                                 </p:column>
 
-                                <p:column headerText="min. Temperature">
+                                <p:column headerText="min. Temperature [C]">
                                     <h:outputText value="#{dailyWeatherEntries.minTemperature}" />
                                 </p:column>
 
-                                <p:column headerText="max. Temperature">
+                                <p:column headerText="max. Temperature [C]">
                                     <h:outputText value="#{dailyWeatherEntries.maxTemperature}" />
                                 </p:column>
 
-                                <p:column headerText="Feels Like Temperature">
+                                <p:column headerText="Feels Like Temperature [C]">
                                     <h:outputText value="#{dailyWeatherEntries.feelsLikeTemperature}" />
                                 </p:column>
 
-                                <p:column headerText="Wind speed">
+                                <p:column headerText="Wind speed [m/s]">
                                     <h:outputText value="#{dailyWeatherEntries.windSpeed}" />
                                 </p:column>
 
-                                <p:column headerText="Wind direction">
+                                <p:column headerText="Wind direction [metrol. deg]">
                                     <h:outputText value="#{dailyWeatherEntries.windDeg}" />
                                 </p:column>
 
-                                <p:column headerText="Wind gust">
+                                <p:column headerText="Wind gust [m/s]">
                                     <h:outputText value="#{dailyWeatherEntries.windGust}" />
                                 </p:column>
 
@@ -140,15 +140,15 @@
                                     <h:outputText value="#{dailyWeatherEntries.summary}" />
                                 </p:column>
 
-                                <p:column headerText="Pop">
+                                <p:column headerText="Pop [?]">
                                     <h:outputText value="#{dailyWeatherEntries.pop}" />
                                 </p:column>
 
-                                <p:column headerText="Rain">
+                                <p:column headerText="Rain [%]">
                                     <h:outputText value="#{dailyWeatherEntries.rain}" />
                                 </p:column>
 
-                                <p:column headerText="Snow">
+                                <p:column headerText="Snow [%]">
                                     <h:outputText value="#{dailyWeatherEntries.snow}" />
                                 </p:column>
                             </p:dataTable>
@@ -160,14 +160,3 @@
     </ui:define>
 
 </ui:composition>
-
-<!-- 
-
-<h:outputText value="Hourly weather: "/>
-<h:outputText value="#{weatherBean.weatherDTO.hourlyWeather().get(0)}"/>
-
-<h:outputText value="Daily weather: "/>
-<h:outputText value="#{weatherBean.weatherDTO.dailyWeather().get(0)}"/>
-
-
--->
