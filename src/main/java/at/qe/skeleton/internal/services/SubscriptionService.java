@@ -83,6 +83,11 @@ public class SubscriptionService {
     if (premiumPeriodInMonth.isEmpty()) {
       Pair<LocalDate, LocalDate> lastSubscriptionBeforeMonth =
           getLastSubscriptionBeforeMonth(user.getSubscription().getPremiumPeriod(), month, year);
+
+      // only one subscription tuple for the user and the start is after the query month
+      if (lastSubscriptionBeforeMonth == null) {
+        return 0;
+      }
       // Subscription doesn't have an end set, ergo is still active.
       if (lastSubscriptionBeforeMonth.b == null) {
         return month.length(Year.isLeap(year));
@@ -146,12 +151,19 @@ public class SubscriptionService {
    * @return The tuple with the subscription start that is closest to the query month but still
    *     before it
    */
-  // TODO: add tests
   public Pair<LocalDate, LocalDate> getLastSubscriptionBeforeMonth(
       List<Pair<LocalDate, LocalDate>> subscriptionPeriods, Month month, int year) {
+    // SubscriptionPeriods is never empty. This is checked in the premiumDaysInMonth method
+    if (subscriptionPeriods.isEmpty()) {
+      throw new IllegalArgumentException(
+          "This method doesn't work for empty lists. That case should be handled in premiumDaysInMonth");
+    }
 
+    // if there is only one subscription period on record, return the period if the start is before
+    // the query month, else return null.
     if (subscriptionPeriods.size() == 1) {
-      return subscriptionPeriods.get(0);
+      Pair<LocalDate, LocalDate> subscription = subscriptionPeriods.get(0);
+      return subscription.a.isBefore(LocalDate.of(year, month, 1)) ? subscription : null;
     }
 
     // The list of subscription dates is sorted by the start date.
@@ -178,7 +190,6 @@ public class SubscriptionService {
    * @param year Year to check for
    * @return Whether the date is in the month and year passed
    */
-  // TODO: add tests
   public boolean isInMonth(LocalDate date, Month month, int year) {
     return date != null && date.getMonth() == month && date.getYear() == year;
   }
