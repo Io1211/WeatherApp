@@ -89,6 +89,45 @@
 
                     <br/>
 
+                    <h5 style="margin-top:0" >Weather for the next 24 hours:</h5>
+                    <h:form>
+                        <div class="card">
+                            <p:dataTable var="hourlyWeatherEntries" value="#{weatherBean.getHourlyWeatherEntries()}" style="font-size: 14px" >
+                            
+                                <p:column headerText="Hour">
+                                    <h:outputText value="#{hourlyWeatherEntries.timestamp()}" />
+                                </p:column>
+
+                                <p:column headerText="Weather" style="width: 12%;">
+                                    <h:outputText value="#{hourlyWeatherEntries.weather().description()}" style="font-size: 12px"/>
+                                </p:column>
+
+                                <p:column headerText="Temperature [C]">
+                                    <h:outputText value="#{hourlyWeatherEntries.temperature()}" />
+                                </p:column>
+
+                                <p:column headerText="Feels Like Temperature [C]">
+                                    <h:outputText value="#{hourlyWeatherEntries.feelsLikeTemperature()}" />
+                                </p:column>
+
+                                <p:column headerText="Wind speed [m/s]">
+                                    <h:outputText value="#{hourlyWeatherEntries.windSpeed()}" />
+                                </p:column>
+
+                                <p:column headerText="Wind direction [metrol. deg]">
+                                    <h:outputText value="#{hourlyWeatherEntries.windDirection()}" />
+                                </p:column>
+
+                                <p:column headerText="Pop [?]">
+                                    <h:outputText value="#{hourlyWeatherEntries.probabilityOfPrecipitation()}" />
+                                </p:column>
+
+                            </p:dataTable>
+                        </div>
+                    </h:form>
+
+                    <br/>
+
                     <h5 style="margin-top:0" >Weather for today and the next 3 days:</h5>
                     <h:form>
                         <div class="card">

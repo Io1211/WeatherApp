@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
+import at.qe.skeleton.external.model.currentandforecast.misc.HourlyWeatherDTO;
 import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.model.DailyWeatherEntry;
@@ -13,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -166,20 +168,26 @@ public class WeatherBean {
     return dailyWeatherEntries;
   }
 
+  public List<HourlyWeatherDTO> getHourlyWeatherEntries() {
+    return weatherDTO.hourlyWeather();
+  }
+
   public static String formatInstantToHHMM(Instant timestamp, ZoneId zoneId) {
     LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, zoneId);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-    String formattedTime = localDateTime.format(formatter);
-
-    return formattedTime;
+    return localDateTime.format(formatter);
   }
+
+  public static String formatInstantToHHMMWithoutTimezone(Instant timestamp) {
+    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    return localDateTime.format(formatter);
+}
 
   public static String formatInstantToDate(Instant timestamp, ZoneId zoneId) {
     LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, zoneId);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-    String formattedDate = localDateTime.format(formatter);
-    return formattedDate;
+    return localDateTime.format(formatter);
   }
-
 
 }
