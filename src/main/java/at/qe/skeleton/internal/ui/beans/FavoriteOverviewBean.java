@@ -1,28 +1,22 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
-import at.qe.skeleton.external.model.shared.WeatherDTO;
-import at.qe.skeleton.internal.model.CurrentAndForecastAnswer;
 import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.FavoriteDataConfig;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.CurrentAndForecastAnswerService;
 import at.qe.skeleton.internal.services.FavoriteService;
-import at.qe.skeleton.internal.services.LocationService;
 import at.qe.skeleton.internal.services.UserxService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
+import java.util.Comparator;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-
-import java.util.Comparator;
-import java.util.List;
-import jakarta.annotation.PostConstruct;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 
 /** Bean for creating overview view for favorite locations for logged in user. */
 @Component
@@ -36,7 +30,6 @@ public class FavoriteOverviewBean {
   @Autowired private CurrentAndForecastAnswerService currentAndForecastAnswerService;
   private List<Favorite> favorites;
   private FavoriteDataConfig favoriteDataConfig;
-  private List<CurrentAndForecastAnswerDTO> currentAndForecastAnswerDTOS;
   private Userx user;
 
   @PostConstruct
@@ -51,14 +44,6 @@ public class FavoriteOverviewBean {
               .toList();
 
       favoriteDataConfig = user.getFavoriteDataConfig();
-
-      currentAndForecastAnswerDTOS =
-          favorites.stream()
-              .map(
-                  favorite ->
-                      currentAndForecastAnswerService.deserializeDTO(
-                          favorite.getLocation().getWeather().getWeatherData()))
-              .toList();
 
     } catch (Exception e) {
       this.addMessage(
@@ -86,10 +71,9 @@ public class FavoriteOverviewBean {
   }
 
   public List<Favorite> getFavorites() {
+    if (favorites.isEmpty()) {
+      this.addMessage("You haven´t added any favorites yet.", FacesMessage.SEVERITY_INFO);
+    }
     return favorites;
-  }
-
-  public List<CurrentAndForecastAnswerDTO> getCurrentAndForecastAnswerDTOS() {
-    return currentAndForecastAnswerDTOS;
   }
 }

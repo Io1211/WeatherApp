@@ -12,30 +12,60 @@
                 padding: 10px;
                 margin: 15px;
                 justify-content: center;
+                max-width: 350px; /* Set the maximum width as per your requirement */
+                width: 100%; /* Ensure it takes up 100% of the available width within the carousel */
+                box-sizing: border-box; /* Ensure padding and border are included in the width */
             }
 
             .city {
-                margin-top: -10px;
-                margin-bottom: -10px;
-                padding-bottom: -10px;
+                margin-top: 0;
+                margin-bottom: 0;
+                padding-bottom: 0;
             }
 
-            .city, .country {
-                margin-left: 10px;
+            .country {
+                margin-top: 10px;
+            }
+
+            .ui-card {
+                padding-top: 0;
+            }
+
+
+            .weather-icon {
+                display: inline;
+                width: 100px;
+                height: 100px;
             }
 
             .favorites-panelgrid {
                 width: 100%;
-                max-width: 400px;
+                max-width: 350px;
             }
+
+            .toggle-favorites-button {
+                margin-top: 10px;
+                margin-left: 10px;
+            }
+
         </style>
         <h:form id="favoritesOverview">
-            <p:messages id="messages" showDetail="false" autoUpdate="true" closable="true"/>
-            <p:carousel var="favoriteLocation" value="#{favoriteOverviewBean.favorites}" numVisible="4" numScroll="4">
+            <p:panel rendered="#{empty favoriteOverviewBean.favorites}" closable="true">
+                <h:outputText value="You dont have any favorites."/>
+            </p:panel>
+
+            <p:carousel var="favoriteLocation" value="#{favoriteOverviewBean.favorites}" numVisible="4" numScroll="4"
+                        rendered="#{not empty favoriteOverviewBean.favorites}">
                 <p:card styleClass="favorites-card">
-                    <h2 class="city">#{favoriteLocation.location.city}</h2>
-                    <h5 class="country">#{favoriteLocation.location.country}</h5>
+
                     <h:panelGrid columns="2" cellpadding="10" styleClass="favorites-panelgrid">
+                        <div class="city-country-div">
+                            <h2 class="city">#{favoriteLocation.location.city}</h2>
+                            <h5 class="country">#{favoriteLocation.location.country}</h5>
+                        </div>
+                        <h:graphicImage alt="Weather Icon" url="#{weatherApiDemoBean.icon}"
+                                        styleClass="weather-icon"/>
+
                         <h:outputLabel value="Clouds:"
                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}"/>
                         <h:outputText
@@ -137,15 +167,6 @@
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().snow()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
 
-
-                        <h:outputText
-                                value="Weather Icon"
-                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showIcon}"/>
-                        <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()}"
-                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showIcon}"/>
-
-
                         <h:outputText
                                 value="Weather"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTitle}"/>
@@ -153,19 +174,22 @@
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().title()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTitle}"/>
                     </h:panelGrid>
-                    <p:commandButton id="remove_favorite"
-                                     action="#{favoriteOverviewBean.removeFavorite(favoriteLocation)}"
-                                     rendered="#{sessionInfoBean.loggedIn}" icon="pi pi-heart"
-                                     styleClass="rounded-button ui-button-help"
-                                     update="favoritesOverview">
-                        <p:confirm type="popup" message="Remove from favorites?"
-                                   icon="pi pi-info-circle"/>
-                    </p:commandButton>
-                    <p:confirmPopup global="true">
-                        <p:commandButton value="Yes" type="button" styleClass="ui-confirm-popup-yes"/>
-                        <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+                    <div class="toggle-favorites-button">
+                        <p:commandButton id="remove_favorite"
+                                         action="#{favoriteOverviewBean.removeFavorite(favoriteLocation)}"
+                                         rendered="#{sessionInfoBean.loggedIn}" icon="pi pi-heart"
+                                         styleClass="rounded-button ui-button-help"
+                                         update="favoritesOverview">
+                            <p:confirm type="popup" message="Remove from favorites?"
+                                       icon="pi pi-info-circle"/>
+                        </p:commandButton>
+                        <p:confirmPopup global="true">
+                            <p:commandButton value="Yes" type="button" styleClass="ui-confirm-popup-yes"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
 
-                    </p:confirmPopup>
+                        </p:confirmPopup>
+                    </div>
+
                 </p:card>
             </p:carousel>
         </h:form>
