@@ -59,10 +59,14 @@
                         <h:graphicImage alt="Weather Icon" url="#{iconController.getIcon(
                         favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()
                         )}"
-                                        styleClass="weather-icon"/>
+                                        styleClass="weather-icon"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showIcon}"/>
+                        <!--following empty outputText is in case user removes weathericon via favoriteDataConfig,
+                            since the WeatherIcon is part of panelGrid, otherwise it would mess up the whole panelGrid -->
+                        <h:outputText value="" rendered="#{not favoriteOverviewBean.favoriteDataConfig.showIcon}"/>
 
-                        <h:outputLabel value="Clouds:"
-                                       rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}"/>
+                        <h:outputText value="Clouds:"
+                                      rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().clouds()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}"/>

@@ -14,7 +14,6 @@ import jakarta.faces.context.FacesContext;
 import java.util.Comparator;
 import java.util.List;
 
-import org.primefaces.model.ResponsiveOption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
