@@ -23,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-
 /**
  * Demonstrates the working api and what the raw request data would look like <br>
  * <br>
@@ -79,9 +78,9 @@ public class WeatherApiDemoBean {
               "weatherForm:locationSearch",
               new FacesMessage(
                   FacesMessage.SEVERITY_INFO,
-                  "",
                   "Sorry, we couldn't find a location with the name: %s"
-                      .formatted(locationSearchInput)));
+                      .formatted(locationSearchInput),
+                  "details"));
       return null;
     }
     this.weatherDTO =
