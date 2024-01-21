@@ -29,7 +29,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LocationSearchTest {
-  // todo: add tests
   @Mock LocationService locationServiceMock;
   @Mock CurrentAndForecastAnswerService currentAndForecastAnswerService;
 
