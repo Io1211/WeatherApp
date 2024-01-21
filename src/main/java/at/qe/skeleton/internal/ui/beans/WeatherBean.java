@@ -10,6 +10,8 @@ import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyList
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -144,12 +146,13 @@ public class WeatherBean {
     
     for (Integer index = 0; index <= 2; index++) {
       dailyWeatherEntries.add(new DailyWeatherEntry(
-        weatherDTO.dailyWeather().get(index).sunrise(),
-        weatherDTO.dailyWeather().get(index).sunset(),
+        formatInstantToDate(weatherDTO.dailyWeather().get(index).sunrise()),
+        formatInstantToHHMM(weatherDTO.dailyWeather().get(index).sunrise()),
+        formatInstantToHHMM(weatherDTO.dailyWeather().get(index).sunset()),
         weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().dayTemperature(),
         weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().minimumDailyTemperature(),
         weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().maximumDailyTemperature(),
-        // TO-DO: cannot set the feels like temp correctly, super weird...
+        // TO-DO: cannot set the feels like temp correctly??
         weatherDTO.dailyWeather().get(index).dailyTemperatureAggregation().dayTemperature(),
         weatherDTO.dailyWeather().get(index).windSpeed(),
         weatherDTO.dailyWeather().get(index).windDirection(),
@@ -162,6 +165,19 @@ public class WeatherBean {
     }
 
     return dailyWeatherEntries;
+  }
+
+  public static String formatInstantToHHMM(Instant timestamp) {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneId.systemDefault());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String formattedTime = localDateTime.format(formatter);
+        return formattedTime;
+  }
+
+  public static LocalDate formatInstantToDate(Instant timestamp) {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneId.systemDefault());
+        LocalDate localDate = localDateTime.toLocalDate();
+        return localDate;
   }
 
 

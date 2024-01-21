@@ -89,85 +89,67 @@
 
                     <br/>
 
-                    <h5 style="margin-top:0" >Test table:</h5>
+                    <h5 style="margin-top:0" >Weather in the next 3 days:</h5>
                     <h:form>
                         <div class="card">
                             <p:dataTable var="dailyWeatherEntries" value="#{weatherBean.getDailyWeatherEntries()}" style="font-size: 12px" >
                                 <p:column headerText="">
                                 </p:column>
                             
+                                <p:column headerText="Day">
+                                    <h:outputText value="#{dailyWeatherEntries.date}" />
+                                </p:column>
+
+                                <p:column headerText="Sunrise">
+                                    <h:outputText value="#{dailyWeatherEntries.sunrise}" />
+                                </p:column>
+
+                                <p:column headerText="Sunset">
+                                    <h:outputText value="#{dailyWeatherEntries.sunset}" />
+                                </p:column>
+
                                 <p:column headerText="Temperature">
                                     <h:outputText value="#{dailyWeatherEntries.dayTemperature}" />
                                 </p:column>
 
-                            </p:dataTable>
-                        </div>
-                    </h:form>
-
-                    <br/>
-
-                    <h5 style="margin-top:0" >Weather in the next 3 days:</h5>
-                    <h:form>
-                        <div class="card">
-                            <p:dataTable var="product" value="test2" style="font-size: 12px" >
-                                <p:column headerText="">
-                                </p:column>
-                            
-                                <p:column headerText="Day">
-                                    <!-- TO-DO: extract date from sunrise? -->
-                                    <h:outputText value="Wert 1" />
-                                </p:column>
-
-                                <p:column headerText="Sunrise">
-                                    <h:outputText value="Wert 1" />
-                                </p:column>
-
-                                <p:column headerText="Sunset">
-                                    <h:outputText value="Wert 1" />
-                                </p:column>
-
-                                <p:column headerText="Temperature">
-                                    <h:outputText value="Wert 1" />
-                                </p:column>
-
                                 <p:column headerText="min. Temperature">
-                                    <h:outputText value="Wert 1" />
+                                    <h:outputText value="#{dailyWeatherEntries.minTemperature}" />
                                 </p:column>
 
                                 <p:column headerText="max. Temperature">
-                                    <h:outputText value="Wert 1" />
+                                    <h:outputText value="#{dailyWeatherEntries.maxTemperature}" />
                                 </p:column>
 
-                                <p:column headerText="FeelsLikeTemperature">
-                                    <h:outputText value="Wert 1" />
+                                <p:column headerText="Feels Like Temperature">
+                                    <h:outputText value="#{dailyWeatherEntries.feelsLikeTemperature}" />
                                 </p:column>
 
-                                <p:column headerText="windSpeed">
-                                    <h:outputText value="Wert 1" />
+                                <p:column headerText="Wind speed">
+                                    <h:outputText value="#{dailyWeatherEntries.windSpeed}" />
                                 </p:column>
 
-                                <p:column headerText="windDirection">
-                                    <h:outputText value="Wert 1" />
+                                <p:column headerText="Wind direction">
+                                    <h:outputText value="#{dailyWeatherEntries.windDeg}" />
                                 </p:column>
 
-                                <p:column headerText="windGust">
-                                    <h:outputText value="Wert 1" />
+                                <p:column headerText="Wind gust">
+                                    <h:outputText value="#{dailyWeatherEntries.windGust}" />
                                 </p:column>
 
-                                <p:column headerText="summary">
-                                    <h:outputText value="Wert 1" />
+                                <p:column headerText="Summary">
+                                    <h:outputText value="#{dailyWeatherEntries.summary}" />
                                 </p:column>
 
                                 <p:column headerText="Pop">
-                                    <h:outputText value="Wert 1" />
+                                    <h:outputText value="#{dailyWeatherEntries.pop}" />
                                 </p:column>
 
                                 <p:column headerText="Rain">
-                                    <h:outputText value="Wert 1" />
+                                    <h:outputText value="#{dailyWeatherEntries.rain}" />
                                 </p:column>
 
                                 <p:column headerText="Snow">
-                                    <h:outputText value="Wert 1" />
+                                    <h:outputText value="#{dailyWeatherEntries.snow}" />
                                 </p:column>
                             </p:dataTable>
                         </div>

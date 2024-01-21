@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.time.Instant;
+import java.time.LocalDate;
+
 import org.springframework.data.domain.Persistable;
 
 
@@ -14,8 +16,9 @@ public class DailyWeatherEntry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    public Instant sunrise;
-    public Instant sunset;
+    public LocalDate date;
+    public String sunrise;
+    public String sunset;
     public Double dayTemperature;
     public Double minTemperature;
     public Double maxTemperature;
@@ -30,19 +33,20 @@ public class DailyWeatherEntry {
 
 
     public DailyWeatherEntry(
-            Instant sunrise,
-            Instant sunset,
-            Double dayTemperature,
-            Double minTemperature,
-            Double maxTemperature,
-            Double feelsLikeTemperature,
-            Double windSpeed,
-            Double windDeg,
-            Double windGust,
-            String summary,
-            Integer pop,
-            Double rain,
-            Double snow) {
+        LocalDate date,
+        String sunrise,
+        String sunset,
+        Double dayTemperature,
+        Double minTemperature,
+        Double maxTemperature,
+        Double feelsLikeTemperature,
+        Double windSpeed,
+        Double windDeg,
+        Double windGust,
+        String summary,
+        Integer pop,
+        Double rain,
+        Double snow) {
 
         this.sunrise = sunrise;
         this.sunset = sunset;
@@ -59,11 +63,15 @@ public class DailyWeatherEntry {
         this.snow = snow;
     }
 
-    public Instant getSunrise() {
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public String getSunrise() {
         return sunrise;
     }
 
-    public Instant getSunset() {
+    public String getSunset() {
         return sunset;
     }
 
