@@ -94,7 +94,7 @@
                         <div class="card">
                             <p:dataTable var="hourlyWeatherEntries" value="#{weatherBean.getHourlyWeatherEntries()}" style="font-size: 14px" >
                             
-                                <p:column headerText="Hour">
+                                <p:column headerText="Time">
                                     <h:outputText value="#{weatherBean.formatInstantToHHMMWithoutTimezone(hourlyWeatherEntries.timestamp())}" />
                                 </p:column>
 

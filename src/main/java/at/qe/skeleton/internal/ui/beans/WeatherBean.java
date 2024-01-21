@@ -181,7 +181,7 @@ public class WeatherBean {
 
   public static String formatInstantToHHMMWithoutTimezone(Instant timestamp) {
     LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.: HH:mm");
     return localDateTime.format(formatter);
 }
 
