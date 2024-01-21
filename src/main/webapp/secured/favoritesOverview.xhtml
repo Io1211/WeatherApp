@@ -153,11 +153,19 @@
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().title()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTitle}"/>
                     </h:panelGrid>
-                    <p:commandButton id="toggle-un-favorite"
-                                     action="#{weatherApiDemoBean.toggleFavorite()}"
+                    <p:commandButton id="remove_favorite"
+                                     action="#{favoriteOverviewBean.removeFavorite(favoriteLocation)}"
                                      rendered="#{sessionInfoBean.loggedIn}" icon="pi pi-heart"
-                                     styleClass="#{weatherApiDemoBean.isFavorite() ? 'rounded-button ui-button-help' : 'rounded-button ui-button-help ui-button-outlined'}"
-                                     update="favoritesOverview"/>
+                                     styleClass="rounded-button ui-button-help"
+                                     update="favoritesOverview">
+                        <p:confirm type="popup" message="Remove from favorites?"
+                                   icon="pi pi-info-circle"/>
+                    </p:commandButton>
+                    <p:confirmPopup global="true">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirm-popup-yes"/>
+                        <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+
+                    </p:confirmPopup>
                 </p:card>
             </p:carousel>
         </h:form>

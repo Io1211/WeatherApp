@@ -31,13 +31,12 @@ public class FavoriteOverviewBean {
 
   @Autowired private UserxService userxService;
 
-  @Autowired private LocationService locationService;
+  @Autowired private FavoriteService favoriteService;
 
   @Autowired private CurrentAndForecastAnswerService currentAndForecastAnswerService;
   private List<Favorite> favorites;
   private FavoriteDataConfig favoriteDataConfig;
   private List<CurrentAndForecastAnswerDTO> currentAndForecastAnswerDTOS;
-
   private Userx user;
 
   @PostConstruct
@@ -71,6 +70,11 @@ public class FavoriteOverviewBean {
   public CurrentAndForecastAnswerDTO getCurrentWeather(Favorite favorite) {
     byte[] serializedWeatherData = favorite.getLocation().getWeather().getWeatherData();
     return currentAndForecastAnswerService.deserializeDTO(serializedWeatherData);
+  }
+
+  public String removeFavorite(Favorite favorite) {
+    this.favoriteService.toggleFavorite(this.user, favorite);
+    return "/secured/favoritesOverview.xhtml?faces-redirect=true";
   }
 
   private void addMessage(String summary, FacesMessage.Severity severity) {
