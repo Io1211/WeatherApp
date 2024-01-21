@@ -3,7 +3,9 @@ package at.qe.skeleton.internal.services;
 import at.qe.skeleton.internal.model.Subscription;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
+import at.qe.skeleton.internal.services.exceptions.NoActivePremiumSubscriptionFoundException;
 import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
+import at.qe.skeleton.internal.services.exceptions.NoSubscriptionFoundException;
 import at.qe.skeleton.internal.services.exceptions.NotYetAvailableException;
 import java.time.LocalDate;
 import java.time.Month;
@@ -24,10 +26,11 @@ public class SubscriptionService {
   @Autowired private CreditCardRepository creditCardRepository;
 
   /**
-   * This method activates a premium subscription. If the user wasn't premium before, it creates a
-   * new subscription for them and appends the list keeping track of the premium periods with the
-   * current date for the start and null for the end date (i.e., end not set). If they were premium
-   * before, the same operation is performed minus the creation of a new subscription entity.
+   * This method activates a premium subscription and sets the according user role. If the user
+   * wasn't premium before, it creates a new subscription for them and appends the list keeping
+   * track of the premium periods with the current date for the start and null for the end date
+   * (i.e., end not set). If they were premium before, the same operation is performed minus the
+   * creation of a new subscription entity.
    *
    * @param user The user who premium shall be activated for
    * @throws NoCreditCardFoundException when the user in question doesn't have credit card info
@@ -51,6 +54,18 @@ public class SubscriptionService {
     userxService.activatePremium(user);
   }
 
+  /**
+   * This method deactivates/terminates a premium subscription. It removes the premium status from a
+   * user and sets the last active (i.e., current) subscription to be ended at the date when this
+   * method was called. In absence of an active subscription or a subscription at all the according
+   * exception is thrown.
+   *
+   * @param user The user to whom prime status should be revoked
+   * @throws NoSubscriptionFoundException when the user in question doesn't have a subscription tied
+   *     to their account
+   * @throws NoActivePremiumSubscriptionFoundException when the user in question doesn't have any
+   *     active premium membership to cancel tied to their account
+   */
   // TODO: add tests
   public void deactivatePremiumSubscription(Userx user)
       throws NoSubscriptionFoundException, NoActivePremiumSubscriptionFoundException {
