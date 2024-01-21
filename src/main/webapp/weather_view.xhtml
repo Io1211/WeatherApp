@@ -8,24 +8,21 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
-    <!--PrimeFaces is a UI components library over the JSF framework (7 JavaServer Faces Technology).
-    It has things like date pickers, data grids, graphics, carousels, etc.
-    So many of the configurations and the coding has actually more to do with JSF -->
+<!--
+Explanation of sequence of Events in frontend:
+Here's a simplified sequence of events:
 
+1. User clicks the "CommitSearchRequest" button.
+2. The performLocationSearch method is invoked, updating the latitude and longitude values in weatherBean.
+3. The performWeatherApiRequest method is called directly within the commandButton action, and it can access the updated latitude and longitude values from weatherBean.
+4. Both methods execute within the same request-response cycle, so the bean state is available and consistent throughout.
 
-    <!--Explanation of sequence of Events in frontend:
-    Here's a simplified sequence of events:
+Since the view scope keeps the bean alive for the duration of the user's interaction with a specific view,
+both methods (performLocationSearch and performWeatherApiRequest) will operate on the same instance of the bean
+during the same view lifecycle.
+Therefore, any changes made in one method will be reflected in the other within the same view scope.
+-->
 
-    1. User clicks the "CommitSearchRequest" button.
-    2. The performLocationSearch method is invoked, updating the latitude and longitude values in weatherBean.
-    3. The performWeatherApiRequest method is called directly within the commandButton action, and it can access the updated latitude and longitude values from weatherBean.
-    4. Both methods execute within the same request-response cycle, so the bean state is available and consistent throughout.
-
-    Since the view scope keeps the bean alive for the duration of the user's interaction with a specific view,
-    both methods (performLocationSearch and performWeatherApiRequest) will operate on the same instance of the bean
-    during the same view lifecycle.
-    Therefore, any changes made in one method will be reflected in the other within the same view scope.
-    -->
     <ui:define name="content">
         <h:form id="weatherForm">
             <p:panel header="Search for a location:">
@@ -79,7 +76,7 @@
                             <h:outputText value="#{weatherBean.weatherDTO.currentWeather().windSpeed()} m/s"/>
 
                             <h:outputText value="Wind direction: "/>
-                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().windDirection()} metrol. deg"/>
+                            <h:outputText value="#{weatherBean.degreesToCardinal(weatherBean.weatherDTO.currentWeather().windDirection())}"/>
 
                         </h:panelGrid>
                     
@@ -114,8 +111,8 @@
                                     <h:outputText value="#{hourlyWeatherEntries.windSpeed()}" />
                                 </p:column>
 
-                                <p:column headerText="Wind direction [metrol. deg]">
-                                    <h:outputText value="#{hourlyWeatherEntries.windDirection()}" />
+                                <p:column headerText="Wind direction">
+                                    <h:outputText value="#{weatherBean.degreesToCardinal(hourlyWeatherEntries.windDirection())}" />
                                 </p:column>
 
                                 <p:column headerText="Pop [?]">
@@ -169,8 +166,8 @@
                                     <h:outputText value="#{dailyWeatherEntries.windSpeed()}" />
                                 </p:column>
 
-                                <p:column headerText="Wind direction [metrol. deg]">
-                                    <h:outputText value="#{dailyWeatherEntries.windDirection()}" />
+                                <p:column headerText="Wind direction">
+                                    <h:outputText value="#{weatherBean.degreesToCardinal(dailyWeatherEntries.windDirection())}" />
                                 </p:column>
 
                                 <p:column headerText="Wind gust [m/s]">
@@ -195,5 +192,4 @@
             </p:panel>
         </h:form>
     </ui:define>
-
 </ui:composition>
