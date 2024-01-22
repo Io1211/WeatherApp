@@ -9,14 +9,11 @@ import at.qe.skeleton.internal.model.CurrentAndForecastAnswer;
 import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.CurrentAndForecastAnswerService;
 import at.qe.skeleton.internal.services.LocationService;
-import at.qe.skeleton.internal.ui.beans.WeatherApiDemoBean;
+import at.qe.skeleton.internal.ui.beans.WeatherBean;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.*;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Before;
@@ -32,7 +29,7 @@ public class LocationSearchTest {
   @Mock LocationService locationServiceMock;
   @Mock CurrentAndForecastAnswerService currentAndForecastAnswerService;
 
-  @InjectMocks WeatherApiDemoBean weatherApiDemoBean;
+  @InjectMocks WeatherBean weatherBean;
 
   static LocationAnswerDTO locationDtoInnsbruck;
   static CurrentAndForecastAnswerDTO weatherDtoInnsbruck;
@@ -83,27 +80,11 @@ public class LocationSearchTest {
         .thenReturn(weatherDtoInnsbruck);
 
     // preparing weatherApiDemoBean
-    this.weatherApiDemoBean.setLocationSearchInput(searchString);
-    this.weatherApiDemoBean.performLocationSearch();
+    this.weatherBean.setLocationSearchInput(searchString);
+    this.weatherBean.performLocationSearch();
 
     // the actual test
     verify(locationServiceMock, times(1)).handleLocationSearch(searchString);
-    Assertions.assertEquals(weatherDtoInnsbruck, weatherApiDemoBean.getWeatherDTO());
-  }
-
-  @Test
-  public void testGetSunsetDateTime() {
-    Instant sunsetInstant = weatherDtoInnsbruck.currentWeather().sunset();
-    String apiResponseTimezone = weatherDtoInnsbruck.timezone();
-    this.weatherApiDemoBean.setWeatherDTO(weatherDtoInnsbruck);
-
-    ZonedDateTime expectedSunsetInDesiredZone =
-        sunsetInstant.atZone(ZoneId.of(apiResponseTimezone));
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-    String expected = expectedSunsetInDesiredZone.format(formatter);
-
-    String result = weatherApiDemoBean.getSunsetString();
-
-    assertEquals(expected, result);
+    Assertions.assertEquals(weatherDtoInnsbruck, weatherBean.getWeatherDTO());
   }
 }

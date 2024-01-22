@@ -21,33 +21,32 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-
 @SpringBootTest
 class WeatherBeanTest {
 
-    @MockBean public WeatherBean weatherBean;
+  public WeatherBean weatherBean = new WeatherBean();
 
-    /**
-     * Some tests for {@link WeatherBean}.
-     * The tests check if timestamps and wind directions are properly converted.
-     */
-    @Test
-    public void formatInstantToDateTimeTest() {
-        Instant timestamp = Instant.parse("2023-04-15T12:30:45Z");
-        String format = "yyyy-MM-dd HH:mm";
-        String result = weatherBean.formatInstantToDateTime(timestamp, format);
-        assertEquals("2023-04-15 12:30", result);
+  /**
+   * Some tests for {@link WeatherBean}. The tests check if timestamps and wind directions are
+   * properly converted.
+   */
+  @Test
+  public void formatInstantToDateTimeTest() {
+    Instant timestamp = Instant.parse("2023-04-15T12:30:45Z");
+    String format = "yyyy-MM-dd HH:mm";
+    String result = weatherBean.formatInstantToDateTime(timestamp, format);
+    assertEquals("2023-04-15 12:30", result);
 
-        timestamp = Instant.parse("2023-08-27T08:15:30Z");
-        format = "yyyy.MM.dd";
-        result = weatherBean.formatInstantToDateTime(timestamp, format);
-        assertEquals("2023.08.27", result);
-    }
+    timestamp = Instant.parse("2023-08-27T08:15:30Z");
+    format = "yyyy.MM.dd";
+    result = weatherBean.formatInstantToDateTime(timestamp, format);
+    assertEquals("2023.08.27", result);
+  }
 
-    @Test
-    public void degreesToCardinalTest() {
-        assertEquals("N", weatherBean.degreesToCardinal(0.0));
-        assertEquals("E", weatherBean.degreesToCardinal(90.0));
-        assertEquals("NNW", weatherBean.degreesToCardinal(337.5));
-    }
+  @Test
+  public void degreesToCardinalTest() {
+    assertEquals("N", weatherBean.degreesToCardinal(0.0));
+    assertEquals("E", weatherBean.degreesToCardinal(90.0));
+    assertEquals("NNW", weatherBean.degreesToCardinal(337.5));
+  }
 }
