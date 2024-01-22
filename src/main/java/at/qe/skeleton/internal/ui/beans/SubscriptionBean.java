@@ -46,7 +46,7 @@ public class SubscriptionBean {
                   FacesMessage.SEVERITY_INFO,
                   "Success",
                   "Premium activated successfully. Please login again to get access to premium features."));
-      LOGGER.info("Subscription activated for user %s", user);
+      LOGGER.info("Subscription activated for user {}", user.getId());
       sessionInfoBean.reloadCurrentUser();
       return "/success_page";
     } catch (NoCreditCardFoundException e) {
@@ -59,22 +59,18 @@ public class SubscriptionBean {
     Userx user = sessionInfoBean.getCurrentUser();
     try {
       subscriptionService.deactivatePremiumSubscription(user);
-    }
-    // TODO: handle these exceptions appropriately (e.g., via primefacce message)
-    catch (NoSubscriptionFoundException | NoActivePremiumSubscriptionFoundException e) {
-      throw new RuntimeException(e);
-    } catch (MoneyGlitchAvoidanceException e) {
-      FacesContext.getCurrentInstance()
-          .addMessage(
-              null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning", e.getMessage()));
+    } catch (NoSubscriptionFoundException
+        | NoActivePremiumSubscriptionFoundException
+        | MoneyGlitchAvoidanceException e) {
+      showMessageInPrimefaces(FacesMessage.SEVERITY_WARN, e.getMessage());
       return "/home";
     }
-    FacesContext.getCurrentInstance()
-        .addMessage(
-            null,
-            new FacesMessage(
-                FacesMessage.SEVERITY_INFO, "Success", "Premium deactivated successfully."));
+    showMessageInPrimefaces(FacesMessage.SEVERITY_INFO, "Premium deactivated successfully.");
     sessionInfoBean.reloadCurrentUser();
     return "/success_page";
+  }
+
+  private void showMessageInPrimefaces(FacesMessage.Severity severity, String detail) {
+    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, null, detail));
   }
 }
