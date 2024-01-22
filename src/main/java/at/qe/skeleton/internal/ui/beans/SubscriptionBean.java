@@ -70,7 +70,7 @@ public class SubscriptionBean {
     return "/success_page";
   }
 
-  private void showMessageInPrimefaces(FacesMessage.Severity severity, String detail) {
-    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, null, detail));
+  private void showMessageInPrimefaces(FacesMessage.Severity severity, String summary) {
+    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
   }
 }
