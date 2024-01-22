@@ -8,23 +8,21 @@
       xml:lang="en">
 <body>
 <ui:composition>
-    <h:form>
+    <h:form id="headerForm">
+
         <p:menubar>
-            <p:submenu label="User Submenu 1" rendered="#{sessionInfoBean.hasRole('REGISTERED_USER')}">
-                <p:menuitem value="Registered User Action 1 - 1"/>
-                <p:menuitem value="Registered User Action 1 - 2"/>
-            </p:submenu>
-            <p:submenu label="Manager Submenu" rendered="#{sessionInfoBean.hasRole('MANAGER')}">
+            <!--We can add Billing Management here-->
+            <p:submenu label="Billing Management" rendered="#{sessionInfoBean.hasRole('MANAGER')}">
                 <p:menuitem value="Manager Action 1"/>
                 <p:menuitem value="Manager Action 2"/>
             </p:submenu>
             <p:submenu label="Admin Submenu" rendered="#{sessionInfoBean.hasRole('ADMIN')}">
                 <p:menuitem value="Manage Users" url="/admin/users.xhtml"/>
             </p:submenu>
-            <p:submenu label="Test Submenu" rendered="#{sessionInfoBean.loggedIn}">
-                <p:menuitem value="Security Test" url="/secured/test.xhtml"/>
-                <p:menuitem value="Weather API Demo" url="/secured/weather_api_demo.xhtml"/>
-            </p:submenu>
+
+            <p:menuitem value="My Favorites" url="/secured/favoritesOverview.xhtml"
+                        rendered="#{sessionInfoBean.loggedIn}"/>
+
             <p:menuitem value="Configure overview" url="/secured/overview_config.xhtml"
                         rendered="#{sessionInfoBean.loggedIn}"/>
 
@@ -36,7 +34,20 @@
             <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
 
+            <p:menuitem>
+
+                <p:autoComplete id="locationSearchField" value="#{weatherApiDemoBean.locationSearchInput}"
+                                completeMethod="#{autoCompleteController.autoCompleteLocation}"
+                                style="margin-right: 10px;" emptyMessage="no results"/>
+
+                <p:commandButton value="Search" id="commitSearchRequest"
+                                 action="#{weatherApiDemoBean.performLocationSearch()}"
+                                 update="headerForm">
+                </p:commandButton>
+            </p:menuitem>
+
         </p:menubar>
+        <p:messages id="message" showDetail="false"/>
     </h:form>
 </ui:composition>
 </body>
