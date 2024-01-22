@@ -1,6 +1,7 @@
 package at.qe.skeleton.configs;
 
 import at.qe.skeleton.external.services.GeocodingApiRequestService;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
