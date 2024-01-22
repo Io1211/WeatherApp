@@ -9,7 +9,7 @@ import org.springframework.data.domain.Persistable;
 
 /**
  * Entity for storing which fields a users wants displayed in their favorite overview. Contains
- * booleans for all fields of CurrentWeatherDTO
+ * booleans for all fields of CurrentWeatherDTO. Title is also called weather.main.
  */
 @Entity
 public class FavoriteDataConfig implements Persistable<String>, Serializable {

@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.internal.model.Favorite;
+import at.qe.skeleton.internal.model.FavoriteDataConfig;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.UserxService;
 import jakarta.annotation.PostConstruct;
@@ -24,6 +25,7 @@ public class OverviewConfigBean {
 
   @Autowired private UserxService userxService;
   private List<Favorite> favorites;
+  private FavoriteDataConfig favoriteDataConfig;
 
   private Userx user;
 
@@ -32,6 +34,8 @@ public class OverviewConfigBean {
     try {
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
       this.user = userxService.loadUser(auth.getName());
+
+      this.favoriteDataConfig = user.getFavoriteDataConfig();
 
       favorites =
           user.getFavorites().stream()
@@ -48,6 +52,8 @@ public class OverviewConfigBean {
         favorites.get(i).setPriority(i);
       }
       this.user.setFavorites(favorites);
+      this.user.setFavoriteDataConfig(this.favoriteDataConfig);
+
       userxService.saveUser(this.user);
     } catch (Exception e) {
       this.addMessage("An error occurred while saving the changes", FacesMessage.SEVERITY_ERROR);
@@ -67,5 +73,13 @@ public class OverviewConfigBean {
 
   public void setFavorites(List<Favorite> favorites) {
     this.favorites = favorites;
+  }
+
+  public FavoriteDataConfig getFavoriteDataConfig() {
+    return favoriteDataConfig;
+  }
+
+  public void setFavoriteDataConfig(FavoriteDataConfig favoriteDataConfig) {
+    this.favoriteDataConfig = favoriteDataConfig;
   }
 }

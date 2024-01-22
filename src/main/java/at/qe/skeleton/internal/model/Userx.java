@@ -1,6 +1,8 @@
 package at.qe.skeleton.internal.model;
 
 import jakarta.persistence.*;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +21,7 @@ import org.springframework.data.domain.Persistable;
 @Entity
 public class Userx implements Persistable<String>, Serializable, Comparable<Userx> {
 
-  private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
   @Id
   @Column(length = 100)
@@ -37,7 +39,13 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   @UpdateTimestamp private LocalDateTime updateDate;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
+  // FetchType.EAGER is used because Lazy loading complicates testing / makes testing more
+  // error-prone
+  @OneToMany(
+      cascade = CascadeType.ALL,
+      mappedBy = "user",
+      orphanRemoval = true,
+      fetch = FetchType.EAGER)
   private List<Favorite> favorites;
 
   @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)

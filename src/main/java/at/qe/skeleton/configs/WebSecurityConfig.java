@@ -88,9 +88,9 @@ public class WebSecurityConfig {
               form ->
                   form.loginPage(LOGIN)
                       .permitAll()
-                      .defaultSuccessUrl("/secured/welcome.xhtml")
+                      .defaultSuccessUrl("/secured/favoritesOverview.xhtml")
                       .loginProcessingUrl("/login")
-                      .successForwardUrl("/secured/welcome.xhtml")
+                      .successForwardUrl("/secured/favoritesOverview.xhtml")
                       .failureUrl("/login.xhtml?error"))
           .logout(
               logout ->
