@@ -1,0 +1,196 @@
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+
+    <ui:define name="content">
+        <style>
+            .favorites-card {
+                border: solid;
+                padding: 10px;
+                justify-content: center;
+                max-width: 300px; /* Set the maximum width as per your requirement */
+                box-sizing: border-box; /* Ensure padding and border are included in the width */
+            }
+
+            .city {
+                margin-top: 0;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+            .country {
+                margin-top: 10px;
+            }
+
+            .weather-icon {
+                display: inline;
+                width: 100px;
+                height: 100px;
+            }
+
+            .favorites-panelgrid {
+                width: 100%;
+                max-width: 350px;
+            }
+
+            .toggle-favorites-button {
+                margin-top: 10px;
+                margin-left: 10px;
+            }
+
+        </style>
+        <h:form id="favoritesOverview">
+            <p:panel rendered="#{empty favoriteOverviewBean.favorites}" closable="true">
+                <h:outputText value="You dont have any favorites."/>
+            </p:panel>
+
+            <p:carousel var="favoriteLocation" value="#{favoriteOverviewBean.favorites}" numVisible="4" numScroll="4"
+                        rendered="#{not empty favoriteOverviewBean.favorites}"
+                        styleClass="ui-carousel-items-content">
+                <p:card styleClass="favorites-card">
+                    <h:panelGrid columns="2" cellpadding="10" styleClass="favorites-panelgrid">
+                        <div class="city-country-div">
+                            <h2 class="city">#{favoriteLocation.location.city}</h2>
+                            <h5 class="country">#{favoriteLocation.location.country}</h5>
+                        </div>
+                        <h:graphicImage alt="Weather Icon" url="#{iconController.getIcon(
+                        favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()
+                        )}"
+                                        styleClass="weather-icon"
+                                        rendered="#{favoriteOverviewBean.favoriteDataConfig.showIcon}"/>
+                        <!--following empty outputText is in case user removes weathericon via favoriteDataConfig,
+                            since the WeatherIcon is part of panelGrid, otherwise it would mess up the whole panelGrid -->
+                        <h:outputText value="" rendered="#{not favoriteOverviewBean.favoriteDataConfig.showIcon}"/>
+
+                        <h:outputText value="Clouds:"
+                                      rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().clouds()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}"/>
+
+
+                        <h:outputText value="Temperature"
+                                      rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().temperature()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}"/>
+
+                        <!--   USE TIME SERVICE CLASS FOR SUNRISE AND SUNSET  -->
+                        <h:outputText value="Sunrise"
+                                      rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
+
+
+                        <h:outputText
+                                value="Sunset"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
+
+
+                        <h:outputText
+                                value="Feels Like"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().feelsLikeTemperature()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>
+
+
+                        <h:outputText
+                                value="Pressure"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showPressure}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().pressure()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showPressure}"/>
+
+
+                        <h:outputText
+                                value="Humidity"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showHumidity}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().humidity()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showHumidity}"/>
+
+                        <h:outputText
+                                value="Dew-Point"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().dewPoint()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}"/>
+
+                        <h:outputText
+                                value="UVI"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showUvi}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().uvi()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showUvi}"/>
+
+                        <h:outputText
+                                value="Visibility"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showVisibility}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().visibility()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showVisibility}"/>
+
+                        <h:outputText
+                                value="Wind Speed"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindSpeed}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windSpeed()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindSpeed}"/>
+
+                        <h:outputText
+                                value="Wind Direction"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindDirection}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windDirection()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindDirection}"/>
+
+                        <h:outputText
+                                value="Rain Amount"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showRain}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().rain()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showRain}"/>
+
+                        <h:outputText
+                                value="Snow Amount"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().snow()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
+
+                        <h:outputText
+                                value="Weather"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showTitle}"/>
+                        <h:outputText
+                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().title()}"
+                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showTitle}"/>
+                    </h:panelGrid>
+                    <div class="toggle-favorites-button">
+                        <p:commandButton id="remove_favorite"
+                                         action="#{favoriteOverviewBean.removeFavorite(favoriteLocation)}"
+                                         rendered="#{sessionInfoBean.loggedIn}" icon="pi pi-heart"
+                                         styleClass="rounded-button ui-button-help"
+                                         update="favoritesOverview">
+                            <p:confirm type="popup" message="Remove from favorites?"
+                                       icon="pi pi-info-circle"/>
+                        </p:commandButton>
+                        <p:confirmPopup global="true">
+                            <p:commandButton value="Yes" type="button" styleClass="ui-confirm-popup-yes"/>
+                            <p:commandButton value="No" type="button" styleClass="ui-confirm-popup-no ui-button-flat"/>
+
+                        </p:confirmPopup>
+                    </div>
+
+                </p:card>
+            </p:carousel>
+        </h:form>
+    </ui:define>
+</ui:composition>
