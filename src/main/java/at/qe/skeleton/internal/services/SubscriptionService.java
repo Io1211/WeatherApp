@@ -63,18 +63,20 @@ public class SubscriptionService {
    * @throws NoActivePremiumSubscriptionFoundException when the user in question doesn't have any
    *     active premium membership to cancel tied to their account
    */
-  // TODO: add tests
   public void deactivatePremiumSubscription(Userx user)
       throws NoSubscriptionFoundException,
           NoActivePremiumSubscriptionFoundException,
           MoneyGlitchAvoidanceException {
+    // These are just precautionary measures. By activating the membership via
+    // activatePremiumSubscription these cases should never happen.
+    // ---
     Subscription subscription = user.getSubscription();
     if (subscription == null) {
       throw new NoSubscriptionFoundException(user);
     }
 
     List<Pair<LocalDate, LocalDate>> premiumPeriods = subscription.getPremiumPeriod();
-    if (premiumPeriods.isEmpty()) {
+    if (premiumPeriods == null || premiumPeriods.isEmpty()) {
       throw new NoActivePremiumSubscriptionFoundException(user);
     }
 
@@ -82,6 +84,7 @@ public class SubscriptionService {
     if (lastSubscription.b != null) {
       throw new NoActivePremiumSubscriptionFoundException(user);
     }
+    // ---
 
     // If a user can activate and deactivate premium the same day they might get away with not
     // paying for the membership.

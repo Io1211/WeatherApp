@@ -5,18 +5,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.model.Subscription;
 import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.repositories.FavoriteRepository;
 import at.qe.skeleton.internal.repositories.SubscriptionRepository;
 import at.qe.skeleton.internal.repositories.UserxRepository;
-import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
-import at.qe.skeleton.internal.services.exceptions.NotYetAvailableException;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
-import java.time.ZonedDateTime;
+import at.qe.skeleton.internal.services.exceptions.*;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 import org.antlr.v4.runtime.misc.Pair;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +42,9 @@ class SubscriptionServiceTest {
   void activatePremiumSubscriptionTest() throws NoCreditCardFoundException {
     Userx user = new Userx();
     user.setId("Primus");
+    TreeSet<UserxRole> roles = new TreeSet<>();
+    roles.add(UserxRole.REGISTERED_USER);
+    user.setRoles(roles);
 
     // case 1: throw custom exception when there is no credit card set for the user trying to get
     // premium
@@ -61,6 +62,8 @@ class SubscriptionServiceTest {
     user = userxRepository.save(user);
 
     // case 2: no prior subscription on record
+    user.getRoles().remove(UserxRole.PREMIUM_USER);
+    assertFalse(user.getRoles().contains(UserxRole.PREMIUM_USER));
     subscriptionService.activatePremiumSubscription(user);
     assertNotNull(user.getSubscription());
     assertNotNull(user.getSubscription().getPremiumPeriod());
@@ -68,8 +71,13 @@ class SubscriptionServiceTest {
     Pair<LocalDate, LocalDate> premiumPeriod = user.getSubscription().getPremiumPeriod().get(0);
     // only compares date and not time so this should be fine
     assertTrue(premiumPeriod.a.isEqual(LocalDate.now()));
+    assertTrue(
+        user.getRoles().contains(UserxRole.PREMIUM_USER),
+        "A problem occurred in the activatePremium method of the UserxService.");
 
     // case 3: add to already existing list of premium periods
+    user.getRoles().remove(UserxRole.PREMIUM_USER);
+    assertFalse(user.getRoles().contains(UserxRole.PREMIUM_USER));
     List<Pair<LocalDate, LocalDate>> premiumPeriods = new ArrayList<>();
     premiumPeriods.add(new Pair<>(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 2, 1)));
     premiumPeriods.add(new Pair<>(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 4, 1)));
@@ -85,6 +93,90 @@ class SubscriptionServiceTest {
         user.getSubscription().getPremiumPeriod().get(premiumPeriods.size() - 1);
     // only compares date and not time so this should be fine
     assertTrue(lastPremiumPeriod.a.isEqual(LocalDate.now()));
+    assertTrue(
+        user.getRoles().contains(UserxRole.PREMIUM_USER),
+        "A problem occurred in the activatePremium method of the UserxService.");
+  }
+
+  @DirtiesContext
+  @Test
+  void deactivatePremiumSubscriptionTest()
+      throws NoSubscriptionFoundException,
+          MoneyGlitchAvoidanceException,
+          NoActivePremiumSubscriptionFoundException {
+    // case 1: user has no subscription and tries to deactivate premium
+    assertThrows(
+        NoSubscriptionFoundException.class,
+        () -> {
+          Userx user = new Userx();
+          subscriptionService.deactivatePremiumSubscription(user);
+        });
+
+    // case 2: user has a subscription but no premium period on record and thus to terminate
+    assertThrows(
+        NoActivePremiumSubscriptionFoundException.class,
+        () -> {
+          Userx user = new Userx();
+          user.setSubscription(new Subscription());
+          subscriptionService.deactivatePremiumSubscription(user);
+        });
+
+    // case 3: user has a subscription but the last premium period was already terminated so there
+    // is nothing to cancel
+    assertThrows(
+        NoActivePremiumSubscriptionFoundException.class,
+        () -> {
+          Userx user = new Userx();
+          user.setSubscription(new Subscription());
+          user.getSubscription()
+              .setPremiumPeriod(
+                  new ArrayList<>(
+                      List.of(
+                          new Pair<>(
+                              LocalDate.now().minus(Period.of(0, 0, 5)),
+                              LocalDate.now().minus(Period.of(0, 0, 3))))));
+          subscriptionService.deactivatePremiumSubscription(user);
+        });
+
+    // case 4: user tries to cancel the membership the day it was started (we want to avoid this
+    // because the current billing would not charge the user. Thus, a malicious user could sign up
+    // in the morning and cancel in the evening and never pay a dime)
+    assertThrows(
+        MoneyGlitchAvoidanceException.class,
+        () -> {
+          Userx user = new Userx();
+          user.setSubscription(new Subscription());
+          user.getSubscription()
+              .setPremiumPeriod(new ArrayList<>(List.of(new Pair<>(LocalDate.now(), null))));
+          subscriptionService.deactivatePremiumSubscription(user);
+        });
+
+    // case 5: user has an active membership and tries to cancel it
+    Userx user = new Userx();
+    user.setId("Primus");
+    TreeSet<UserxRole> roles = new TreeSet<>();
+    roles.add(UserxRole.REGISTERED_USER);
+    user.setRoles(roles);
+    user.setSubscription(new Subscription());
+    user.getSubscription()
+        .setPremiumPeriod(
+            new ArrayList<>(List.of(new Pair<>(LocalDate.now().minus(Period.of(0, 0, 3)), null))));
+
+    user.addRole(UserxRole.PREMIUM_USER);
+    assertTrue(user.getRoles().contains(UserxRole.PREMIUM_USER));
+
+    subscriptionService.deactivatePremiumSubscription(user);
+
+    Pair<LocalDate, LocalDate> expected =
+        new Pair<>(LocalDate.now().minus(Period.of(0, 0, 3)), LocalDate.now());
+    assertEquals(
+        expected,
+        user.getSubscription()
+            .getPremiumPeriod()
+            .get(user.getSubscription().getPremiumPeriod().size() - 1));
+    assertFalse(
+        user.getRoles().contains(UserxRole.PREMIUM_USER),
+        "There is a problem with the deactivatePremium method of the UserxService.");
   }
 
   @DirtiesContext
