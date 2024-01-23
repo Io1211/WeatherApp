@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <h:form id="userForm">
+            <p:messages id="messages" showDetail="false" closable="true">
+                <p:autoUpdate/>
+            </p:messages>
+
+            <div style="margin-bottom: 2rem; margin-top: 2rem; margin-left: 0.5rem">
+                <p:outputLabel for="month" value="Month: "/>
+                <p:selectOneMenu id="month" label="" style="width:150px;  margin-right: 1rem">
+                    <p:ajax listener="#{billingBean.onMonthChange()}" update="billingTable"/>
+                    <f:selectItems value="#{billingBean.months}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel for="year" value="Year: "/>
+                <p:selectOneMenu id="year" label="" style="width:150px">
+                    <p:ajax listener="#{billingBean.onYearChange()}" update="billingTable"/>
+                    <f:selectItems value="#{billingBean.years}"/>
+                </p:selectOneMenu>
+            </div>
+
+            <p:dataTable id="billingTable" var="user" value="#{billingBean.users}" stickyHeader="true">
+                <p:column field="username" headerText="Username"/> <!-- TODO: fix sorting -->
+                <p:column headerText="Premium Status" sortable="true"> <!-- TODO: sorting (see sortable/sortBy) -->
+                    <h:outputText value="#{billingBean.isActive(user)}"/>
+                </p:column>
+<!--                <p:column headerText="Billed Days">-->
+<!--                    <h:outputText value="#{billingBean.daysToBill}"/>-->
+<!--                </p:column>-->
+<!--                <p:column style="width:100px;text-align: center">-->
+<!--                    <p:commandButton update=":userForm:userEditDialog" oncomplete="PF('userEditDialog').show()"-->
+<!--                                     icon="pi pi-user-edit" title="Edit">-->
+<!--                        <f:setPropertyActionListener value="#{user}" target="#{userDetailController.user}"/>-->
+<!--                    </p:commandButton>-->
+<!--                </p:column>-->
+            </p:dataTable>
+
+<!--            <p:dialog header="Edit User" id="userEditDialog" widgetVar="userEditDialog" modal="true" showEffect="fade"-->
+<!--                      hideEffect="fade" resizable="false">-->
+<!--            </p:dialog>-->
+
+<!--            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="300">-->
+<!--                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>-->
+<!--                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>-->
+<!--            </p:confirmDialog>-->
+
+        </h:form>
+    </ui:define>
+</ui:composition>

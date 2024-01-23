@@ -11,10 +11,8 @@
     <h:form id="headerForm">
 
         <p:menubar>
-            <!--We can add Billing Management here-->
             <p:submenu label="Billing Management" rendered="#{sessionInfoBean.hasRole('MANAGER')}">
-                <p:menuitem value="Manager Action 1"/>
-                <p:menuitem value="Manager Action 2"/>
+                <p:menuitem value="Manage Billing" url="/manager/billing.xhtml"/>
             </p:submenu>
             <p:submenu label="Admin Submenu" rendered="#{sessionInfoBean.hasRole('ADMIN')}">
                 <p:menuitem value="Manage Users" url="/admin/users.xhtml"/>
@@ -50,7 +48,6 @@
             <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
 
             <p:menuitem>
-
                 <p:autoComplete id="locationSearchField" value="#{weatherApiDemoBean.locationSearchInput}"
                                 completeMethod="#{autoCompleteController.autoCompleteLocation}"
                                 style="margin-right: 10px;" emptyMessage="no results"/>
