@@ -35,7 +35,7 @@ public class WebSecurityConfig {
   private static final String REGISTERED_USER = UserxRole.REGISTERED_USER.name();
   private static final String LOGIN = "/login.xhtml";
 
-  private static final String WEATHERFORECAST = "/weatherForecast.xhtml";
+  private static final String WEATHERFORECAST = "/weather_view.xhtml";
   private static final String ACCESSDENIED = "/error/access_denied.xhtml";
 
   @Autowired DataSource dataSource;
