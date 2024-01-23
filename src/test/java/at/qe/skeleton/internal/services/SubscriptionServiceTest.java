@@ -2,10 +2,7 @@ package at.qe.skeleton.internal.services;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import at.qe.skeleton.internal.model.CreditCard;
-import at.qe.skeleton.internal.model.Subscription;
-import at.qe.skeleton.internal.model.Userx;
-import at.qe.skeleton.internal.model.UserxRole;
+import at.qe.skeleton.internal.model.*;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.repositories.FavoriteRepository;
 import at.qe.skeleton.internal.repositories.SubscriptionRepository;
@@ -66,11 +63,11 @@ class SubscriptionServiceTest {
     assertFalse(user.getRoles().contains(UserxRole.PREMIUM_USER));
     subscriptionService.activatePremiumSubscription(user);
     assertNotNull(user.getSubscription());
-    assertNotNull(user.getSubscription().getPremiumPeriod());
-    assertEquals(1, user.getSubscription().getPremiumPeriod().size());
-    Pair<LocalDate, LocalDate> premiumPeriod = user.getSubscription().getPremiumPeriod().get(0);
+    assertNotNull(user.getSubscription().getSubscriptionPeriods());
+    assertEquals(1, user.getSubscription().getSubscriptionPeriods().size());
+    SubscriptionPeriod premiumPeriod = user.getSubscription().getSubscriptionPeriods().get(0);
     // only compares date and not time so this should be fine
-    assertTrue(premiumPeriod.a.isEqual(LocalDate.now()));
+    assertTrue(premiumPeriod.getStart().isEqual(LocalDate.now()));
     assertTrue(
         user.getRoles().contains(UserxRole.PREMIUM_USER),
         "A problem occurred in the activatePremium method of the UserxService.");
@@ -78,21 +75,31 @@ class SubscriptionServiceTest {
     // case 3: add to already existing list of premium periods
     user.getRoles().remove(UserxRole.PREMIUM_USER);
     assertFalse(user.getRoles().contains(UserxRole.PREMIUM_USER));
-    List<Pair<LocalDate, LocalDate>> premiumPeriods = new ArrayList<>();
-    premiumPeriods.add(new Pair<>(LocalDate.of(2023, 1, 1), LocalDate.of(2023, 2, 1)));
-    premiumPeriods.add(new Pair<>(LocalDate.of(2023, 3, 1), LocalDate.of(2023, 4, 1)));
-    premiumPeriods.add(new Pair<>(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 5)));
+    List<SubscriptionPeriod> premiumPeriods = new ArrayList<>();
+    SubscriptionPeriod subscriptionPeriod1 = new SubscriptionPeriod();
+    SubscriptionPeriod subscriptionPeriod2 = new SubscriptionPeriod();
+    SubscriptionPeriod subscriptionPeriod3 = new SubscriptionPeriod();
+    subscriptionPeriod1.setActive(true);
+    subscriptionPeriod1.setStart(LocalDate.of(2023, 1, 1));
+    subscriptionPeriod1.setStop(LocalDate.of(2023, 2, 1));
+    subscriptionPeriod2.setActive(true);
+    subscriptionPeriod2.setStart(LocalDate.of(2023, 3, 1));
+    subscriptionPeriod2.setStop(LocalDate.of(2023, 4, 1));
+    subscriptionPeriod3.setActive(true);
+    subscriptionPeriod3.setStart(LocalDate.of(2024, 1, 1));
+    subscriptionPeriod3.setStop(LocalDate.of(2024, 1, 5));
+    premiumPeriods.addAll(List.of(subscriptionPeriod1, subscriptionPeriod2, subscriptionPeriod3));
     // overwrites the value from the previous test case
-    user.getSubscription().setPremiumPeriod(premiumPeriods);
+    user.getSubscription().setSubscriptionPeriods(premiumPeriods);
     userxRepository.save(user);
 
     subscriptionService.activatePremiumSubscription(user);
     // 3 entries created in setup + 1 that is set upon activation = 4 subscription periods expected
-    assertEquals(4, user.getSubscription().getPremiumPeriod().size());
-    Pair<LocalDate, LocalDate> lastPremiumPeriod =
-        user.getSubscription().getPremiumPeriod().get(premiumPeriods.size() - 1);
+    assertEquals(4, user.getSubscription().getSubscriptionPeriods().size());
+    SubscriptionPeriod lastPremiumPeriod =
+        user.getSubscription().getSubscriptionPeriods().get(premiumPeriods.size() - 1);
     // only compares date and not time so this should be fine
-    assertTrue(lastPremiumPeriod.a.isEqual(LocalDate.now()));
+    assertTrue(lastPremiumPeriod.getStart().isEqual(LocalDate.now()));
     assertTrue(
         user.getRoles().contains(UserxRole.PREMIUM_USER),
         "A problem occurred in the activatePremium method of the UserxService.");

@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Subscription;
+import at.qe.skeleton.internal.model.SubscriptionPeriod;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.services.exceptions.*;
@@ -11,7 +12,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import org.antlr.v4.runtime.misc.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,12 +41,14 @@ public class SubscriptionService {
       user.setSubscription(new Subscription());
     }
     Subscription subscription = user.getSubscription();
-    if (subscription.getPremiumPeriod() == null) {
-      user.getSubscription().setPremiumPeriod(new ArrayList<>());
+    if (subscription.getSubscriptionPeriods() == null) {
+      user.getSubscription().setSubscriptionPeriods(new ArrayList<>());
     }
 
-    List<Pair<LocalDate, LocalDate>> premiumPeriods = user.getSubscription().getPremiumPeriod();
-    Pair<LocalDate, LocalDate> newPremiumPeriod = new Pair<>(LocalDate.now(), null);
+    List<SubscriptionPeriod> premiumPeriods = user.getSubscription().getSubscriptionPeriods();
+    SubscriptionPeriod newPremiumPeriod = new SubscriptionPeriod();
+    newPremiumPeriod.setStart(LocalDate.now());
+    newPremiumPeriod.setActive(true);
     premiumPeriods.add(newPremiumPeriod);
     userxService.activatePremium(user);
   }
@@ -75,29 +77,26 @@ public class SubscriptionService {
       throw new NoSubscriptionFoundException(user);
     }
 
-    List<Pair<LocalDate, LocalDate>> premiumPeriods = subscription.getPremiumPeriod();
+    List<SubscriptionPeriod> premiumPeriods = subscription.getSubscriptionPeriods();
     if (premiumPeriods == null || premiumPeriods.isEmpty()) {
       throw new NoActivePremiumSubscriptionFoundException(user);
     }
 
-    Pair<LocalDate, LocalDate> lastSubscription = premiumPeriods.get(premiumPeriods.size() - 1);
-    if (lastSubscription.b != null) {
+    SubscriptionPeriod lastSubscription = premiumPeriods.get(premiumPeriods.size() - 1);
+    if (lastSubscription.getStop() != null) {
       throw new NoActivePremiumSubscriptionFoundException(user);
     }
     // ---
 
     // If a user can activate and deactivate premium the same day they might get away with not
     // paying for the membership.
-    if (lastSubscription.a.isEqual(LocalDate.now())) {
+    if (lastSubscription.getStart().isEqual(LocalDate.now())) {
       throw new MoneyGlitchAvoidanceException(
           "Premium can't be deactivated the day it was activated");
     }
 
-    Pair<LocalDate, LocalDate> canceledSubscription =
-        new Pair<>(lastSubscription.a, LocalDate.now());
-    premiumPeriods.remove(lastSubscription);
-    premiumPeriods.add(canceledSubscription);
-    user.getSubscription().setPremiumPeriod(premiumPeriods);
+    lastSubscription.setStop(LocalDate.now());
+    lastSubscription.setActive(false);
 
     userxService.deactivatePremium(user);
   }
@@ -127,16 +126,19 @@ public class SubscriptionService {
           "Billing info is only available for past months. You are trying to access it for this or future months.");
     }
 
-    if (user.getSubscription().getPremiumPeriod().isEmpty()) {
+    if (user.getSubscription().getSubscriptionPeriods().isEmpty()) {
       return 0;
     }
 
     // This collects all the subscription tuples that start or stop in the queried month.
     // Makes it easy to calculate the premium period if such tuples are found.
     // Otherwise, the empty list is handled below.
-    List<Pair<LocalDate, LocalDate>> premiumPeriodInMonth =
-        user.getSubscription().getPremiumPeriod().stream()
-            .filter(pair -> isInMonth(pair.a, month, year) || isInMonth(pair.b, month, year))
+    List<SubscriptionPeriod> premiumPeriodInMonth =
+        user.getSubscription().getSubscriptionPeriods().stream()
+            .filter(
+                subscriptionPeriod ->
+                    isInMonth(subscriptionPeriod.getStart(), month, year)
+                        || isInMonth(subscriptionPeriod.getStop(), month, year))
             .toList();
 
     // This handles the case where neither start nor stop of a subscription is in the queried month.
@@ -145,24 +147,25 @@ public class SubscriptionService {
     // If an end is set, it means that the subscription wasn't active during the query month ->
     // return 0.
     if (premiumPeriodInMonth.isEmpty()) {
-      Pair<LocalDate, LocalDate> lastSubscriptionBeforeMonth =
-          getLastSubscriptionBeforeMonth(user.getSubscription().getPremiumPeriod(), month, year);
+      SubscriptionPeriod lastSubscriptionBeforeMonth =
+          getLastSubscriptionBeforeMonth(
+              user.getSubscription().getSubscriptionPeriods(), month, year);
 
       // only one subscription tuple for the user and the start is after the query month
       if (lastSubscriptionBeforeMonth == null) {
         return 0;
       }
       // Subscription doesn't have an end set, ergo is still active.
-      if (lastSubscriptionBeforeMonth.b == null) {
+      if (lastSubscriptionBeforeMonth.getStop() == null) {
         return month.length(Year.isLeap(year));
       }
       // This means that the end date of the tuple is after the query month and year, ergo the
       // subscription was still active in the query month and year.
-      else if (lastSubscriptionBeforeMonth.b.isAfter(LocalDate.of(year, month, 1))) {
+      else if (lastSubscriptionBeforeMonth.getStop().isAfter(LocalDate.of(year, month, 1))) {
         return month.length(Year.isLeap(year));
       }
       // This means that the subscription was terminated before the query month and year.
-      else if (lastSubscriptionBeforeMonth.b.isBefore(LocalDate.of(year, month, 1))) {
+      else if (lastSubscriptionBeforeMonth.getStop().isBefore(LocalDate.of(year, month, 1))) {
         return 0;
       }
     }
@@ -170,7 +173,10 @@ public class SubscriptionService {
     // Calculate the days of active premium during the query month. Sum if multiple start and stops
     // were found.
     return premiumPeriodInMonth.stream()
-        .map(pair -> calculatePremiumFromStartAndStop(pair.a, pair.b, month, year))
+        .map(
+            subscriptionPeriod ->
+                calculatePremiumFromStartAndStop(
+                    subscriptionPeriod.getStart(), subscriptionPeriod.getStop(), month, year))
         .reduce(0, Integer::sum);
   }
 
@@ -215,8 +221,8 @@ public class SubscriptionService {
    * @return The tuple with the subscription start that is closest to the query month but still
    *     before it
    */
-  public Pair<LocalDate, LocalDate> getLastSubscriptionBeforeMonth(
-      List<Pair<LocalDate, LocalDate>> subscriptionPeriods, Month month, int year) {
+  public SubscriptionPeriod getLastSubscriptionBeforeMonth(
+      List<SubscriptionPeriod> subscriptionPeriods, Month month, int year) {
     // SubscriptionPeriods is never empty. This is checked in the premiumDaysInMonth method
     if (subscriptionPeriods.isEmpty()) {
       throw new IllegalArgumentException(
@@ -226,17 +232,19 @@ public class SubscriptionService {
     // if there is only one subscription period on record, return the period if the start is before
     // the query month, else return null.
     if (subscriptionPeriods.size() == 1) {
-      Pair<LocalDate, LocalDate> subscription = subscriptionPeriods.get(0);
-      return subscription.a.isBefore(LocalDate.of(year, month, 1)) ? subscription : null;
+      SubscriptionPeriod subscriptionPeriod = subscriptionPeriods.get(0);
+      return subscriptionPeriod.getStart().isBefore(LocalDate.of(year, month, 1))
+          ? subscriptionPeriod
+          : null;
     }
 
     // The list of subscription dates is sorted by the start date.
     // Iterating over the sorted list and setting the extracted tuple every time until the start
     // date is after the query month yields the sought tuple.
-    subscriptionPeriods.sort(new DatePairComparator());
-    Pair<LocalDate, LocalDate> lastSubscriptionBeforeMonth = null;
-    for (Pair<LocalDate, LocalDate> subscriptionPeriod : subscriptionPeriods) {
-      if (subscriptionPeriod.a.isBefore(LocalDate.of(year, month.getValue(), 1))) {
+    subscriptionPeriods.sort(new SubscriptionPeriodsComparator());
+    SubscriptionPeriod lastSubscriptionBeforeMonth = null;
+    for (SubscriptionPeriod subscriptionPeriod : subscriptionPeriods) {
+      if (subscriptionPeriod.getStart().isBefore(LocalDate.of(year, month.getValue(), 1))) {
         lastSubscriptionBeforeMonth = subscriptionPeriod;
       } else {
         break;
@@ -263,12 +271,12 @@ public class SubscriptionService {
    * periods. The tuples are sorted using the date of the membership start i.e., A in a tuple (A,
    * B), in ascending order.
    */
-  static class DatePairComparator implements Comparator<Pair<LocalDate, LocalDate>> {
+  static class SubscriptionPeriodsComparator implements Comparator<SubscriptionPeriod> {
     @Override
-    public int compare(Pair<LocalDate, LocalDate> pair1, Pair<LocalDate, LocalDate> pair2) {
-      if (pair1.a.isBefore(pair2.a)) {
+    public int compare(SubscriptionPeriod subscriptionPeriod1, SubscriptionPeriod subscriptionPeriod2) {
+      if (subscriptionPeriod1.getStart().isBefore(subscriptionPeriod2.getStart())) {
         return -1;
-      } else if (pair1.a.isEqual(pair2.a)) {
+      } else if (subscriptionPeriod1.getStart().isEqual(subscriptionPeriod2.getStart())) {
         return 0;
       } else {
         return 1;
