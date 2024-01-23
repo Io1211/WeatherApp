@@ -39,11 +39,11 @@
                                    icon="ui-icon-alert"/>
                     </p:commandButton>
                     <p:spacer width="10"/>
-                    <p:commandButton icon="pi pi-unlock" title="Reset Password" action="#{userDetailController.sendResetPasswordAdmin()}"
+                    <p:commandButton icon="pi pi-unlock" title="Send reset password email" action="#{userDetailController.sendResetPasswordAdmin()}"
                                      update=":userForm:usersTable">
                         <f:setPropertyActionListener value="#{user}" target="#{userDetailController.user}"/>
-                        <p:confirm header="Password Reset Confirmation"
-                                   message="Are you sure you want to reset the password for this user?"
+                        <p:confirm header="Password Reset Email"
+                                   message="Are you sure you want to send a password reset email to this user?"
                                    icon="pi pi-alert"/>
                     </p:commandButton>
                 </p:column>
