@@ -141,7 +141,7 @@ public class WeatherBean {
 
   /**
    * Formats an instant timestamp to a date-time string using a given specified format. Used to
-   * convert mutliple occurences of timestamps (Type Instant) in the weather details table to the
+   * convert multiple occurrences of timestamps (Type Instant) in the weather details table to the
    * desired formats.
    *
    * @param timestamp Instant timestamp.
