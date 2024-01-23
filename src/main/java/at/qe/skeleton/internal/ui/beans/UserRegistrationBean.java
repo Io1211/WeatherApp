@@ -59,7 +59,7 @@ public class UserRegistrationBean {
     this.insertedToken = insertedToken;
   }
 
-  private void addMessage(String summary, FacesMessage.Severity severity) {
+  public void addMessage(String summary, FacesMessage.Severity severity) {
     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
   }
 
@@ -67,9 +67,6 @@ public class UserRegistrationBean {
     try {
       setToken(tokenService.generateToken());
       registrationService.registerUser(user, getToken());
-      addMessage(
-          "Registration successful. Please check your email for the confirmation token.",
-          FacesMessage.SEVERITY_INFO);
       return "confirm_registration";
     } catch (RuntimeException e) {
       addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
@@ -82,9 +79,6 @@ public class UserRegistrationBean {
       setToken(tokenService.generateToken());
       registrationService.resendRegistrationEmailToUser(user.getEmail(), getToken());
       user = registrationService.loadUserByEmail(user.getEmail());
-        addMessage(
-            "Registration email successfully resent. Please check your email for the confirmation token.",
-            FacesMessage.SEVERITY_INFO);
       return "confirm_registration";
     } catch (RuntimeException e) {
       addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
@@ -95,7 +89,6 @@ public class UserRegistrationBean {
   public String confirmRegistration() {
     try {
       registrationService.confirmRegistrationOfUser(user.getUsername(), token, insertedToken);
-        addMessage("Registration confirmed.", FacesMessage.SEVERITY_INFO);
       return "login";
     } catch (RuntimeException e) {
       addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
