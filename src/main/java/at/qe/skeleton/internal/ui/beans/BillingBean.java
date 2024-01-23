@@ -52,13 +52,7 @@ public class BillingBean {
             ? LocalDate.now().getYear() - 1
             : LocalDate.now()
                 .getYear(); // if this month is january, the previous month is in last year
-    FacesContext.getCurrentInstance()
-        .addMessage(
-            null,
-            new FacesMessage(
-                FacesMessage.SEVERITY_INFO,
-                "Showing billing for %s of %s".formatted(year, month),
-                null));
+    facesMessage(FacesMessage.SEVERITY_INFO, "Showing billing for %s of %s".formatted(year, month));
   }
 
   public Collection<Userx> getUsers() {
@@ -72,13 +66,29 @@ public class BillingBean {
     try {
       return subscriptionService.premiumDaysInMonth(user, month, year) != 0 ? "ACTIVE" : "INACTIVE";
     } catch (NotYetAvailableException e) {
-      throw new RuntimeException(e);
+      facesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage());
+      return "ERROR";
     }
   }
 
-  public void onMonthChange() {}
+  public int getBilledDays(Userx user) {
+    try {
+      return subscriptionService.premiumDaysInMonth(user, month, year);
+    } catch (NotYetAvailableException e) {
+      facesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage());
+      return -1;
+    }
+  }
 
-  public void onYearChange() {}
+  public void onMonthChange() {
+    facesMessage(
+        FacesMessage.SEVERITY_INFO, "Showing data for" + " %s of %s".formatted(month, year));
+  }
+
+  public void onYearChange() {
+    facesMessage(
+        FacesMessage.SEVERITY_INFO, "Showing data for" + " %s of %s".formatted(month, year));
+  }
 
   public Month getMonth() {
     return month;
@@ -110,5 +120,9 @@ public class BillingBean {
 
   public void setYears(List<Integer> years) {
     this.years = years;
+  }
+
+  public void facesMessage(FacesMessage.Severity severity, String message) {
+    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, message, null));
   }
 }

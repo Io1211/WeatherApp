@@ -14,14 +14,16 @@
 
             <div style="margin-bottom: 2rem; margin-top: 2rem; margin-left: 0.5rem">
                 <p:outputLabel for="month" value="Month: "/>
-                <p:selectOneMenu id="month" label="" style="width:150px;  margin-right: 1rem">
+                <p:selectOneMenu id="month" value="#{billingBean.month}" style="width:150px;  margin-right: 1rem">
                     <p:ajax listener="#{billingBean.onMonthChange()}" update="billingTable"/>
+                    <f:selectItem itemLabel="#{billingBean.month}"/>
                     <f:selectItems value="#{billingBean.months}"/>
                 </p:selectOneMenu>
 
                 <p:outputLabel for="year" value="Year: "/>
-                <p:selectOneMenu id="year" label="" style="width:150px">
+                <p:selectOneMenu id="year" value="#{billingBean.year}" style="width:150px">
                     <p:ajax listener="#{billingBean.onYearChange()}" update="billingTable"/>
+                    <f:selectItem itemLabel="#{billingBean.year}"/>
                     <f:selectItems value="#{billingBean.years}"/>
                 </p:selectOneMenu>
             </div>
@@ -31,25 +33,25 @@
                 <p:column headerText="Premium Status" sortable="true"> <!-- TODO: sorting (see sortable/sortBy) -->
                     <h:outputText value="#{billingBean.isActive(user)}"/>
                 </p:column>
-<!--                <p:column headerText="Billed Days">-->
-<!--                    <h:outputText value="#{billingBean.daysToBill}"/>-->
-<!--                </p:column>-->
-<!--                <p:column style="width:100px;text-align: center">-->
-<!--                    <p:commandButton update=":userForm:userEditDialog" oncomplete="PF('userEditDialog').show()"-->
-<!--                                     icon="pi pi-user-edit" title="Edit">-->
-<!--                        <f:setPropertyActionListener value="#{user}" target="#{userDetailController.user}"/>-->
-<!--                    </p:commandButton>-->
-<!--                </p:column>-->
+                <p:column headerText="Days Billed">
+                    <h:outputText value="#{billingBean.getBilledDays(user)}"/>
+                </p:column>
+                <!--                <p:column style="width:100px;text-align: center">-->
+                <!--                    <p:commandButton update=":userForm:userEditDialog" oncomplete="PF('userEditDialog').show()"-->
+                <!--                                     icon="pi pi-user-edit" title="Edit">-->
+                <!--                        <f:setPropertyActionListener value="#{user}" target="#{userDetailController.user}"/>-->
+                <!--                    </p:commandButton>-->
+                <!--                </p:column>-->
             </p:dataTable>
 
-<!--            <p:dialog header="Edit User" id="userEditDialog" widgetVar="userEditDialog" modal="true" showEffect="fade"-->
-<!--                      hideEffect="fade" resizable="false">-->
-<!--            </p:dialog>-->
+            <!--            <p:dialog header="Edit User" id="userEditDialog" widgetVar="userEditDialog" modal="true" showEffect="fade"-->
+            <!--                      hideEffect="fade" resizable="false">-->
+            <!--            </p:dialog>-->
 
-<!--            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="300">-->
-<!--                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>-->
-<!--                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>-->
-<!--            </p:confirmDialog>-->
+            <!--            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="300">-->
+            <!--                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>-->
+            <!--                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>-->
+            <!--            </p:confirmDialog>-->
 
         </h:form>
     </ui:define>
