@@ -5,13 +5,10 @@ import at.qe.skeleton.internal.services.RegistrationService;
 import at.qe.skeleton.internal.services.TokenService;
 import at.qe.skeleton.internal.services.UserxService;
 import at.qe.skeleton.internal.ui.beans.UserRegistrationBean;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -28,13 +25,9 @@ class UserRegistrationBeanTest {
 
   @Mock private UserxService userService;
 
-  @Mock private FacesContext mockedFacesContext;
-
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    // Mock FacesContext and ensure getCurrentInstance() returns the mock
-    mockedFacesContext = Mockito.mock(FacesContext.class);
   }
 
   @Test
