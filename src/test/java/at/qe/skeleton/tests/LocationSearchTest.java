@@ -87,4 +87,6 @@ public class LocationSearchTest {
     verify(locationServiceMock, times(1)).handleLocationSearch(searchString);
     Assertions.assertEquals(weatherDtoInnsbruck, weatherBean.getWeatherDTO());
   }
+
+  // todo: test exception handling
 }
