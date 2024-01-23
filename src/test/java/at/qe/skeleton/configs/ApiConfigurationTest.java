@@ -4,15 +4,19 @@ import at.qe.skeleton.external.services.GeocodingApiRequestService;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.AfterAll;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
@@ -21,13 +25,10 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// had to create seperate configs package inside test-package in order to have access to
-// ApiConfiguration protected
-// defaultRestClient methode.
 @SpringBootTest
 class ApiConfigurationTest {
 
-  @Autowired RestClient restClient;
+  @Autowired private RestClient restClient;
   static String apiResponseStringWoergl;
   static String apiResponseForInnsbruck;
 
@@ -54,14 +55,18 @@ class ApiConfigurationTest {
   static String mockURL;
   static String mockPasswort;
 
+  @DynamicPropertySource
+  public static void setProperties(DynamicPropertyRegistry registry) {
+    registry.add("api.url", () -> mockURL);
+    registry.add("api.key", () -> mockPasswort);
+  }
+
   @BeforeAll
   public static void setApiParametersForFakeApi() throws Exception {
     mockWebServer = new MockWebServer();
     mockWebServer.start();
     mockURL = String.format("http://localhost:%s", mockWebServer.getPort());
     mockPasswort = "someRandomPasswort";
-    System.setProperty("api.key", mockPasswort);
-    System.setProperty("api.url", mockURL);
   }
 
   @AfterAll
@@ -71,6 +76,7 @@ class ApiConfigurationTest {
 
   @Test
   public void correctGeoCodingApiRequestURLWhenUsingRealRestClient() throws Exception {
+
     GeocodingApiRequestService geocodingApiRequestService =
         new GeocodingApiRequestService(restClient);
 
@@ -93,6 +99,7 @@ class ApiConfigurationTest {
 
   @Test
   public void correctGeoCodingApiURIEncodingWhenUsingRealRestClient() throws Exception {
+
     GeocodingApiRequestService geocodingApiRequestService =
         new GeocodingApiRequestService(restClient);
 
