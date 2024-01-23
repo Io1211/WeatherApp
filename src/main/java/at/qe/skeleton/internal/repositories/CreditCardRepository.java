@@ -14,4 +14,6 @@ public interface CreditCardRepository extends AbstractRepository<CreditCard, Str
   CreditCard findCreditCardByUserId(@Param("userId") Long userId);
 
   CreditCard findByUserId_Username(String username);
+
+  void deleteAll();
 }

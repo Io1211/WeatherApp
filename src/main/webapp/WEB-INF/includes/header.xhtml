@@ -23,6 +23,10 @@
             <p:menuitem value="My Favorites" url="/secured/favoritesOverview.xhtml"
                         rendered="#{sessionInfoBean.loggedIn}"/>
 
+            <p:submenu label="Test Submenu" rendered="#{sessionInfoBean.loggedIn}">
+                <p:menuitem value="Security Test" url="/secured/test.xhtml"/>
+                <p:menuitem value="Weather API Demo" url="/secured/weather_api_demo.xhtml"/>
+            </p:submenu>
             <p:menuitem value="Configure overview" url="/secured/overview_config.xhtml"
                         rendered="#{sessionInfoBean.loggedIn}"/>
 
@@ -33,6 +37,17 @@
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
+
+            <p:menuitem value="Activate Premium"
+                        action="#{subscriptionBean.activatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and !sessionInfoBean.userPremium}"
+                        update="headerForm"/>
+            <p:menuitem value="Deactivate Premium"
+                        action="#{subscriptionBean.deactivatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and sessionInfoBean.userPremium}"
+                        update="headerForm"/>
+
+            <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
 
             <p:menuitem>
 

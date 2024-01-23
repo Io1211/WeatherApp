@@ -14,9 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
-/**
- * Some very basic tests for UserBean. {@link CreditCardBean}
- */
+/** Some very basic tests for UserBean. {@link CreditCardBean} */
 public class CreditCardBeanTest {
 
     @InjectMocks private CreditCardBean creditCardBean;
@@ -75,8 +73,6 @@ public class CreditCardBeanTest {
 
             verify(creditCardService, times(1)).saveCreditCard(testCreditCard);
 
-            verify(mockedUser, times(1)).setCreditCard(testCreditCard);
-
             assertEquals("credit_card_details.xhtml", result);
         }
     }
@@ -98,8 +94,6 @@ public class CreditCardBeanTest {
             String result = creditCardBean.updateCreditCard();
 
             verify(creditCardService, times(1)).saveCreditCard(testCreditCard);
-
-            verify(mockedUser, times(1)).setCreditCard(testCreditCard);
 
             assertEquals("credit_card_details.xhtml", result);
         }

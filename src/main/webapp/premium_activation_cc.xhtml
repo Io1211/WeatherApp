@@ -8,8 +8,8 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
-        <h:form id="creditcardForm">
-            <p:messages autoUpdate="true" closable="true"/>
+        <h:form id="premiumActivationCCForm">
+
             <p:dataTable id="creditcardTable" var="creditcard" value="#{creditCardController.creditcard}" lazy="false">
                 <p:column headerText="Number">
                     <h:outputText value="#{creditcard.cardnumber}"/>
@@ -21,11 +21,10 @@
                     <h:outputText value="#{creditcard.cardType}"/>
                 </p:column>
             </p:dataTable>
+
             <br/>
-            <p:commandButton value="Add new Credit Card" action="add_credit_card.xhtml" style="margin-right: 30px;"/>
-            <p:commandButton value="Delete" action="#{creditCardController.deleteCreditCard}" update=":creditcardForm"
-                             style="margin-right: 30px;"/>
-            <p:commandButton value="Edit" action="edit_cc.xhtml"/>
+            <p:commandButton value="Activate Premium" action="#{subscriptionBean.activatePremiumSubscription}"/>
+            <p:commandButton value="Edit" action="edit_cc_sub.xhtml"/>
 
 
         </h:form>
