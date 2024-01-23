@@ -23,13 +23,12 @@ public class UserDetailController implements Serializable {
 
   @Autowired private PasswordEncoder passwordEncoder;
 
-    @Autowired private PasswordResetService passwordResetService;
+  @Autowired private PasswordResetService passwordResetService;
 
   /** Attribute to cache the currently displayed user */
   private Userx user;
 
   private String newPassword;
-
 
   /**
    * Sets the currently displayed user and reloads it form db. This user is targeted by any further
@@ -52,11 +51,13 @@ public class UserDetailController implements Serializable {
   }
 
   public String getNewPassword() {
-    return newPassword;}
+    return newPassword;
+  }
 
-    public void setNewPassword(String newPassword) {
+  public void setNewPassword(String newPassword) {
     this.newPassword = newPassword;
-    }
+  }
+
   /** Action to force a reload of the currently displayed user. */
   public void doReloadUser() {
     user = userService.loadUser(user.getUsername());
@@ -74,16 +75,14 @@ public class UserDetailController implements Serializable {
     user = null;
   }
 
-  /**
-   * Resets the password of the currently displayed user if a new password has been set.
-   */
+  /** Resets the password of the currently displayed user if a new password has been set. */
   public void resetPassword() {
     if (newPassword != null && !newPassword.trim().isEmpty()) {
       user.setPassword(passwordEncoder.encode(newPassword));
     }
   }
 
-    public void sendResetPasswordAdmin() {
-        passwordResetService.sendForgetPasswordEmail(user);
-    }
+  public void sendResetPasswordAdmin() {
+    passwordResetService.sendForgetPasswordEmail(user);
+  }
 }
