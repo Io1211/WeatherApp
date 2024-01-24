@@ -71,12 +71,15 @@ public class BillingBean {
     }
   }
 
-  public int getBilledDays(Userx user) {
+  public String getBilledDays(Userx user) {
+    if (user.getSubscription() == null) {
+      return "-";
+    }
     try {
-      return subscriptionService.premiumDaysInMonth(user, month, year);
+      return String.valueOf(subscriptionService.premiumDaysInMonth(user, month, year));
     } catch (NotYetAvailableException e) {
       facesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage());
-      return -1;
+      return "ERROR";
     }
   }
 
