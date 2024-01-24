@@ -127,8 +127,7 @@ public class WeatherBean {
   /**
    * Gets the daily weather entries for the current and next 3 days (3+1 daily DTOs) 
    * or current and next 8 days (8+1 daily DTOs).
-   * The amount of returned daily weatherDTO's depends if the user is premium or not.
-   * The premium check is performed via the sessionInfoBean method "isUserPremium".
+   * The amount of returned daily weatherDTO's depends on sessionInfoBean.isUserPremium().
    *
    * @return The list of daily weather entries.
    */
@@ -139,8 +138,7 @@ public class WeatherBean {
   /**
    * Gets the hourly weather entries for the current and next 24 hours (24+1 hourly DTOs) 
    * or current and next 48 hours (48+1 hourly DTOs).
-   * The amount of return hourly weatherDTO's depends if the user is premium or not.
-   * The premium check is performed via the sessionInfoBean method "isUserPremium".
+   * The amount of returned daily weatherDTO's depends on sessionInfoBean.isUserPremium().
    *
    * @return The list of hourly weather entries.
    */
