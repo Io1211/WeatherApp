@@ -16,6 +16,9 @@ public class Subscription implements Persistable<Long>, Serializable {
 
   private LocalDate signupDate;
 
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Payment> payments;
+
   public LocalDate getSignupDate() {
     return signupDate;
   }
@@ -38,6 +41,14 @@ public class Subscription implements Persistable<Long>, Serializable {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public List<Payment> getPayments() {
+    return payments;
+  }
+
+  public void setPayments(List<Payment> paidMonths) {
+    this.payments = paidMonths;
   }
 
   @Override

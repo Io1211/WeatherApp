@@ -10,6 +10,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,10 @@ public class BillingBean {
 
   @Autowired private EmailService emailService;
 
+  private Userx user; // holds the user edited in the detailed view
+
+  private boolean paid;
+
   private Month month;
 
   private List<Month> months;
@@ -35,7 +40,7 @@ public class BillingBean {
   private List<Integer> years;
 
   @PostConstruct
-  public void initMonthAndYearList() {
+  public void init() {
     // month and year lists for dropdown menus
     months = List.of(Month.values());
     years =
@@ -59,6 +64,19 @@ public class BillingBean {
     return userxService.getAllUsers();
   }
 
+  public void onYearOrMonthChange() {
+    if ((year > ZonedDateTime.now().getYear())
+        || ((year == ZonedDateTime.now().getYear())
+            && month.getValue() >= ZonedDateTime.now().getMonthValue())) {
+      facesMessage(
+          FacesMessage.SEVERITY_ERROR,
+          "Billing info is only available for past months. You are trying to access it for this or future months.");
+      return;
+    }
+    facesMessage(
+        FacesMessage.SEVERITY_INFO, "Showing data for" + " %s of %s".formatted(month, year));
+  }
+
   public String isActive(Userx user) {
     if (user.getSubscription() == null) {
       return "-";
@@ -66,7 +84,6 @@ public class BillingBean {
     try {
       return subscriptionService.premiumDaysInMonth(user, month, year) != 0 ? "ACTIVE" : "INACTIVE";
     } catch (NotYetAvailableException e) {
-      facesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage());
       return "ERROR";
     }
   }
@@ -78,19 +95,20 @@ public class BillingBean {
     try {
       return String.valueOf(subscriptionService.premiumDaysInMonth(user, month, year));
     } catch (NotYetAvailableException e) {
-      facesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage());
       return "ERROR";
     }
   }
 
-  public void onMonthChange() {
-    facesMessage(
-        FacesMessage.SEVERITY_INFO, "Showing data for" + " %s of %s".formatted(month, year));
+  public String getPayment(Userx user) {
+    if (user.getSubscription() == null) {
+      return "-";
+    }
+    LocalDate queryDate = LocalDate.of(year, month, 1);
+    return subscriptionService.isMonthPaid(user, queryDate) ? "PAID" : "PENDING";
   }
 
-  public void onYearChange() {
-    facesMessage(
-        FacesMessage.SEVERITY_INFO, "Showing data for" + " %s of %s".formatted(month, year));
+  public String handlePaymentStatus() {
+    return "";
   }
 
   public Month getMonth() {
@@ -123,6 +141,22 @@ public class BillingBean {
 
   public void setYears(List<Integer> years) {
     this.years = years;
+  }
+
+  public Userx getUser() {
+    return user;
+  }
+
+  public void setUser(Userx user) {
+    this.user = user;
+  }
+
+  public boolean isPaid() {
+    return paid;
+  }
+
+  public void setPaid(boolean paid) {
+    this.paid = paid;
   }
 
   public void facesMessage(FacesMessage.Severity severity, String message) {

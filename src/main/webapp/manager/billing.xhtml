@@ -7,7 +7,7 @@
                 xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
-        <h:form id="userForm">
+        <h:form id="billingForm">
             <p:messages id="messages" showDetail="false" closable="true">
                 <p:autoUpdate/>
             </p:messages>
@@ -15,14 +15,14 @@
             <div style="margin-bottom: 2rem; margin-top: 2rem; margin-left: 0.5rem">
                 <p:outputLabel for="month" value="Month: "/>
                 <p:selectOneMenu id="month" value="#{billingBean.month}" style="width:150px;  margin-right: 1rem">
-                    <p:ajax listener="#{billingBean.onMonthChange()}" update="billingTable"/>
+                    <p:ajax listener="#{billingBean.onYearOrMonthChange()}" update="billingTable"/>
                     <f:selectItem itemLabel="#{billingBean.month}"/>
                     <f:selectItems value="#{billingBean.months}"/>
                 </p:selectOneMenu>
 
                 <p:outputLabel for="year" value="Year: "/>
                 <p:selectOneMenu id="year" value="#{billingBean.year}" style="width:150px">
-                    <p:ajax listener="#{billingBean.onYearChange()}" update="billingTable"/>
+                    <p:ajax listener="#{billingBean.onYearOrMonthChange()}" update="billingTable"/>
                     <f:selectItem itemLabel="#{billingBean.year}"/>
                     <f:selectItems value="#{billingBean.years}"/>
                 </p:selectOneMenu>
@@ -36,22 +36,45 @@
                 <p:column headerText="Days Billed">
                     <h:outputText value="#{billingBean.getBilledDays(user)}"/>
                 </p:column>
-                <!--                <p:column style="width:100px;text-align: center">-->
-                <!--                    <p:commandButton update=":userForm:userEditDialog" oncomplete="PF('userEditDialog').show()"-->
-                <!--                                     icon="pi pi-user-edit" title="Edit">-->
-                <!--                        <f:setPropertyActionListener value="#{user}" target="#{userDetailController.user}"/>-->
-                <!--                    </p:commandButton>-->
-                <!--                </p:column>-->
+                <p:column headerText="Payment">
+                    <h:outputText value="#{billingBean.getPayment(user)}"/>
+                </p:column>
+                <p:column style="width:100px;text-align: center">
+                    <p:commandButton update=":billingForm:userEditDialog" oncomplete="PF('userEditDialog').show()"
+                                     icon="pi pi-user-edit" title="Edit">
+                        <f:setPropertyActionListener value="#{user}" target="#{billingBean.user}"/>
+                    </p:commandButton>
+                </p:column>
             </p:dataTable>
 
-            <!--            <p:dialog header="Edit User" id="userEditDialog" widgetVar="userEditDialog" modal="true" showEffect="fade"-->
-            <!--                      hideEffect="fade" resizable="false">-->
-            <!--            </p:dialog>-->
 
-            <!--            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="300">-->
-            <!--                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>-->
-            <!--                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>-->
-            <!--            </p:confirmDialog>-->
+            <p:dialog header="Edit User" id="userEditDialog" widgetVar="userEditDialog" modal="true" showEffect="fade"
+                      hideEffect="fade" resizable="false" style="min-width: 300px">
+                <p:outputPanel id="userData" rendered="#{not empty billingBean.user}">
+                    <h:panelGrid columns="1">
+                        <p:outputLabel id="username" value="Username: #{billingBean.user.username}"/>
+                        <p:outputLabel id="firstName" value="First Name: #{billingBean.user.firstName}"/>
+                        <p:outputLabel id="lastName" value="Last Name: #{billingBean.user.lastName}"/>
+                        <p:outputLabel id="email" value="E-Mail: #{billingBean.user.email}"/>
+                        <p:outputLabel id="phone" value="Phone: #{billingBean.user.phone}" mask="+99? 999 9999999"/>
+                    </h:panelGrid>
+                    <p:separator/>
+                    <h:panelGrid columns="2">
+                        <p:outputLabel for="paid" value="Paid: "/>
+                        <p:selectBooleanCheckbox id="paid" value="#{billingBean.paid}"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3">
+                        <!--                        <p:commandButton value="Save" action="#{billingBean.}"-->
+                        <!--                                         oncomplete="PF('userEditDialog').hide()" update=":billingForm:billingTable"/>-->
+                        <p:commandButton value="Abort" onclick="PF('userEditDialog').hide()"/>
+                    </h:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="300">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+            </p:confirmDialog>
 
         </h:form>
     </ui:define>

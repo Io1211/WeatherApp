@@ -1,5 +1,6 @@
 package at.qe.skeleton.internal.services;
 
+import at.qe.skeleton.internal.model.Payment;
 import at.qe.skeleton.internal.model.Subscription;
 import at.qe.skeleton.internal.model.SubscriptionPeriod;
 import at.qe.skeleton.internal.model.Userx;
@@ -21,6 +22,27 @@ public class SubscriptionService {
   @Autowired private UserxService userxService;
 
   @Autowired private CreditCardRepository creditCardRepository;
+
+  public void addPayment(Userx user, ZonedDateTime dateTime) {
+    if (user.getSubscription().getPayments() == null) {
+      user.getSubscription().setPayments(new ArrayList<>());
+    }
+    Payment payment = new Payment();
+    payment.setPaid(true);
+    payment.setPaymentDateTime(dateTime);
+    user.getSubscription().getPayments().add(payment);
+    userxService.saveUser(user);
+  }
+
+  public boolean isMonthPaid(Userx user, LocalDate date) {
+    return user.getSubscription().getPayments().stream()
+        .anyMatch(
+            payment -> {
+              ZonedDateTime paymentDate = payment.getPaymentDateTime();
+              return paymentDate.getMonth() == date.getMonth()
+                  && paymentDate.getYear() == date.getYear();
+            });
+  }
 
   /**
    * This method activates a premium subscription and sets the according user role. If the user
