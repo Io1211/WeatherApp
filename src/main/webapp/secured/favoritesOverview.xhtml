@@ -27,8 +27,8 @@
 
             .weather-icon {
                 display: inline;
-                width: 100px;
-                height: 100px;
+                width: 70px;
+                height: 70px;
             }
 
             .favorites-panelgrid {
@@ -42,6 +42,19 @@
             }
 
         </style>
+
+        <script>
+                function largeText(element) {
+                element.style.transform = 'scale(0.6)';
+                element.style.overflow = 'visible';
+                }
+
+                function smallText(element) {
+                element.style.transform = 'scale(0.8)';
+                element.style.overflow = 'hidden';
+                }
+        </script>
+
         <h:form id="favoritesOverview">
             <p:panel rendered="#{empty favoriteOverviewBean.favorites}" closable="true">
                 <h:outputText value="You dont have any favorites."/>
@@ -53,8 +66,13 @@
                 <p:card styleClass="favorites-card">
                     <h:panelGrid columns="2" cellpadding="10" styleClass="favorites-panelgrid">
                         <div class="city-country-div">
-                            <h2 class="city">#{favoriteLocation.location.city}</h2>
-                            <h5 class="country">#{favoriteLocation.location.country}</h5>
+
+                                <h2 class="city" onmouseover="largeText(this)" onmouseout="smallText(this)" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; transform-origin: left;">
+                                        #{favoriteLocation.location.city}
+                                </h2>
+                                    
+                                <h5 class="country">#{favoriteLocation.location.country}</h5>
+                        
                         </div>
                         <h:graphicImage alt="Weather Icon" url="#{iconController.getIcon(
                         favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()
