@@ -417,31 +417,30 @@ class SubscriptionServiceTest {
   //    assertFalse(subscriptionService.isInMonth(LocalDate.of(2024, 1, 1), Month.FEBRUARY, 2024));
   //  }
   //
-  //  @Test
-  //  void customComparatorTest() {
-  //    // always compares only the start date of tuples i.e., a in a tuple (a, b).
-  //    SubscriptionService.DatePairComparator comparator =
-  //        new SubscriptionService.DatePairComparator();
-  //
-  //    // a == b
-  //    assertEquals(
-  //        0,
-  //        comparator.compare(
-  //            new Pair<>(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)),
-  //            new Pair<>(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 27))));
-  //
-  //    // a > b (a after b)
-  //    assertEquals(
-  //        1,
-  //        comparator.compare(
-  //            new Pair<>(LocalDate.of(2023, 8, 5), LocalDate.of(2023, 5, 10)),
-  //            new Pair<>(LocalDate.of(2023, 5, 15), LocalDate.of(2023, 5, 27))));
-  //
-  //    // a < b (a before b)
-  //    assertEquals(
-  //        -1,
-  //        comparator.compare(
-  //            new Pair<>(LocalDate.of(2023, 5, 5), LocalDate.of(2023, 5, 10)),
-  //            new Pair<>(LocalDate.of(2023, 8, 15), LocalDate.of(2023, 5, 27))));
-  //  }
+  @Test
+  void customComparatorTest() {
+    SubscriptionService.SubscriptionPeriodsComparator comparator =
+        new SubscriptionService.SubscriptionPeriodsComparator();
+
+    // a == b
+    assertEquals(
+        0,
+        comparator.compare(
+            buildSubscription(LocalDate.of(2023, 5, 5), null, false),
+            buildSubscription(LocalDate.of(2023, 5, 5), null, false)));
+
+    // a > b (a after b)
+    assertEquals(
+        1,
+        comparator.compare(
+            buildSubscription(LocalDate.of(2023, 8, 5), null, false),
+            buildSubscription(LocalDate.of(2023, 5, 15), null, false)));
+
+    // a < b (a before b)
+    assertEquals(
+        -1,
+        comparator.compare(
+            buildSubscription(LocalDate.of(2023, 5, 5), null, false),
+            buildSubscription(LocalDate.of(2023, 8, 15), null, false)));
+  }
 }
