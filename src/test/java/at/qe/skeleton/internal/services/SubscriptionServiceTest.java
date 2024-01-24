@@ -362,61 +362,55 @@ class SubscriptionServiceTest {
   //        subscriptionService.calculatePremiumFromStartAndStop(start, stop, month, year),
   //        "Error in start only in month case with (stop not set)");
   //  }
-  //
-  //  @Test
-  //  void getLastSubscriptionBeforeMonthTest() {
-  //    // case 1: method called with an empty list
-  //    List<Pair<LocalDate, LocalDate>> finalSubscriptionPeriods = new ArrayList<>();
-  //    assertThrows(
-  //        IllegalArgumentException.class,
-  //        () -> {
-  //          subscriptionService.getLastSubscriptionBeforeMonth(
-  //              finalSubscriptionPeriods, Month.JANUARY, 2024);
-  //        });
-  //
-  //    List<Pair<LocalDate, LocalDate>> subscriptionPeriods = new ArrayList<>();
-  //    LocalDate start = LocalDate.of(2024, 4, 1);
-  //    LocalDate stop = LocalDate.of(2024, 9, 1);
-  //    subscriptionPeriods.add(new Pair<>(start, stop));
-  //
-  //    // case 2: there is only one subscription in the list (necessary because the method uses
-  // sorting
-  //    // to efficiently get the result, but sorting can't be done with a list of one entry)
-  //    assertNull(
-  //        subscriptionService.getLastSubscriptionBeforeMonth(
-  //            subscriptionPeriods, Month.JANUARY, 2024));
-  //    assertNull(
-  //        subscriptionService.getLastSubscriptionBeforeMonth(
-  //            subscriptionPeriods, Month.JANUARY, 2024));
-  //    Pair<LocalDate, LocalDate> expected = new Pair<>(start, stop);
-  //    assertEquals(
-  //        expected,
-  //        subscriptionService.getLastSubscriptionBeforeMonth(subscriptionPeriods, Month.JUNE,
-  // 2024));
-  //
-  //    // case 3: many dates in list. Find the correct one.
-  //    subscriptionPeriods =
-  //        new ArrayList<>(
-  //            List.of(
-  //                new Pair<>(LocalDate.of(2024, 1, 1), null),
-  //                new Pair<>(LocalDate.of(2024, 2, 1), null),
-  //                new Pair<>(LocalDate.of(2024, 3, 1), null),
-  //                new Pair<>(LocalDate.of(2024, 4, 1), null),
-  //                new Pair<>(LocalDate.of(2024, 5, 1), null)));
-  //    expected = new Pair<>(LocalDate.of(2024, 3, 1), null);
-  //    assertEquals(
-  //        expected,
-  //        subscriptionService.getLastSubscriptionBeforeMonth(subscriptionPeriods, Month.APRIL,
-  // 2024));
-  //  }
-  //
-  //  @Test
-  //  void isInMonthTest() {
-  //    assertTrue(subscriptionService.isInMonth(LocalDate.of(2024, 1, 1), Month.JANUARY, 2024));
-  //    assertFalse(subscriptionService.isInMonth(LocalDate.of(2024, 1, 1), Month.JANUARY, 2025));
-  //    assertFalse(subscriptionService.isInMonth(LocalDate.of(2024, 1, 1), Month.FEBRUARY, 2024));
-  //  }
-  //
+
+  @Test
+  void getLastSubscriptionBeforeMonthTest() {
+    // case 1: method called with an empty list
+    List<SubscriptionPeriod> finalSubscriptionPeriods = new ArrayList<>();
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          subscriptionService.getLastSubscriptionBeforeMonth(
+              finalSubscriptionPeriods, Month.JANUARY, 2024);
+        });
+
+    SubscriptionPeriod subscriptionPeriod =
+        buildSubscription(LocalDate.of(2024, 4, 1), LocalDate.of(2024, 9, 1), false);
+    List<SubscriptionPeriod> subscriptionPeriods = new ArrayList<>();
+    subscriptionPeriods.add(subscriptionPeriod);
+
+    // case 2: there is only one subscription in the list (necessary because the method uses sorting
+    // to efficiently get the result, but sorting can't be done with a list of one entry)
+    assertNull(
+        subscriptionService.getLastSubscriptionBeforeMonth(
+            subscriptionPeriods, Month.JANUARY, 2024));
+    SubscriptionPeriod expected = subscriptionPeriod;
+    assertEquals(
+        expected,
+        subscriptionService.getLastSubscriptionBeforeMonth(subscriptionPeriods, Month.JUNE, 2024));
+
+    // case 3: many dates in list. Find the correct one.
+    expected = buildSubscription(LocalDate.of(2024, 3, 8), LocalDate.of(2024, 3, 10), false);
+    subscriptionPeriods =
+        new ArrayList<>(
+            List.of(
+                buildSubscription(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 1, 10), false),
+                buildSubscription(LocalDate.of(2024, 2, 1), LocalDate.of(2024, 2, 10), false),
+                expected,
+                buildSubscription(LocalDate.of(2024, 4, 1), LocalDate.of(2024, 4, 10), false),
+                buildSubscription(LocalDate.of(2024, 5, 1), null, true)));
+    assertEquals(
+        expected,
+        subscriptionService.getLastSubscriptionBeforeMonth(subscriptionPeriods, Month.APRIL, 2024));
+  }
+
+  @Test
+  void isInMonthTest() {
+    assertTrue(subscriptionService.isInMonth(LocalDate.of(2024, 1, 1), Month.JANUARY, 2024));
+    assertFalse(subscriptionService.isInMonth(LocalDate.of(2024, 1, 1), Month.JANUARY, 2025));
+    assertFalse(subscriptionService.isInMonth(LocalDate.of(2024, 1, 1), Month.FEBRUARY, 2024));
+  }
+
   @Test
   void customComparatorTest() {
     SubscriptionService.SubscriptionPeriodsComparator comparator =

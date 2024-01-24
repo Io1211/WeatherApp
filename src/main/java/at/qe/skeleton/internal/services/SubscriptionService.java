@@ -85,7 +85,7 @@ public class SubscriptionService {
     // ---
 
     // Get the currently active membership period or throw an exception if there is none.
-    SubscriptionPeriod lastSubscription =
+    SubscriptionPeriod activeSubscription =
         user.getSubscription().getSubscriptionPeriods().stream()
             .filter(SubscriptionPeriod::isActive)
             .findFirst()
@@ -93,13 +93,13 @@ public class SubscriptionService {
 
     // If a user can activate and deactivate premium the same day they might get away with not
     // paying for the membership.
-    if (lastSubscription.getStart().isEqual(LocalDate.now())) {
+    if (activeSubscription.getStart().isEqual(LocalDate.now())) {
       throw new MoneyGlitchAvoidanceException(
           "Premium can't be deactivated the day it was activated");
     }
 
-    lastSubscription.setStop(LocalDate.now());
-    lastSubscription.setActive(false);
+    activeSubscription.setStop(LocalDate.now());
+    activeSubscription.setActive(false);
 
     userxService.deactivatePremium(user);
   }
