@@ -50,8 +50,13 @@ public class SubscriptionService {
         .orElse(null);
   }
 
-  public void revokeSubscription(Userx user) {
+  public void revokeSubscription(Userx user) throws NoEmailProvidedException {
     user.setSubscription(null);
+    userxRepository.save(user);
+    if (user.getEmail() == "" || user.getEmail() == null) {
+      throw new NoEmailProvidedException(
+          "The customer couldn't be reached as no email address was provided.");
+    }
     emailService.sendEmail(
         user.getEmail(),
         "Weather-app subscription termination",

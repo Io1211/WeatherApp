@@ -5,6 +5,7 @@ import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.SubscriptionService;
 import at.qe.skeleton.internal.services.UserxService;
+import at.qe.skeleton.internal.services.exceptions.NoEmailProvidedException;
 import at.qe.skeleton.internal.services.exceptions.NotYetAvailableException;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
@@ -127,13 +128,19 @@ public class BillingBean {
           FacesMessage.SEVERITY_INFO,
           "The payment status for %s has been set to paid for %s of %s"
               .formatted(user.getId(), month, year));
-      paid = false; // reset
     } else {
-      subscriptionService.revokeSubscription(user);
-      facesMessage(
-          FacesMessage.SEVERITY_WARN,
-          "Payment status set to failed for user %s. Their subscription has been terminated."
-              .formatted(user.getId()));
+      try {
+        subscriptionService.revokeSubscription(user);
+        facesMessage(
+            FacesMessage.SEVERITY_INFO,
+            "Payment status set to failed for user %s. Their subscription has been terminated."
+                .formatted(user.getId()));
+      } catch (NoEmailProvidedException e) {
+        facesMessage(
+            FacesMessage.SEVERITY_WARN,
+            "The subscription was cancelled, however there was a problem when contacting the user. "
+                + e.getMessage());
+      }
     }
   }
 
