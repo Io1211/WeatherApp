@@ -45,15 +45,12 @@
 
         <script>
                 function smallText(element) {
-                if (element.innerText.length >= 12) {
-                        element.style.transform = 'scale(0.6)';
+                        if (element.innerText.length >= 12) element.style.transform = "scale(0.6)";
+                        element.style.overflow = ((element.innerText.length >= 22) ? "hidden" : "visible");
                 }
-                element.style.overflow = 'visible';
-                }
-
                 function largeText(element) {
-                element.style.transform = 'scale(1)';
-                element.style.overflow = 'hidden';
+                        element.style.transform = "scale(1)";
+                        element.style.overflow = "hidden";
                 }
         </script>
 
