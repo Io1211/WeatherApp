@@ -16,10 +16,6 @@ public class SubscriptionPeriod implements Persistable<Long>, Serializable {
 
   private LocalDate stop;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "subscription_id", nullable = false)
-  private Subscription subscription;
-
   public LocalDate getStart() {
     return start;
   }
@@ -34,14 +30,6 @@ public class SubscriptionPeriod implements Persistable<Long>, Serializable {
 
   public void setStop(LocalDate stop) {
     this.stop = stop;
-  }
-
-  public Subscription getSubscription() {
-    return subscription;
-  }
-
-  public void setSubscription(Subscription subscription) {
-    this.subscription = subscription;
   }
 
   public boolean isActive() {

@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.domain.Persistable;
 
 @Entity
@@ -11,16 +13,15 @@ public class Subscription implements Persistable<Long>, Serializable {
 
   @Id @GeneratedValue private Long id;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "subscription", orphanRemoval = true)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   private List<SubscriptionPeriod> subscriptionPeriods;
 
-  private LocalDate signupDate;
+  @CreationTimestamp private LocalDate signupDate;
 
   public LocalDate getSignupDate() {
     return signupDate;
   }
 
-  @PrePersist
   public void setSignupDate() {
     this.signupDate = LocalDate.now();
   }

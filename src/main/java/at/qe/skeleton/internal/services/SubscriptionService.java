@@ -4,6 +4,7 @@ import at.qe.skeleton.internal.model.Subscription;
 import at.qe.skeleton.internal.model.SubscriptionPeriod;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
+import at.qe.skeleton.internal.repositories.SubscriptionRepository;
 import at.qe.skeleton.internal.services.exceptions.*;
 import java.time.LocalDate;
 import java.time.Month;
@@ -17,6 +18,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SubscriptionService {
+
+  @Autowired private SubscriptionPeriodRepository subscriptionPeriodRepository;
+
+  @Autowired private SubscriptionRepository subscriptionRepository;
 
   @Autowired private UserxService userxService;
 
@@ -39,17 +44,18 @@ public class SubscriptionService {
     }
     if (user.getSubscription() == null) {
       user.setSubscription(new Subscription());
+      user.getSubscription().setSignupDate(LocalDate.now());
     }
+
     Subscription subscription = user.getSubscription();
     if (subscription.getSubscriptionPeriods() == null) {
       user.getSubscription().setSubscriptionPeriods(new ArrayList<>());
     }
 
-    List<SubscriptionPeriod> premiumPeriods = user.getSubscription().getSubscriptionPeriods();
     SubscriptionPeriod newPremiumPeriod = new SubscriptionPeriod();
     newPremiumPeriod.setStart(LocalDate.now());
     newPremiumPeriod.setActive(true);
-    premiumPeriods.add(newPremiumPeriod);
+    user.getSubscription().getSubscriptionPeriods().add(newPremiumPeriod);
     userxService.activatePremium(user);
   }
 
@@ -81,12 +87,14 @@ public class SubscriptionService {
     if (premiumPeriods == null || premiumPeriods.isEmpty()) {
       throw new NoActivePremiumSubscriptionFoundException(user);
     }
-
-    SubscriptionPeriod lastSubscription = premiumPeriods.get(premiumPeriods.size() - 1);
-    if (lastSubscription.getStop() != null) {
-      throw new NoActivePremiumSubscriptionFoundException(user);
-    }
     // ---
+
+    // Get the currently active membership period or throw an exception if there is none.
+    SubscriptionPeriod lastSubscription =
+        user.getSubscription().getSubscriptionPeriods().stream()
+            .filter(SubscriptionPeriod::isActive)
+            .findFirst()
+            .orElseThrow(() -> new NoActivePremiumSubscriptionFoundException(user));
 
     // If a user can activate and deactivate premium the same day they might get away with not
     // paying for the membership.
@@ -273,7 +281,8 @@ public class SubscriptionService {
    */
   static class SubscriptionPeriodsComparator implements Comparator<SubscriptionPeriod> {
     @Override
-    public int compare(SubscriptionPeriod subscriptionPeriod1, SubscriptionPeriod subscriptionPeriod2) {
+    public int compare(
+        SubscriptionPeriod subscriptionPeriod1, SubscriptionPeriod subscriptionPeriod2) {
       if (subscriptionPeriod1.getStart().isBefore(subscriptionPeriod2.getStart())) {
         return -1;
       } else if (subscriptionPeriod1.getStart().isEqual(subscriptionPeriod2.getStart())) {
