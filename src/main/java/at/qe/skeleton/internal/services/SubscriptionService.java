@@ -7,6 +7,7 @@ import at.qe.skeleton.internal.model.Subscription;
 import at.qe.skeleton.internal.model.SubscriptionPeriod;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
+import at.qe.skeleton.internal.repositories.UserxRepository;
 import at.qe.skeleton.internal.services.exceptions.*;
 import java.time.*;
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ public class SubscriptionService {
 
   @Autowired private EmailService emailService;
 
+  @Autowired private UserxRepository userxRepository;
+
   @Autowired private CreditCardRepository creditCardRepository;
 
   public void addPayment(Userx user, LocalDate dateTime) {
@@ -32,7 +35,7 @@ public class SubscriptionService {
     payment.setPaid(true);
     payment.setPaymentDate(dateTime);
     user.getSubscription().getPayments().add(payment);
-    userxService.saveUser(user);
+    userxRepository.save(user);
   }
 
   public Payment findPayment(Userx userx, LocalDate date) {
@@ -67,9 +70,16 @@ public class SubscriptionService {
   }
 
   public long calculateTotalPremiumDays(Userx user) {
-    return user.getSubscription().getSubscriptionPeriods().stream()
-        .mapToLong(sub -> DAYS.between(sub.getStart(), sub.getStop()))
-        .sum();
+    long total = 0;
+    List<SubscriptionPeriod> subscriptionPeriods = user.getSubscription().getSubscriptionPeriods();
+    for (SubscriptionPeriod sub : subscriptionPeriods) {
+      if (sub.getStop() == null) {
+        total += DAYS.between(sub.getStart(), LocalDate.now());
+      } else {
+        total += DAYS.between(sub.getStart(), sub.getStop());
+      }
+    }
+    return total;
   }
 
   /**

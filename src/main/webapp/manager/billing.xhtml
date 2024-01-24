@@ -66,8 +66,7 @@
                     <p:separator/>
                     <h:panelGrid columns="2">
                         <p:outputLabel for="paid" value="Paid: "/>
-                        <p:toggleSwitch id="paid" value="#{billingBean.paid}">
-                        </p:toggleSwitch>
+                        <p:selectBooleanCheckbox id="paid" value="#{billingBean.paid}"/>
                     </h:panelGrid>
                     <h:panelGrid columns="3">
                         <p:commandButton value="Save" action="#{billingBean.handlePaymentStatus(billingBean.user)}"
