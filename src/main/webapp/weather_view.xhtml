@@ -67,7 +67,8 @@
                     <h:form>
                         <div class="card">
                             <p:dataTable var="hourlyWeatherEntries" value="#{weatherBean.getHourlyWeatherEntries()}"
-                                         style="font-size: 14px" paginator="true" paginatorPosition="bottom" rows="10">
+                                         style="font-size: 14px" paginator="true" paginatorPosition="bottom" 
+                                         rows="10">
 
                                 <p:column headerText="Time">
                                     <h:outputText
@@ -98,6 +99,24 @@
 
                                 <p:column headerText="Pop">
                                     <h:outputText value="#{hourlyWeatherEntries.probabilityOfPrecipitation()}"/>
+                                </p:column>
+
+                                <!-- Additional premium weather stats: -->
+
+                                <p:column headerText="Humidity [%]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{hourlyWeatherEntries.humidity()}"/>
+                                </p:column>
+
+                                <p:column headerText="Pressure [hPa]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{hourlyWeatherEntries.pressure()}"/>
+                                </p:column>
+
+                                <p:column headerText="Cloudiness [%]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{hourlyWeatherEntries.clouds()}"/>
+                                </p:column>
+
+                                <p:column headerText="Visibility [m]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{hourlyWeatherEntries.visibility()}"/>
                                 </p:column>
 
                             </p:dataTable>
