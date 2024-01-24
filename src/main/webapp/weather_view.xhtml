@@ -45,12 +45,15 @@
                             <h:outputText value="#{weatherBean.weatherDTO.currentWeather().feelsLikeTemperature()} °C"/>
 
                             <h:outputText value="Wind Speed:" style="font-weight: bold;"/>
-                            <h:outputText
-                                    value="#{weatherBean.msToKmh(weatherBean.weatherDTO.currentWeather().windSpeed())} km/h"/>
+                            <h:outputText value="#{weatherBean.msToKmh(weatherBean.weatherDTO.currentWeather().windSpeed())} km/h"/>
 
                             <h:outputText value="Wind Direction:" style="font-weight: bold;"/>
-                            <h:outputText
-                                    value="#{weatherBean.degreesToCardinal(weatherBean.weatherDTO.currentWeather().windDirection())}"/>
+                            <h:outputText value="#{weatherBean.degreesToCardinal(weatherBean.weatherDTO.currentWeather().windDirection())}"/>
+                        
+                            <!-- There is no POP value in weatherDTO/current weatherDTO, instead the current one from hourly weather is taken. -->
+                            <h:outputText value="Pop:" style="font-weight: bold;"/>
+                            <h:outputText value="#{weatherBean.getHourlyWeatherEntries().get(0).probabilityOfPrecipitation()}"/>
+                                                
                         </h:panelGrid>
 
 
@@ -60,7 +63,7 @@
 
                     <br/>
 
-                    <h5 style="margin-top:0">Weather for the next 24 hours:</h5>
+                    <h5 style="margin-top:0">Weather for the next hours:</h5>
                     <h:form>
                         <div class="card">
                             <p:dataTable var="hourlyWeatherEntries" value="#{weatherBean.getHourlyWeatherEntries()}"
@@ -157,7 +160,7 @@
                                             value="#{weatherBean.degreesToCardinal(dailyWeatherEntries.windDirection())}"/>
                                 </p:column>
 
-                                <p:column headerText="Wind gust">
+                                <p:column headerText="Wind gust [km/h]">
                                     <h:outputText value="#{weatherBean.msToKmh(dailyWeatherEntries.windGust())}"/>
                                 </p:column>
 
