@@ -13,6 +13,7 @@ import java.time.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,22 +39,10 @@ public class SubscriptionService {
     userxRepository.save(user);
   }
 
-  public Payment findPayment(Userx userx, LocalDate date) {
-    return userx.getSubscription().getPayments().stream()
-        .filter(
-            payment -> {
-              LocalDate paymentDate = payment.getPaymentDateTime();
-              return paymentDate.getMonth() == date.getMonth()
-                  && paymentDate.getYear() == date.getYear();
-            })
-        .findFirst()
-        .orElse(null);
-  }
-
   public void revokeSubscription(Userx user) throws NoEmailProvidedException {
     user.setSubscription(null);
     userxRepository.save(user);
-    if (user.getEmail() == "" || user.getEmail() == null) {
+    if (Objects.equals(user.getEmail(), "") || user.getEmail() == null) {
       throw new NoEmailProvidedException(
           "The customer couldn't be reached as no email address was provided.");
     }

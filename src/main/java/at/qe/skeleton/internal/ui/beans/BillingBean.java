@@ -1,6 +1,5 @@
 package at.qe.skeleton.internal.ui.beans;
 
-import at.qe.skeleton.internal.model.Payment;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.SubscriptionService;
@@ -105,10 +104,6 @@ public class BillingBean {
     }
     LocalDate queryDate = LocalDate.of(year, month, 1);
     return subscriptionService.isMonthPaid(user, queryDate) ? "PAID" : "PENDING";
-  }
-
-  public Payment getPayment(Userx userx) {
-    return subscriptionService.findPayment(userx, LocalDate.of(year, month, 1));
   }
 
   public String getTotalPremiumDays(Userx user) {
