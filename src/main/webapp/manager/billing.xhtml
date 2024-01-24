@@ -37,11 +37,12 @@
                     <h:outputText value="#{billingBean.getBilledDays(user)}"/>
                 </p:column>
                 <p:column headerText="Payment">
-                    <h:outputText value="#{billingBean.getPayment(user)}"/>
+                    <h:outputText value="#{billingBean.getPaymentStatus(user)}"/>
                 </p:column>
                 <p:column style="width:100px;text-align: center">
                     <p:commandButton update=":billingForm:userEditDialog" oncomplete="PF('userEditDialog').show()"
-                                     icon="pi pi-user-edit" title="Edit">
+                                     icon="pi pi-user-edit" title="Edit"
+                                     rendered="#{billingBean.userHasSubscription(user)}">
                         <f:setPropertyActionListener value="#{user}" target="#{billingBean.user}"/>
                     </p:commandButton>
                 </p:column>
@@ -57,15 +58,20 @@
                         <p:outputLabel id="lastName" value="Last Name: #{billingBean.user.lastName}"/>
                         <p:outputLabel id="email" value="E-Mail: #{billingBean.user.email}"/>
                         <p:outputLabel id="phone" value="Phone: #{billingBean.user.phone}" mask="+99? 999 9999999"/>
+                        <p:outputLabel id="singup" value="Signup date: #{billingBean.user.subscription.signupDate}"/>
+                        <p:outputLabel id="total"
+                                       value="Total days as premium: #{billingBean.getTotalPremiumDays(billingBean.user)}"/>
+                        <!-- TODO: render all active periods for the user -->
                     </h:panelGrid>
                     <p:separator/>
                     <h:panelGrid columns="2">
                         <p:outputLabel for="paid" value="Paid: "/>
-                        <p:selectBooleanCheckbox id="paid" value="#{billingBean.paid}"/>
+                        <p:toggleSwitch id="paid" value="#{billingBean.paid}">
+                        </p:toggleSwitch>
                     </h:panelGrid>
                     <h:panelGrid columns="3">
-                        <!--                        <p:commandButton value="Save" action="#{billingBean.}"-->
-                        <!--                                         oncomplete="PF('userEditDialog').hide()" update=":billingForm:billingTable"/>-->
+                        <p:commandButton value="Save" action="#{billingBean.handlePaymentStatus(billingBean.user)}"
+                                         oncomplete="PF('userEditDialog').hide()" update=":billingForm:billingTable"/>
                         <p:commandButton value="Abort" onclick="PF('userEditDialog').hide()"/>
                     </h:panelGrid>
                 </p:outputPanel>

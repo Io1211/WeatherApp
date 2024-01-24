@@ -4,8 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import java.io.Serializable;
-import java.time.ZonedDateTime;
-import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDate;
 import org.springframework.data.domain.Persistable;
 
 @Entity
@@ -13,7 +12,7 @@ public class Payment implements Persistable<Long>, Serializable {
 
   @Id @GeneratedValue private Long id;
 
-  @CreationTimestamp private ZonedDateTime paymentDateTime;
+  private LocalDate paymentDate;
 
   private boolean paid;
 
@@ -29,12 +28,12 @@ public class Payment implements Persistable<Long>, Serializable {
     this.id = id;
   }
 
-  public ZonedDateTime getPaymentDateTime() {
-    return paymentDateTime;
+  public LocalDate getPaymentDateTime() {
+    return paymentDate;
   }
 
-  public void setPaymentDateTime(ZonedDateTime zonedDateTime) {
-    this.paymentDateTime = zonedDateTime;
+  public void setPaymentDate(LocalDate localDate) {
+    this.paymentDate = localDate;
   }
 
   @Override
@@ -44,6 +43,6 @@ public class Payment implements Persistable<Long>, Serializable {
 
   @Override
   public boolean isNew() {
-    return paymentDateTime == null;
+    return paymentDate == null;
   }
 }

@@ -1,15 +1,14 @@
 package at.qe.skeleton.internal.services;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 import at.qe.skeleton.internal.model.Payment;
 import at.qe.skeleton.internal.model.Subscription;
 import at.qe.skeleton.internal.model.SubscriptionPeriod;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.services.exceptions.*;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -21,27 +20,56 @@ public class SubscriptionService {
 
   @Autowired private UserxService userxService;
 
+  @Autowired private EmailService emailService;
+
   @Autowired private CreditCardRepository creditCardRepository;
 
-  public void addPayment(Userx user, ZonedDateTime dateTime) {
+  public void addPayment(Userx user, LocalDate dateTime) {
     if (user.getSubscription().getPayments() == null) {
       user.getSubscription().setPayments(new ArrayList<>());
     }
     Payment payment = new Payment();
     payment.setPaid(true);
-    payment.setPaymentDateTime(dateTime);
+    payment.setPaymentDate(dateTime);
     user.getSubscription().getPayments().add(payment);
     userxService.saveUser(user);
   }
 
+  public Payment findPayment(Userx userx, LocalDate date) {
+    return userx.getSubscription().getPayments().stream()
+        .filter(
+            payment -> {
+              LocalDate paymentDate = payment.getPaymentDateTime();
+              return paymentDate.getMonth() == date.getMonth()
+                  && paymentDate.getYear() == date.getYear();
+            })
+        .findFirst()
+        .orElse(null);
+  }
+
+  public void revokeSubscription(Userx user) {
+    user.setSubscription(null);
+    emailService.sendEmail(
+        user.getEmail(),
+        "Weather-app subscription termination",
+        "Dear customer, we regret to inform you, that your subscription has been terminated by a staff member due to the failure to charge your card in the amount of the monthly fee.");
+  }
+
   public boolean isMonthPaid(Userx user, LocalDate date) {
     return user.getSubscription().getPayments().stream()
+        .filter(Payment::isPaid)
         .anyMatch(
             payment -> {
-              ZonedDateTime paymentDate = payment.getPaymentDateTime();
+              LocalDate paymentDate = payment.getPaymentDateTime();
               return paymentDate.getMonth() == date.getMonth()
                   && paymentDate.getYear() == date.getYear();
             });
+  }
+
+  public long calculateTotalPremiumDays(Userx user) {
+    return user.getSubscription().getSubscriptionPeriods().stream()
+        .mapToLong(sub -> DAYS.between(sub.getStart(), sub.getStop()))
+        .sum();
   }
 
   /**

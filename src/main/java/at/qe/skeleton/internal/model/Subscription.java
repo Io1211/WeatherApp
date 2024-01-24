@@ -16,7 +16,7 @@ public class Subscription implements Persistable<Long>, Serializable {
 
   private LocalDate signupDate;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   private List<Payment> payments;
 
   public LocalDate getSignupDate() {

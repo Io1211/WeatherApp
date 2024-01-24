@@ -1,5 +1,6 @@
 package at.qe.skeleton.internal.ui.beans;
 
+import at.qe.skeleton.internal.model.Payment;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.SubscriptionService;
@@ -8,9 +9,7 @@ import at.qe.skeleton.internal.services.exceptions.NotYetAvailableException;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
 import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +98,7 @@ public class BillingBean {
     }
   }
 
-  public String getPayment(Userx user) {
+  public String getPaymentStatus(Userx user) {
     if (user.getSubscription() == null) {
       return "-";
     }
@@ -107,8 +106,39 @@ public class BillingBean {
     return subscriptionService.isMonthPaid(user, queryDate) ? "PAID" : "PENDING";
   }
 
-  public String handlePaymentStatus() {
-    return "";
+  public Payment getPayment(Userx userx) {
+    return subscriptionService.findPayment(userx, LocalDate.of(year, month, 1));
+  }
+
+  public String getTotalPremiumDays(Userx user) {
+    if (user.getSubscription() == null) {
+      return "-";
+    }
+    return String.valueOf(subscriptionService.calculateTotalPremiumDays(user));
+  }
+
+  public void handlePaymentStatus(Userx user) {
+    if (user.getSubscription() == null) {
+      return;
+    }
+    if (paid) {
+      subscriptionService.addPayment(user, LocalDate.of(year, month, 1));
+      facesMessage(
+          FacesMessage.SEVERITY_INFO,
+          "The payment status for %s has been set to paid for %s of %s"
+              .formatted(user.getId(), month, year));
+      paid = false; // reset
+    } else {
+      subscriptionService.revokeSubscription(user);
+      facesMessage(
+          FacesMessage.SEVERITY_WARN,
+          "Payment status set to failed for user %s. Their subscription has been terminated."
+              .formatted(user.getId()));
+    }
+  }
+
+  public boolean userHasSubscription(Userx user) {
+    return user.getSubscription() != null;
   }
 
   public Month getMonth() {
