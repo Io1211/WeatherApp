@@ -30,7 +30,7 @@
 
             <p:dataTable id="billingTable" var="user" value="#{billingBean.users}" stickyHeader="true">
                 <p:column field="username" headerText="Username"/> <!-- TODO: fix sorting -->
-                <p:column headerText="Premium Status" sortable="true"> <!-- TODO: sorting (see sortable/sortBy) -->
+                <p:column headerText="Premium Status"> <!-- TODO: sorting (see sortable/sortBy) -->
                     <h:outputText value="#{billingBean.isActive(user)}"/>
                 </p:column>
                 <p:column headerText="Days Billed">

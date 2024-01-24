@@ -61,7 +61,7 @@ public class BillingBean {
 
   public String isActive(Userx user) {
     if (user.getSubscription() == null) {
-      return "INACTIVE";
+      return "-";
     }
     try {
       return subscriptionService.premiumDaysInMonth(user, month, year) != 0 ? "ACTIVE" : "INACTIVE";
