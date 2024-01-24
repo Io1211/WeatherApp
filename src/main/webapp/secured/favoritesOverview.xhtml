@@ -44,12 +44,14 @@
         </style>
 
         <script>
-                function largeText(element) {
-                element.style.transform = 'scale(0.6)';
+                function smallText(element) {
+                if (element.innerText.length >= 12) {
+                        element.style.transform = 'scale(0.6)';
+                }
                 element.style.overflow = 'visible';
                 }
 
-                function smallText(element) {
+                function largeText(element) {
                 element.style.transform = 'scale(1)';
                 element.style.overflow = 'hidden';
                 }
@@ -67,7 +69,7 @@
                     <h:panelGrid columns="2" cellpadding="10" styleClass="favorites-panelgrid">
                         <div class="city-country-div">
 
-                                <h2 class="city" onmouseover="largeText(this)" onmouseout="smallText(this)" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; transform-origin: left;">
+                                <h2 class="city" onmouseover="smallText(this)" onmouseout="largeText(this)" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; transform-origin: left;">
                                         #{favoriteLocation.location.city}
                                 </h2>
                                     
