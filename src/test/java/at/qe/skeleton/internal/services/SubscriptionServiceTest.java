@@ -178,13 +178,16 @@ class SubscriptionServiceTest {
     subscriptionService.deactivatePremiumSubscription(user);
 
     SubscriptionPeriod expected =
-        buildSubscription(LocalDate.now().minus(Period.of(0, 0, 3)), LocalDate.now(), true);
-    assertEquals(
-        expected,
-        user.getSubscription().getSubscriptionPeriods().stream()
-            .filter(SubscriptionPeriod::isActive)
-            .findFirst()
-            .orElseThrow(NullPointerException::new));
+        buildSubscription(LocalDate.now().minus(Period.of(0, 0, 3)), LocalDate.now(), false);
+    SubscriptionPeriod found =
+        user.getSubscription()
+            .getSubscriptionPeriods()
+            .get(user.getSubscription().getSubscriptionPeriods().size() - 1);
+    // Since expected isn't persisted the objects can't be compared as their ids wouldn't match.
+    // Persisting wouldn't help, as the ids are generated values and thus wouldn't match either.
+    assertEquals(expected.getStart(), found.getStart());
+    assertEquals(expected.getStop(), found.getStop());
+    assertEquals(expected.isActive(), found.isActive());
     assertFalse(
         user.getRoles().contains(UserxRole.PREMIUM_USER),
         "There is a problem with the deactivatePremium method of the UserxService.");

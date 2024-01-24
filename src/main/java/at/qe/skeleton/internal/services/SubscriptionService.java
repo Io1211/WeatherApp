@@ -4,7 +4,6 @@ import at.qe.skeleton.internal.model.Subscription;
 import at.qe.skeleton.internal.model.SubscriptionPeriod;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
-import at.qe.skeleton.internal.repositories.SubscriptionRepository;
 import at.qe.skeleton.internal.services.exceptions.*;
 import java.time.LocalDate;
 import java.time.Month;
@@ -18,10 +17,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SubscriptionService {
-
-  @Autowired private SubscriptionPeriodRepository subscriptionPeriodRepository;
-
-  @Autowired private SubscriptionRepository subscriptionRepository;
 
   @Autowired private UserxService userxService;
 
