@@ -159,7 +159,7 @@ public class SubscriptionService {
         return 0;
       }
       // Subscription doesn't have an end set, ergo is still active.
-      if (lastSubscriptionBeforeMonth.getStop() == null) {
+      if (lastSubscriptionBeforeMonth.isActive()) {
         return month.length(Year.isLeap(year));
       }
       // This means that the end date of the tuple is after the query month and year, ergo the
