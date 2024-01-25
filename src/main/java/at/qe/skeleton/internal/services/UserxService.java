@@ -30,7 +30,7 @@ public class UserxService {
   /**
    * Returns a collection of all users.
    *
-   * @return
+   * @return colletion of all users
    */
   @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MANAGER')")
   public Collection<Userx> getAllUsers() {
