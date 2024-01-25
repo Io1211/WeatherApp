@@ -113,18 +113,6 @@ public class UserxService {
     return user.getRoles().contains(UserxRole.PREMIUM_USER);
   }
 
-  @PreAuthorize("hasAuthority('ADMIN')")
-  public void addUserRole(Userx user, UserxRole role) {
-    user.addRole(role);
-    userRepository.save(user);
-  }
-
-  @PreAuthorize("hasAuthority('ADMIN')")
-  public void removeUserRole(Userx user, UserxRole role) {
-    user.removeRole(role);
-    userRepository.save(user);
-  }
-
   public Set<UserxRole> getAllUserxRoles() {
     return new TreeSet<>(Arrays.asList(UserxRole.values()));
   }
