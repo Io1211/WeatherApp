@@ -3,7 +3,10 @@ package at.qe.skeleton.internal.services;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.repositories.UserxRepository;
+
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -109,4 +112,22 @@ public class UserxService {
   public boolean isPremium(Userx user) {
     return user.getRoles().contains(UserxRole.PREMIUM_USER);
   }
+
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public void addUserRole(Userx user, UserxRole role) {
+    user.addRole(role);
+    userRepository.save(user);
+  }
+
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public void removeUserRole(Userx user, UserxRole role) {
+    user.removeRole(role);
+    userRepository.save(user);
+  }
+
+  public Set<UserxRole> getAllUserxRoles() {
+    return new TreeSet<>(Arrays.asList(UserxRole.values()));
+  }
 }
+
+

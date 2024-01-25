@@ -68,11 +68,20 @@
                         <p:inputText id="email" value="#{userDetailController.user.email}"/>
                         <p:outputLabel for="phone" value="Phone: "/>
                         <p:inputMask id="phone" value="#{userDetailController.user.phone}" mask="+99? 999 9999999"/>
+                        <p:outputLabel for="roles" value="Roles: "/>
                     </h:panelGrid>
                     <p:separator/>
                     <h:panelGrid columns="2">
                         <p:outputLabel for="enabled" value="Enabled: "/>
                         <p:selectBooleanCheckbox id="enabled" value="#{userDetailController.user.enabled}"/>
+                    </h:panelGrid>
+                    <p:separator/>
+                    <h:panelGrid columns="2">
+                        <p:outputLabel for="roles" value="Roles:"/>
+                        <p:selectCheckboxMenu id="roles" value="#{userDetailController.initializedRoles}" label="Roles">
+                            <f:selectItems value="#{userDetailController.userxRoles}" var="role"
+                                           itemLabel="#{role}" itemValue="#{role}"/>
+                        </p:selectCheckboxMenu>
                     </h:panelGrid>
                     <p:separator/>
                     <h:panelGrid columns="3">
