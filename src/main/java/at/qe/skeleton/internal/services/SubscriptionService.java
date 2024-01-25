@@ -28,9 +28,15 @@ public class SubscriptionService {
 
   @Autowired private CreditCardRepository creditCardRepository;
 
-  public void addPayment(Userx user, LocalDate dateTime) {
+  public void addPayment(Userx user, LocalDate dateTime) throws NotYetAvailableException {
     if (user.getSubscription().getPayments() == null) {
       user.getSubscription().setPayments(new ArrayList<>());
+    }
+    // this adds unnecessary computational overhead... it's a bodge that would be done better if
+    // there was more time
+    if (premiumDaysInMonth(user, dateTime.getMonth(), dateTime.getYear()) == 0) {
+      throw new ArrayIndexOutOfBoundsException(
+          "Can't add a payment to a month where premium wasn't active");
     }
     Payment payment = new Payment();
     payment.setPaid(true);

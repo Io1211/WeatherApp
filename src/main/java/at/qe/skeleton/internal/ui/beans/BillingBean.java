@@ -118,7 +118,11 @@ public class BillingBean {
       return;
     }
     if (paid) {
-      subscriptionService.addPayment(user, LocalDate.of(year, month, 1));
+      try {
+        subscriptionService.addPayment(user, LocalDate.of(year, month, 1));
+      } catch (NotYetAvailableException e) {
+        facesMessage(FacesMessage.SEVERITY_WARN, e.getMessage());
+      }
       facesMessage(
           FacesMessage.SEVERITY_INFO,
           "The payment status for %s has been set to paid for %s of %s"
