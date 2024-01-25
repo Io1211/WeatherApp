@@ -9,6 +9,7 @@
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
         <h:form id="userForm">
+            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
             <p:dataTable id="usersTable" var="user" value="#{userListController.users}">
                 <p:column headerText="Username">
                     <h:outputText value="#{user.username}"/>
@@ -50,6 +51,7 @@
             </p:dataTable>
 
             <p:dialog header="Edit User" id="userEditDialog" widgetVar="userEditDialog" modal="true" showEffect="fade"
+
                       hideEffect="fade" resizable="false">
                 <p:outputPanel id="userData" rendered="#{not empty userDetailController.user}">
                     <h:panelGrid columns="2">
@@ -86,7 +88,7 @@
                     <p:separator/>
                     <h:panelGrid columns="3">
                         <p:commandButton value="Save" action="#{userDetailController.doSaveUser()}"
-                                         oncomplete="PF('userEditDialog').hide()" update=":userForm:usersTable"/>
+                                         oncomplete="PF('userEditDialog').hide()" update=":userForm:usersTable :userForm:messages"/>
                         <p:commandButton value="Reload" action="#{userDetailController.doReloadUser()}"
                                          update=":userForm:userData"/>
                         <p:commandButton value="Abort" onclick="PF('userEditDialog').hide()"/>
