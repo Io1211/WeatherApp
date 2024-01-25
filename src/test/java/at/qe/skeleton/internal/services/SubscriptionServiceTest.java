@@ -13,7 +13,6 @@ import java.util.TreeSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mail.MailAuthenticationException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -115,12 +114,11 @@ class SubscriptionServiceTest {
     user.setSubscription(new Subscription());
     user.getSubscription().setPayments(new ArrayList<>());
     user.getSubscription().setSubscriptionPeriods(new ArrayList<>());
-    user.setEmail("abs@mail.com");
     user.setRoles(new TreeSet<>());
     user.getRoles().add(UserxRole.PREMIUM_USER);
     try {
       subscriptionService.revokeSubscription(user);
-    } catch (MailAuthenticationException e) { // triggered by fake/invalid email set above
+    } catch (NoEmailProvidedException e) {
       assertNull(user.getSubscription());
       assertFalse(user.getRoles().contains(UserxRole.PREMIUM_USER));
     }
