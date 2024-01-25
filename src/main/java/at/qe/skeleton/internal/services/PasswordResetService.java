@@ -44,5 +44,18 @@ public class PasswordResetService {
       user.setPassword(passwordEncoder.encode(newPassword));
       userRepository.save(user);
     }
-  }
+  }   /**
+     * Reset password for user by admin.
+     *
+     * @param user
+     * @param newPassword
+     */
+    public void sendForgetPasswordEmail(Userx user) {
+        emailService.sendEmail(
+                user.getEmail(),
+                "Reset your password",
+                "\nTo reset your password follow this link:\n"
+                        + "http://localhost:8080/request_new_password.xhtml"
+                        + "\n\nIf you did not request a password reset, please ignore this email.");
+    }
 }
