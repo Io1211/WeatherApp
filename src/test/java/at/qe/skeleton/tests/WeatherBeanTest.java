@@ -34,9 +34,14 @@ class WeatherBeanTest {
   public void formatInstantToDateTimeTest() {
     Instant timestamp = Instant.parse("2023-04-15T12:30:45Z");
     String format = "yyyy-MM-dd HH:mm";
-    String timezone = "Europe/Paris";
+    String timezone = "Europe/Paris"; // UTC+2
     String result = weatherBean.formatInstantToDateTime(timezone, timestamp, format);
-    assertEquals("2023-04-15 12:30", result);
+    assertEquals("2023-04-15 14:30", result);
+    
+    format = "HH:mm";
+    timezone = "America/Los_Angeles"; // UTC-7
+    result = weatherBean.formatInstantToDateTime(timezone, timestamp, format);
+    assertEquals("05:30", result);
 
     timestamp = Instant.parse("2023-08-27T08:15:30Z");
     format = "yyyy.MM.dd";
