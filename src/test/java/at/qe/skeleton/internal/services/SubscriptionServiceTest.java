@@ -3,10 +3,7 @@ package at.qe.skeleton.internal.services;
 import static org.junit.jupiter.api.Assertions.*;
 
 import at.qe.skeleton.internal.model.*;
-import at.qe.skeleton.internal.repositories.CreditCardRepository;
-import at.qe.skeleton.internal.repositories.FavoriteRepository;
-import at.qe.skeleton.internal.repositories.SubscriptionRepository;
-import at.qe.skeleton.internal.repositories.UserxRepository;
+import at.qe.skeleton.internal.repositories.*;
 import at.qe.skeleton.internal.services.exceptions.*;
 import java.time.*;
 import java.util.ArrayList;
@@ -95,6 +92,7 @@ class SubscriptionServiceTest {
         new ArrayList<>(List.of(subscriptionPeriod1, subscriptionPeriod2, subscriptionPeriod3));
     // overwrites the value from the previous test case
     user.getSubscription().setSubscriptionPeriods(premiumPeriods);
+    user.getSubscription().setPayments(new ArrayList<>()); // necessary due to jpa constraints
     userxRepository.save(user);
 
     subscriptionService.activatePremiumSubscription(user);
