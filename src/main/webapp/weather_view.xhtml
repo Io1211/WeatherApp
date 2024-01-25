@@ -72,7 +72,7 @@
 
                                 <p:column headerText="Time">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(hourlyWeatherEntries.timestamp(), 'dd.MM.yyyy: HH:mm')}"/>
+                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), hourlyWeatherEntries.timestamp(), 'dd.MM.yyyy: HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Weather" style="width: 12%;">
@@ -133,7 +133,7 @@
 
                                 <p:column headerText="Day">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.timestamp(), 'dd.MM.yyyy')}"/>
+                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.timestamp(), 'dd.MM.yyyy')}"/>
                                 </p:column>
 
                                 <p:column headerText="Summary" style="width: 8%;">
@@ -142,12 +142,12 @@
 
                                 <p:column headerText="Sunrise">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunrise(), 'HH:mm')}"/>
+                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.sunrise(), 'HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Sunset">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunset(), 'HH:mm')}"/>
+                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.sunset(), 'HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Temperature [C]">

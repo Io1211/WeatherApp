@@ -34,14 +34,15 @@ class WeatherBeanTest {
   public void formatInstantToDateTimeTest() {
     Instant timestamp = Instant.parse("2023-04-15T12:30:45Z");
     String format = "yyyy-MM-dd HH:mm";
-    String result = weatherBean.formatInstantToDateTime(timestamp, format);
+    String timezone = "Europe/Paris";
+    String result = weatherBean.formatInstantToDateTime(timezone, timestamp, format);
     assertEquals("2023-04-15 12:30", result);
 
     timestamp = Instant.parse("2023-08-27T08:15:30Z");
     format = "yyyy.MM.dd";
-    result = weatherBean.formatInstantToDateTime(timestamp, format);
+    result = weatherBean.formatInstantToDateTime(timezone, timestamp, format);
     assertEquals("2023.08.27", result);
-  }
+    }
 
   @Test
   public void degreesToCardinalTest() {

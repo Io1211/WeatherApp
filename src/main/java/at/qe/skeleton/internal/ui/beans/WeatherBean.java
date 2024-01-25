@@ -14,6 +14,7 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -151,12 +152,14 @@ public class WeatherBean {
    * convert multiple occurrences of timestamps (Type Instant) in the weather details table to the
    * desired formats.
    *
+   * @param timezone String of the timezone.
    * @param timestamp Instant timestamp.
    * @param format Desired date-time format so e.g. "HH:mm" or "dd.MM.yyyy - HH:mm".
    * @return A formatted date-time string.
    */
-  public String formatInstantToDateTime(Instant timestamp, String format) {
-    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC);
+  public String formatInstantToDateTime(String timezone, Instant timestamp, String format) {
+    ZoneId zoneId = ZoneId.of(timezone);
+    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, zoneId);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
     return localDateTime.format(formatter);
   }
