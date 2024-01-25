@@ -13,9 +13,11 @@
             <p:messages autoUpdate="true" closable="true"/>
             <p:panel header="Update your Credit Card">
                 <h:panelGrid columns="2" cellpadding="5">
+
                     <p:outputLabel for="cardNumber" value="Card Number:"/>
-                    <p:inputText id="cardNumber" value="#{creditCardBean.creditCard.cardnumber}" required="true"
-                                 requiredMessage="Card Number is required"/>
+                    <p:inputMask id="cardNumber" maxlength="19" value="#{creditCardBean.creditCard.cardnumber}" required="true" requiredMessage="Card Number is required">
+                        <p:keyFilter regEx="/[0-9_]/i" />
+                    </p:inputMask>
 
                     <p:outputLabel for="expirationDate" value="Expiration Date:"/>
                     <p:inputMask id="expirationDate" value="#{creditCardBean.creditCard.expirationDate}"
