@@ -5,8 +5,7 @@ import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.SubscriptionService;
 import at.qe.skeleton.internal.services.UserxService;
-import at.qe.skeleton.internal.services.exceptions.NoEmailProvidedException;
-import at.qe.skeleton.internal.services.exceptions.NotYetAvailableException;
+import at.qe.skeleton.internal.services.exceptions.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -30,6 +29,8 @@ public class BillingBean {
   private Userx user; // holds the user edited in the detailed view
 
   private boolean paid;
+
+  private boolean revokeSubscription;
 
   private Month month;
 
@@ -135,18 +136,32 @@ public class BillingBean {
           "The payment status for %s has been set to paid for %s of %s"
               .formatted(user.getId(), month, year));
     } else {
-      try {
-        subscriptionService.revokeSubscription(user);
-        facesMessage(
-            FacesMessage.SEVERITY_INFO,
-            "Payment status set to failed for user %s. Their subscription has been terminated."
-                .formatted(user.getId()));
-      } catch (NoEmailProvidedException e) {
-        facesMessage(
-            FacesMessage.SEVERITY_WARN,
-            "The subscription was cancelled, however there was a problem when contacting the user. "
-                + e.getMessage());
+      LocalDate queryDate = LocalDate.of(year, month, 1);
+      if (subscriptionService.isMonthPaid(user, queryDate)) {
+        try {
+          subscriptionService.removePayment(user, queryDate);
+        } catch (NoSubscriptionFoundException e) {
+          facesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage());
+        }
       }
+    }
+  }
+
+  public void handleRevokeSubscription(Userx user) {
+    if (!revokeSubscription) {
+      return;
+    }
+    try {
+      subscriptionService.revokeSubscription(user);
+      facesMessage(
+          FacesMessage.SEVERITY_INFO,
+          "Payment status set to failed for user %s. Their subscription has been terminated."
+              .formatted(user.getId()));
+    } catch (NoEmailProvidedException e) {
+      facesMessage(
+          FacesMessage.SEVERITY_WARN,
+          "The subscription was cancelled, however there was a problem when contacting the user. "
+              + e.getMessage());
     }
   }
 
@@ -204,6 +219,14 @@ public class BillingBean {
 
   public void setPaid(boolean paid) {
     this.paid = paid;
+  }
+
+  public boolean getRevokeSubscription() {
+    return revokeSubscription;
+  }
+
+  public void setRevokeSubscription(boolean revokeSubscription) {
+    this.revokeSubscription = revokeSubscription;
   }
 
   public void facesMessage(FacesMessage.Severity severity, String message) {

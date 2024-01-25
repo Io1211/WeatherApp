@@ -2,10 +2,7 @@ package at.qe.skeleton.internal.services;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
-import at.qe.skeleton.internal.model.Payment;
-import at.qe.skeleton.internal.model.Subscription;
-import at.qe.skeleton.internal.model.SubscriptionPeriod;
-import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.model.*;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.repositories.UserxRepository;
 import at.qe.skeleton.internal.services.exceptions.*;
@@ -30,24 +27,45 @@ public class SubscriptionService {
 
   /**
    * @param user The user to register the payment for
-   * @param dateTime The date (month and year) to add the payment for
+   * @param date The date (month and year) to add the payment for
    * @throws NotYetAvailableException if this method is called with a date equal or later than the
    *     current month and year
    */
-  public void addPayment(Userx user, LocalDate dateTime) throws NotYetAvailableException {
+  public void addPayment(Userx user, LocalDate date) throws NotYetAvailableException {
     if (user.getSubscription().getPayments() == null) {
       user.getSubscription().setPayments(new ArrayList<>());
     }
     // this adds unnecessary computational overhead... it's a bodge that would be done better if
     // there was more time
-    if (premiumDaysInMonth(user, dateTime.getMonth(), dateTime.getYear()) == 0) {
+    if (premiumDaysInMonth(user, date.getMonth(), date.getYear()) == 0) {
       throw new ArrayIndexOutOfBoundsException(
           "Can't add a payment to a month where premium wasn't active");
     }
     Payment payment = new Payment();
     payment.setPaid(true);
-    payment.setPaymentDate(dateTime);
+    payment.setPaymentDate(date);
     user.getSubscription().getPayments().add(payment);
+    userxRepository.save(user);
+  }
+
+  /**
+   * @param user The user to remove the payment from
+   * @param date The date (month and year) of the payment to remove
+   * @throws NoSubscriptionFoundException if no subscription is found for the user in question
+   */
+  public void removePayment(Userx user, LocalDate date) throws NoSubscriptionFoundException {
+    if (user.getSubscription() == null || user.getSubscription().getPayments() == null) {
+      throw new NoSubscriptionFoundException(user);
+    }
+    Payment payment =
+        user.getSubscription().getPayments().stream()
+            .filter(
+                sub ->
+                    sub.getPaymentDateTime().getMonth() == date.getMonth()
+                        && sub.getPaymentDateTime().getYear() == date.getYear())
+            .findAny()
+            .orElseThrow(() -> new NoSubscriptionFoundException(user));
+    user.getSubscription().getPayments().remove(payment);
     userxRepository.save(user);
   }
 
@@ -56,6 +74,9 @@ public class SubscriptionService {
    * @throws NoEmailProvidedException if the user doesn't have an email associated to them
    */
   public void revokeSubscription(Userx user) throws NoEmailProvidedException {
+    if (user.getRoles() != null && user.getRoles().contains(UserxRole.PREMIUM_USER)) {
+      userxService.deactivatePremium(user);
+    }
     user.setSubscription(null);
     userxRepository.save(user);
     if (Objects.equals(user.getEmail(), "") || user.getEmail() == null) {

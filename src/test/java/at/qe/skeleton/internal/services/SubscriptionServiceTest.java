@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mail.MailAuthenticationException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -72,11 +73,37 @@ class SubscriptionServiceTest {
 
   @DirtiesContext
   @Test
-  void revokeSubscriptionTest() {
+  void removePaymentTest() throws NoSubscriptionFoundException {
+    Userx user = new Userx();
+    user.setId("Primus");
+
+    assertThrows(
+        NoSubscriptionFoundException.class,
+        () -> subscriptionService.removePayment(user, LocalDate.of(2023, 1, 1)));
+
+    Payment payment1 = new Payment();
+    payment1.setPaymentDate(LocalDate.of(2023, 1, 1));
+    Payment payment2 = new Payment();
+    payment2.setPaymentDate(LocalDate.of(2023, 2, 1));
+    Payment payment3 = new Payment();
+    payment3.setPaymentDate(LocalDate.of(2023, 3, 1));
+    List<Payment> payments = new ArrayList<>(List.of(payment1, payment2, payment3));
+
+    user.setSubscription(new Subscription());
+    user.getSubscription().setPayments(payments);
+
+    subscriptionService.removePayment(user, LocalDate.of(2023, 2, 1));
+
+    assertTrue(
+        user.getSubscription().getPayments().stream().noneMatch(payment -> payment == payment2));
+  }
+
+  @DirtiesContext
+  @Test
+  void revokeSubscriptionTest() throws NoEmailProvidedException {
     Userx user = new Userx();
     user.setId("Primus");
     user.setFavorites(new ArrayList<>());
-    user.setSubscription(new Subscription());
 
     final Userx userx = user;
     assertThrows(
@@ -85,10 +112,17 @@ class SubscriptionServiceTest {
           subscriptionService.revokeSubscription(userx);
         });
 
+    user.setSubscription(new Subscription());
+    user.getSubscription().setPayments(new ArrayList<>());
+    user.getSubscription().setSubscriptionPeriods(new ArrayList<>());
+    user.setEmail("abs@mail.com");
+    user.setRoles(new TreeSet<>());
+    user.getRoles().add(UserxRole.PREMIUM_USER);
     try {
       subscriptionService.revokeSubscription(user);
-    } catch (NoEmailProvidedException e) {
+    } catch (MailAuthenticationException e) { // triggered by fake/invalid email set above
       assertNull(user.getSubscription());
+      assertFalse(user.getRoles().contains(UserxRole.PREMIUM_USER));
     }
   }
 
