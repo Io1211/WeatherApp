@@ -11,7 +11,7 @@ public class Subscription implements Persistable<Long>, Serializable {
 
   @Id @GeneratedValue private Long id;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   private List<SubscriptionPeriod> subscriptionPeriods;
 
   private LocalDate signupDate;
