@@ -1,5 +1,6 @@
 package at.qe.skeleton.internal.services;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.*;
 
 import at.qe.skeleton.internal.model.*;
@@ -36,6 +37,104 @@ class SubscriptionServiceTest {
     subscriptionPeriod.setStop(stop);
     subscriptionPeriod.setActive(active);
     return subscriptionPeriod;
+  }
+
+  @DirtiesContext
+  @Test
+  void addPaymentTest() throws NotYetAvailableException {
+    Userx user = new Userx();
+    user.setId("Primus");
+    user.setSubscription(new Subscription());
+    user.getSubscription().setSubscriptionPeriods(new ArrayList<>());
+    user.setFavorites(new ArrayList<>());
+    userxRepository.save(user);
+
+    assertThrows(
+        NotYetAvailableException.class,
+        () -> subscriptionService.addPayment(user, LocalDate.of(2050, 1, 1)));
+
+    final LocalDate date = LocalDate.of(2023, 1, 1);
+    assertThrows(
+        ArrayIndexOutOfBoundsException.class,
+        () -> {
+          subscriptionService.addPayment(user, date);
+        });
+
+    user.getSubscription().setSubscriptionPeriods(new ArrayList<>());
+    SubscriptionPeriod subscriptionPeriod = new SubscriptionPeriod();
+    subscriptionPeriod.setStart(LocalDate.of(2023, 1, 1));
+    subscriptionPeriod.setStop(LocalDate.of(2023, 1, 15));
+    user.getSubscription().getSubscriptionPeriods().add(subscriptionPeriod);
+
+    subscriptionService.addPayment(user, LocalDate.of(2023, 1, 1));
+    assertNotNull(user.getSubscription().getPayments());
+  }
+
+  @DirtiesContext
+  @Test
+  void revokeSubscriptionTest() {
+    Userx user = new Userx();
+    user.setId("Primus");
+    user.setFavorites(new ArrayList<>());
+    user.setSubscription(new Subscription());
+
+    final Userx userx = user;
+    assertThrows(
+        NoEmailProvidedException.class,
+        () -> {
+          subscriptionService.revokeSubscription(userx);
+        });
+
+    try {
+      subscriptionService.revokeSubscription(user);
+    } catch (NoEmailProvidedException e) {
+      assertNull(user.getSubscription());
+    }
+  }
+
+  @DirtiesContext
+  @Test
+  void isMonthPaidTest() {
+    Userx user = new Userx();
+    user.setId("Primus");
+    user.setSubscription(new Subscription());
+
+    Payment paidPayment = new Payment();
+    paidPayment.setPaid(true);
+    paidPayment.setPaymentDate(LocalDate.of(2023, 3, 18));
+    Payment unpaidPayment = new Payment();
+    unpaidPayment.setPaid(false);
+    unpaidPayment.setPaymentDate(LocalDate.of(2023, 9, 30));
+    List<Payment> payments = new ArrayList<>(List.of(paidPayment, unpaidPayment));
+    user.getSubscription().setPayments(payments);
+    userxRepository.save(user);
+
+    assertTrue(subscriptionService.isMonthPaid(user, LocalDate.of(2023, 3, 1)));
+    assertFalse(subscriptionService.isMonthPaid(user, LocalDate.of(2023, 9, 1)));
+  }
+
+  @DirtiesContext
+  @Test
+  void calculateTotalPremiumDaysTest() {
+    Userx userx = new Userx();
+    userx.setId("Primus");
+    userx.setSubscription(new Subscription());
+    userx.getSubscription().setSubscriptionPeriods(new ArrayList<>());
+    List<SubscriptionPeriod> subscriptionPeriods = userx.getSubscription().getSubscriptionPeriods();
+    userxRepository.save(userx);
+
+    assertEquals(0, subscriptionService.calculateTotalPremiumDays(userx));
+
+    LocalDate start = LocalDate.of(2023, 1, 1);
+    LocalDate stop = LocalDate.of(2023, 3, 15);
+    subscriptionPeriods.add(buildSubscription(start, stop, false));
+    assertEquals(DAYS.between(start, stop), subscriptionService.calculateTotalPremiumDays(userx));
+
+    LocalDate start2 = LocalDate.of(2023, 1, 1);
+    subscriptionPeriods.add(buildSubscription(start, null, false));
+    assertEquals(
+        (DAYS.between(start, stop) + DAYS.between(start2, LocalDate.now())),
+        subscriptionService.calculateTotalPremiumDays(userx));
   }
 
   @DirtiesContext

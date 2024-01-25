@@ -28,6 +28,12 @@ public class SubscriptionService {
 
   @Autowired private CreditCardRepository creditCardRepository;
 
+  /**
+   * @param user The user to register the payment for
+   * @param dateTime The date (month and year) to add the payment for
+   * @throws NotYetAvailableException if this method is called with a date equal or later than the
+   *     current month and year
+   */
   public void addPayment(Userx user, LocalDate dateTime) throws NotYetAvailableException {
     if (user.getSubscription().getPayments() == null) {
       user.getSubscription().setPayments(new ArrayList<>());
@@ -45,6 +51,10 @@ public class SubscriptionService {
     userxRepository.save(user);
   }
 
+  /**
+   * @param user The user whose subscription is to be revoked
+   * @throws NoEmailProvidedException if the user doesn't have an email associated to them
+   */
   public void revokeSubscription(Userx user) throws NoEmailProvidedException {
     user.setSubscription(null);
     userxRepository.save(user);
@@ -58,6 +68,11 @@ public class SubscriptionService {
         "Dear customer, we regret to inform you, that your subscription has been terminated by a staff member due to the failure to charge your card in the amount of the monthly fee.");
   }
 
+  /**
+   * @param user The user to check payments for
+   * @param date The date (month and year) to look for payments
+   * @return if there is a paid payment for the month and year of the date parameter
+   */
   public boolean isMonthPaid(Userx user, LocalDate date) {
     return user.getSubscription().getPayments().stream()
         .filter(Payment::isPaid)
@@ -69,6 +84,10 @@ public class SubscriptionService {
             });
   }
 
+  /**
+   * @param user The user to calculate the total for
+   * @return the total days the user was premium
+   */
   public long calculateTotalPremiumDays(Userx user) {
     long total = 0;
     List<SubscriptionPeriod> subscriptionPeriods = user.getSubscription().getSubscriptionPeriods();
