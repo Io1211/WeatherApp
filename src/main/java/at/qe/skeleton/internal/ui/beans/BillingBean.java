@@ -103,6 +103,14 @@ public class BillingBean {
       return "-";
     }
     LocalDate queryDate = LocalDate.of(year, month, 1);
+    try {
+      if (subscriptionService.premiumDaysInMonth(user, month, year) == 0) {
+        return "-";
+      }
+    } catch (NotYetAvailableException e) {
+      facesMessage(FacesMessage.SEVERITY_WARN, e.getMessage());
+      return "-";
+    }
     return subscriptionService.isMonthPaid(user, queryDate) ? "PAID" : "PENDING";
   }
 
