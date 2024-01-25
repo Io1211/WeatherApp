@@ -71,10 +71,7 @@ public class BillingBean {
       facesMessage(
           FacesMessage.SEVERITY_ERROR,
           "Billing info is only available for past months. You are trying to access it for this or future months.");
-      return;
     }
-    facesMessage(
-        FacesMessage.SEVERITY_INFO, "Showing data for" + " %s of %s".formatted(month, year));
   }
 
   public String isActive(Userx user) {

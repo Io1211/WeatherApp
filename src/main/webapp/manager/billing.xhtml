@@ -12,18 +12,16 @@
                 <p:autoUpdate/>
             </p:messages>
 
-            <div style="margin-bottom: 2rem; margin-top: 2rem; margin-left: 0.5rem">
+            <div id="searchInfo" style="margin-bottom: 2rem; margin-top: 2rem; margin-left: 0.5rem">
                 <p:outputLabel for="month" value="Month: "/>
                 <p:selectOneMenu id="month" value="#{billingBean.month}" style="width:150px;  margin-right: 1rem">
                     <p:ajax listener="#{billingBean.onYearOrMonthChange()}" update="billingTable"/>
-                    <f:selectItem itemLabel="#{billingBean.month}"/>
                     <f:selectItems value="#{billingBean.months}"/>
                 </p:selectOneMenu>
 
                 <p:outputLabel for="year" value="Year: "/>
                 <p:selectOneMenu id="year" value="#{billingBean.year}" style="width:150px">
                     <p:ajax listener="#{billingBean.onYearOrMonthChange()}" update="billingTable"/>
-                    <f:selectItem itemLabel="#{billingBean.year}"/>
                     <f:selectItems value="#{billingBean.years}"/>
                 </p:selectOneMenu>
             </div>
