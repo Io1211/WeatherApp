@@ -1,5 +1,6 @@
 package at.qe.skeleton.internal.ui.beans;
 
+import at.qe.skeleton.internal.model.SubscriptionPeriod;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.SubscriptionService;
@@ -154,6 +155,10 @@ public class BillingBean {
 
   public boolean userHasSubscription(Userx user) {
     return user.getSubscription() != null;
+  }
+
+  public List<SubscriptionPeriod> getSubscriptionPeriods(Userx user) {
+    return user.getSubscription().getSubscriptionPeriods();
   }
 
   public Month getMonth() {
