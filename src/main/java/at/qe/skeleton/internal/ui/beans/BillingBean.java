@@ -120,7 +120,7 @@ public class BillingBean {
     if (paid) {
       try {
         subscriptionService.addPayment(user, LocalDate.of(year, month, 1));
-      } catch (NotYetAvailableException e) {
+      } catch (ArrayIndexOutOfBoundsException | NotYetAvailableException e) {
         facesMessage(FacesMessage.SEVERITY_WARN, e.getMessage());
       }
       facesMessage(
