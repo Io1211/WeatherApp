@@ -17,6 +17,9 @@
                              converter="#{favoriteConverter}" responsive="true"/>
                 <p:panelGrid columns="2" rendered="#{sessionInfoBean.hasRole('PREMIUM_USER')}"
                              style="width: 50%" columnClasses="row-height, row-height">
+                    <h:outputText value="Icon: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showIcon}" onLabel="Show"
+                                           offLabel="Hide"/>
                     <h:outputText value="Clouds: " style="line-height: 2.5"/>
                     <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showClouds}" onLabel="Show"
                                            offLabel="Hide"/>
