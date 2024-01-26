@@ -175,15 +175,21 @@
                                 value="Rain [mm/h]:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showRain}"/>
                         <h:outputText
+                                value="No rain"
+                                rendered="#{empty favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().rain() and favoriteOverviewBean.favoriteDataConfig.showRain}"/>
+                        <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().rain()}"
-                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showRain}"/>
+                                rendered="#{not empty favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().rain() and favoriteOverviewBean.favoriteDataConfig.showRain}"/>
 
                         <h:outputText
                                 value="Snow [mm/h]:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
                         <h:outputText
+                                value="No snow"
+                                rendered="#{empty favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().snow() and favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
+                        <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().snow()}"
-                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
+                                rendered="#{not empty favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().snow() and favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
 
                         <h:outputText
                                 value="Weather:"

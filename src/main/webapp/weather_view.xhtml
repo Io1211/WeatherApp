@@ -190,11 +190,19 @@
                                     <h:outputText value="#{dailyWeatherEntries.probabilityOfPrecipitation()}"/>
                                 </p:column>
 
-                                <p:column headerText="Rain [mm/h]">
+                                <p:column headerText="Rain [mm/h]" rendered="#{empty dailyWeatherEntries.rain()}">
+                                    <h:outputText value="No rain"/>
+                                </p:column>
+
+                                <p:column headerText="Rain [mm/h]" rendered="#{not empty dailyWeatherEntries.rain()}">
                                     <h:outputText value="#{dailyWeatherEntries.rain()}"/>
                                 </p:column>
 
-                                <p:column headerText="Snow [mm/h]">
+                                <p:column headerText="Snow [mm/h]" rendered="#{empty dailyWeatherEntries.snow()}">
+                                    <h:outputText value="No snow"/>
+                                </p:column>
+
+                                <p:column headerText="Snow [mm/h]" rendered="#{not empty dailyWeatherEntries.snow()}">
                                     <h:outputText value="#{dailyWeatherEntries.snow()}"/>
                                 </p:column>
 
