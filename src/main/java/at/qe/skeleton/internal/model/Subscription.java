@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
-import org.antlr.v4.runtime.misc.Pair;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.springframework.data.domain.Persistable;
 
 @Entity
@@ -14,39 +11,49 @@ public class Subscription implements Persistable<Long>, Serializable {
 
   @Id @GeneratedValue private Long id;
 
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  private List<SubscriptionPeriod> subscriptionPeriods;
+
   private LocalDate signupDate;
 
-  // Premium period is a list of tuples, so that every time the service is activated/canceled start
-  // and stop of that period is stored in the same tuple. For every tuple (a, b), a is always the
-  // start date and b the cancellation date.
-  @ElementCollection
-  @Fetch(FetchMode.JOIN)
-  private List<Pair<LocalDate, LocalDate>> premiumPeriod;
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  private List<Payment> payments;
 
-  @Override
-  public Long getId() {
-    return this.id;
+  public LocalDate getSignupDate() {
+    return signupDate;
+  }
+
+  public void setSignupDate() {
+    this.signupDate = LocalDate.now();
+  }
+
+  public List<SubscriptionPeriod> getSubscriptionPeriods() {
+    return subscriptionPeriods;
+  }
+
+  public void setSubscriptionPeriods(List<SubscriptionPeriod> subscriptionPeriods) {
+    this.subscriptionPeriods = subscriptionPeriods;
+  }
+
+  public void setSignupDate(LocalDate signupDate) {
+    this.signupDate = signupDate;
   }
 
   public void setId(Long id) {
     this.id = id;
   }
 
-  public LocalDate getSignupDate() {
-    return signupDate;
+  public List<Payment> getPayments() {
+    return payments;
   }
 
-  @PrePersist
-  public void setStartDate() {
-    this.signupDate = LocalDate.now();
+  public void setPayments(List<Payment> paidMonths) {
+    this.payments = paidMonths;
   }
 
-  public List<Pair<LocalDate, LocalDate>> getPremiumPeriod() {
-    return premiumPeriod;
-  }
-
-  public void setPremiumPeriod(List<Pair<LocalDate, LocalDate>> premiumPeriod) {
-    this.premiumPeriod = premiumPeriod;
+  @Override
+  public Long getId() {
+    return this.id;
   }
 
   @Override

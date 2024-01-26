@@ -1,7 +1,6 @@
 package at.qe.skeleton.internal.model;
 
 import jakarta.persistence.*;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -59,7 +58,6 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   private String phone;
 
   @OneToOne(
-      optional = true,
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.EAGER)

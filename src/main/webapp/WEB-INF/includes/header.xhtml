@@ -11,10 +11,8 @@
     <h:form id="headerForm">
 
         <p:menubar>
-            <!--We can add Billing Management here-->
             <p:submenu label="Billing Management" rendered="#{sessionInfoBean.hasRole('MANAGER')}">
-                <p:menuitem value="Manager Action 1"/>
-                <p:menuitem value="Manager Action 2"/>
+                <p:menuitem value="Manage Billing" url="/manager/billing.xhtml"/>
             </p:submenu>
             <p:submenu label="Admin Submenu" rendered="#{sessionInfoBean.hasRole('ADMIN')}">
                 <p:menuitem value="Manage Users" url="/admin/users.xhtml"/>
@@ -25,7 +23,6 @@
 
             <p:submenu label="Test Submenu" rendered="#{sessionInfoBean.loggedIn}">
                 <p:menuitem value="Security Test" url="/secured/test.xhtml"/>
-                <p:menuitem value="Weather API Demo" url="/secured/weather_api_demo.xhtml"/>
             </p:submenu>
             <p:menuitem value="Configure overview" url="/secured/overview_config.xhtml"
                         rendered="#{sessionInfoBean.loggedIn}"/>
