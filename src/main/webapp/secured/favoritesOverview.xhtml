@@ -95,11 +95,11 @@
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().temperature()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}"/>
 
-                        <!--   USE TIME SERVICE CLASS FOR SUNRISE AND SUNSET  -->
+                                
                         <h:outputText value="Sunrise"
                                       rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise()}"
+                                value="#{favoriteOverviewBean.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
 
 
@@ -107,7 +107,7 @@
                                 value="Sunset"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset()}"
+                                value="#{favoriteOverviewBean.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
 
 
