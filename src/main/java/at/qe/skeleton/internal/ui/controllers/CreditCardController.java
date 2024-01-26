@@ -34,7 +34,7 @@ public class CreditCardController {
   }
 
   public void reloadCreditCard() {
-    creditCard = creditCardService.loadCreditCard(creditCard.getId());
+    creditCard = creditCardService.loadCreditCard(creditCard.getUser());
   }
 
   public void saveCreditCard() {

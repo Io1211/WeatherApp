@@ -42,19 +42,11 @@ public class CreditCard implements Persistable<Long>, Serializable {
   @Enumerated(EnumType.STRING)
   private CardType cardType; // CardType is used to represent a set of possible card types.
 
-  public String getUserId() {
-    return userId.getId();
-  }
-
   public Userx getUser() {
     return userId;
   }
 
-  public void setUserId(String userId) {
-    this.userId.setId(userId);
-  }
-
-  public void setUserId(Userx userId) {
+  public void setUser(Userx userId) {
     this.userId = userId;
   }
 

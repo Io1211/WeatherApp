@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.CreditCard;
+import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -44,8 +45,8 @@ public class CreditCardService {
     }
   }
 
-  public CreditCard loadCreditCard(Long id) {
-    return creditCardRepository.findCreditCardByUserId(id);
+  public CreditCard loadCreditCard(Userx userx) {
+    return creditCardRepository.findCreditCardByUser(userx);
   }
 
   public CreditCard loadCreditCardByUsername(String username) {

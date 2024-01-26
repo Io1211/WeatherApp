@@ -78,7 +78,7 @@ public class CreditCardBean {
    */
   public String saveCreditCard() {
     try {
-      creditCard.setUserId(sessionInfoBean.getCurrentUser());
+      creditCard.setUser(sessionInfoBean.getCurrentUser());
       creditCardService.saveCreditCard(creditCard);
       sessionInfoBean.getCurrentUser().setCreditCard(creditCard);
       addMessage("Credit card saved.");
