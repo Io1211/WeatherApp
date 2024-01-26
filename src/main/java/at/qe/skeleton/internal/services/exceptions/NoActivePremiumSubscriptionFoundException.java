@@ -4,6 +4,6 @@ import at.qe.skeleton.internal.model.Userx;
 
 public class NoActivePremiumSubscriptionFoundException extends Exception {
   public NoActivePremiumSubscriptionFoundException(Userx user) {
-    super("The user " + user + "doesn't have an active subscription to cancel.");
+    super("The user " + user.getId() + "doesn't have an active subscription to cancel.");
   }
 }

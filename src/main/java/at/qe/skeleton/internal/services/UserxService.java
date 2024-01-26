@@ -4,7 +4,6 @@ import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.repositories.UserxRepository;
 import java.util.Collection;
-import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -31,9 +30,9 @@ public class UserxService {
   /**
    * Returns a collection of all users.
    *
-   * @return colletion of all users
+   * @return collection of all users
    */
-  @PreAuthorize("hasAuthority('ADMIN')")
+  @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MANAGER')")
   public Collection<Userx> getAllUsers() {
     return userRepository.findAll();
   }
