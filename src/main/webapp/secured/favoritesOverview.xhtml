@@ -101,7 +101,7 @@
                         <h:outputText value="Sunrise:"
                                       rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise())}"
+                                value="#{weatherHelper.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
 
 
@@ -109,7 +109,7 @@
                                 value="Sunset:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset())}"
+                                value="#{weatherHelper.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
 
 
@@ -161,14 +161,14 @@
                                 value="Wind Speed [km/h]:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindSpeed}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windSpeed()}"
+                                value="#{weatherHelper.msToKmh(favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windSpeed())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindSpeed}"/>
 
                         <h:outputText
                                 value="Wind Direction:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindDirection}"/>
                         <h:outputText
-                                value="#{weatherBean.degreesToCardinal(favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windDirection())}"
+                                value="#{weatherHelper.degreesToCardinal(favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windDirection())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindDirection}"/>
 
                         <h:outputText
