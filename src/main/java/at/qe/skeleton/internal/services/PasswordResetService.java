@@ -22,6 +22,12 @@ public class PasswordResetService {
 
   @Autowired private EmailService emailService;
 
+  /**
+   * Sends a password reset email to the user.
+   *
+   * @param email the email address of the user
+   * @param token the token to reset the password
+   */
   public void sendPasswordResetEmailAndToken(String email, String token) {
     if (userRepository.findFirstByEmail(email) == null) {
       throw new IllegalArgumentException("User not found for email " + email);
@@ -35,6 +41,12 @@ public class PasswordResetService {
     }
   }
 
+  /**
+   * Resets the password of the user.
+   *
+   * @param email the email address of the user
+   * @param newPassword the new password
+   */
   public void resetPassword(String email, String newPassword) {
     Userx user = userRepository.findFirstByEmail(email);
     if (user == null) {
@@ -44,18 +56,19 @@ public class PasswordResetService {
       user.setPassword(passwordEncoder.encode(newPassword));
       userRepository.save(user);
     }
-  }   /**
-     * Reset password for user by admin.
-     *
-     * @param user
-     * @param newPassword
-     */
-    public void sendForgetPasswordEmail(Userx user) {
-        emailService.sendEmail(
-                user.getEmail(),
-                "Reset your password",
-                "\nTo reset your password follow this link:\n"
-                        + "http://localhost:8080/request_new_password.xhtml"
-                        + "\n\nIf you did not request a password reset, please ignore this email.");
-    }
+  }
+
+  /**
+   * Sends a password reset email to the user.
+   *
+   * @param user the user to send the email to
+   */
+  public void sendForgetPasswordEmail(Userx user) {
+    emailService.sendEmail(
+        user.getEmail(),
+        "Reset your password",
+        "\nTo reset your password follow this link:\n"
+            + "http://localhost:8080/request_new_password.xhtml"
+            + "\n\nIf you did not request a password reset, please ignore this email.");
+  }
 }

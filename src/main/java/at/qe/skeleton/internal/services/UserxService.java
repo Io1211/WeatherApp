@@ -117,5 +117,3 @@ public class UserxService {
     return new TreeSet<>(Arrays.asList(UserxRole.values()));
   }
 }
-
-
