@@ -9,22 +9,22 @@
             <p:messages id="messages" showDetail="false" autoUpdate="true" closable="true"/>
             <h:panelGrid columns="2">
                 <p:outputLabel for="username" value="Username:"/>
-                <p:inputText id="username" value="#{userRegistrationBean.user.username}" required="true"/>
+                <p:inputText id="username" value="#{userRegistrationBean.user.username}" required="true" maxlength="20"/>
 
                 <p:outputLabel for="password" value="Password:"/>
-                <p:password id="password" value="#{userRegistrationBean.user.password}" required="true"/>
+                <p:password id="password" value="#{userRegistrationBean.user.password}" required="true" maxlength="20"/>
 
                 <p:outputLabel for="firstname" value="Firstname:"/>
-                <p:inputText id="firstname" value="#{userRegistrationBean.user.firstName}" required="true"/>
+                <p:inputText id="firstname" value="#{userRegistrationBean.user.firstName}" required="true" maxlength="30"/>
 
                 <p:outputLabel for="lastname" value="Lastname:"/>
-                <p:inputText id="lastname" value="#{userRegistrationBean.user.lastName}" required="true"/>
+                <p:inputText id="lastname" value="#{userRegistrationBean.user.lastName}" required="true" maxlength="30"/>
 
                 <p:outputLabel for="email" value="Email:"/>
-                <p:inputText id="email" value="#{userRegistrationBean.user.email}" required="true"/>
+                <p:inputText id="email" value="#{userRegistrationBean.user.email}" required="true" maxlength="40"/>
 
                 <p:outputLabel for="phone" value="Phone:"/>
-                <p:inputText id="phone" value="#{userRegistrationBean.user.phone}" required="true"/>
+                <p:inputMask id="phone" value="#{userRegistrationBean.user.phone}" mask="+999999999999999" maxlength="30" />
 
                 <p:commandButton value="Register" action="#{userRegistrationBean.register}" update="messages"/>
                 <h:outputLink value="/resend_registration_token.xhtml">Resend token</h:outputLink>

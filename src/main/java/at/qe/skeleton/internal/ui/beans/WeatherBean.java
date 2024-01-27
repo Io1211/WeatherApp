@@ -7,15 +7,18 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
+import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 import at.qe.skeleton.internal.ui.controllers.IconController;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -40,6 +43,7 @@ public class WeatherBean {
   @Autowired private UserxService userxService;
   @Autowired private FavoriteService favoriteService;
   @Autowired private IconController iconController;
+  @Autowired private SessionInfoBean sessionInfoBean;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherBean.class);
 
@@ -82,7 +86,7 @@ public class WeatherBean {
     return "/weather_view.xhtml?faces-redirect=true";
   }
 
-  // todo: refactor - for inspiration look at favorite-overview
+  // TODO: refactor - for inspiration look at favorite-overview
   public String getIcon() {
     String iconId = this.weatherDTO.currentWeather().weather().icon();
     return iconController.getIcon(iconId);
@@ -122,21 +126,25 @@ public class WeatherBean {
   }
 
   /**
-   * Gets the daily weather entries for four days, which is the current day and the next three days.
+   * Gets the daily weather entries for the current and next 3 days (3+1 daily DTOs) 
+   * or current and next 8 days (8+1 daily DTOs).
+   * The amount of returned daily weatherDTO's depends on sessionInfoBean.isUserPremium().
    *
    * @return The list of daily weather entries.
    */
   public List<DailyWeatherDTO> getDailyWeatherEntries() {
-    return weatherDTO.dailyWeather().stream().limit(4).collect(Collectors.toList());
+    return weatherDTO.dailyWeather().stream().limit((sessionInfoBean.isUserPremium() ? 9 : 4)).collect(Collectors.toList());
   }
 
   /**
-   * Gets the hourly weather entries for the current and next 24 hours.
+   * Gets the hourly weather entries for the current and next 24 hours (24+1 hourly DTOs) 
+   * or current and next 48 hours (48+1 hourly DTOs).
+   * The amount of returned daily weatherDTO's depends on sessionInfoBean.isUserPremium().
    *
    * @return The list of hourly weather entries.
    */
   public List<HourlyWeatherDTO> getHourlyWeatherEntries() {
-    return weatherDTO.hourlyWeather().stream().limit(25).collect(Collectors.toList());
+    return weatherDTO.hourlyWeather().stream().limit((sessionInfoBean.isUserPremium() ? 49 : 25)).collect(Collectors.toList());
   }
 
   /**
@@ -144,12 +152,14 @@ public class WeatherBean {
    * convert multiple occurrences of timestamps (Type Instant) in the weather details table to the
    * desired formats.
    *
+   * @param timezone String of the timezone.
    * @param timestamp Instant timestamp.
    * @param format Desired date-time format so e.g. "HH:mm" or "dd.MM.yyyy - HH:mm".
    * @return A formatted date-time string.
    */
-  public String formatInstantToDateTime(Instant timestamp, String format) {
-    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, ZoneOffset.UTC);
+  public String formatInstantToDateTime(String timezone, Instant timestamp, String format) {
+    ZoneId zoneId = ZoneId.of(timezone);
+    LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, zoneId);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
     return localDateTime.format(formatter);
   }

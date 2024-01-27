@@ -21,9 +21,6 @@
             <p:menuitem value="My Favorites" url="/secured/favoritesOverview.xhtml"
                         rendered="#{sessionInfoBean.loggedIn}"/>
 
-            <p:submenu label="Test Submenu" rendered="#{sessionInfoBean.loggedIn}">
-                <p:menuitem value="Security Test" url="/secured/test.xhtml"/>
-            </p:submenu>
             <p:menuitem value="Configure overview" url="/secured/overview_config.xhtml"
                         rendered="#{sessionInfoBean.loggedIn}"/>
 
@@ -32,7 +29,6 @@
             </p:submenu>
 
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
-            <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
 
             <p:menuitem value="Activate Premium"
