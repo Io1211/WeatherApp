@@ -3,7 +3,6 @@ package at.qe.skeleton.tests;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.RegistrationService;
 import at.qe.skeleton.internal.services.TokenService;
-import at.qe.skeleton.internal.services.UserxService;
 import at.qe.skeleton.internal.services.exceptions.RegistrationEmailAlreadyExistsException;
 import at.qe.skeleton.internal.services.exceptions.RegistrationInvalidTokenException;
 import at.qe.skeleton.internal.services.exceptions.RegistrationUsernameAlreadyExistsException;
