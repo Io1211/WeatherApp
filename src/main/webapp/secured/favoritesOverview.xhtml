@@ -140,7 +140,7 @@
                                 value="Dew-Point [C]"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().dewPoint()}"
+                                value="#{weatherHelper.roundTemp(favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().dewPoint())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}"/>
 
                         <h:outputText

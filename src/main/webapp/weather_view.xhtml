@@ -233,7 +233,7 @@
                                 </p:column>
 
                                 <p:column headerText="Dew point [C]" rendered="#{sessionInfoBean.isUserPremium()}">
-                                    <h:outputText value="#{dailyWeatherEntries.dewPoint()}"/>
+                                    <h:outputText value="#{weatherHelper.roundTemp(dailyWeatherEntries.dewPoint())}"/>
                                 </p:column>
 
                                 <p:column headerText="Cloudiness [%]" rendered="#{sessionInfoBean.isUserPremium()}">
