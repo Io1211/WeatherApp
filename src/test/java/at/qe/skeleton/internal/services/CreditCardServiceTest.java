@@ -4,7 +4,9 @@ import at.qe.skeleton.internal.model.CardType;
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +26,10 @@ class CreditCardServiceTest {
 
   CreditCard creditCard;
   Userx user2;
+
+  private void resetDB() {
+    creditCardRepository.findAll().forEach(c -> creditCardRepository.delete(c));
+  }
 
   @DirtiesContext
   @Test
@@ -59,9 +65,63 @@ class CreditCardServiceTest {
     Assertions.assertEquals(expirationDateValid, loadedCreditCard.getExpirationDate());
   }
 
-  // todo: add tests
-  //  for if (!validateDate(creditCard.getExpirationDate())) and
-  // (creditCardRepository.findByUserId_Username(creditCard.getUser().getUsername()) != null)
+  @DirtiesContext
+  @Test
+  @WithMockUser(
+      username = "admin",
+      authorities = {"ADMIN"})
+  void safeIllegalExpirationDateCreditcard() {
+    // creditCard for testing
+    this.creditCard = new CreditCard();
+
+    // crediditCard testData
+    user2 = userxService.loadUser("user2");
+    CardType amex = CardType.AMERICANEXPRESS;
+    String cardNumber = "ABCD EFGH 1234 5678";
+    String invalidExpDate1 = "13/2024";
+    String invalidExpDate2 = "100/2024";
+    String invalidExpDate3 = "04/2000";
+
+    // setting up credit card
+    creditCard.setUser(user2);
+    creditCard.setCardType(amex);
+    creditCard.setCardnumber(cardNumber);
+    creditCard.setExpirationDate(invalidExpDate1);
+
+    // making sure repository is empty
+    Assertions.assertTrue(creditCardRepository.findAll().isEmpty());
+
+    // actual testing
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> creditCardService.saveCreditCard(creditCard),
+        "Saving Credit Cards with invalid expiration Date should not be possible.");
+    resetDB();
+    Assertions.assertTrue(
+        creditCardRepository.findAll().isEmpty(), "resetting the db did not work.");
+
+    // now with different invalid exp date
+    creditCard.setExpirationDate(invalidExpDate2);
+    Assertions.assertEquals(
+        invalidExpDate2,
+        creditCard.getExpirationDate(),
+        "setting different Exp Date did not work.");
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> creditCardService.saveCreditCard(creditCard),
+        "Saving Credit Cards with invalid expiration Date should not be possible.");
+    resetDB();
+    Assertions.assertTrue(
+        creditCardRepository.findAll().isEmpty(), "resetting the db did not work.");
+
+    // third invalid exp date
+    creditCard.setExpirationDate(invalidExpDate3);
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> creditCardService.saveCreditCard(creditCard),
+        "Saving Credit Cards with invalid expiration Date should not be possible");
+  }
+
   @Test
   void deleteCreditCard() {}
 
