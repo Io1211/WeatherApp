@@ -30,8 +30,6 @@ public class CreditCardBean {
 
   @Autowired private CreditCardService creditCardService;
 
-  @Autowired private CreditCardRepository creditCardRepository;
-
   private List<CardType> cardTypes;
 
   /**
@@ -50,7 +48,7 @@ public class CreditCardBean {
    */
   private void loadCurrentUserCreditCard() {
     String username = sessionInfoBean.getCurrentUser().getUsername();
-    CreditCard existingCard = creditCardRepository.findByUserId_Username(username);
+    CreditCard existingCard = creditCardService.loadCreditCardByUsername(username);
     if (existingCard != null) {
       this.creditCard = existingCard;
     } else {
@@ -102,7 +100,7 @@ public class CreditCardBean {
   /**
    * This methode is needed to test the class
    *
-   * @param mockCard
+   * @param mockCard mockCard for Testing purposes
    */
   public void setCreditCard(CreditCard mockCard) {
     this.creditCard = mockCard;

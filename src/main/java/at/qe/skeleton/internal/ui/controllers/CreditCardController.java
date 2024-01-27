@@ -20,14 +20,8 @@ public class CreditCardController {
 
   @Autowired private SessionInfoBean sessionInfoBean;
 
-  @Autowired private CreditCardRepository creditCardRepository;
-
-  private CreditCard creditCard;
-
-  // todo: use creditcardservice only! dont use creditCardRepo
-
   public CreditCard getCreditcard() {
-    return creditCardRepository.findByUserId_Username(
+    return creditCardService.loadCreditCardByUsername(
         sessionInfoBean.getCurrentUser().getUsername());
   }
 
