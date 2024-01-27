@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mail.MailAuthenticationException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -116,12 +117,20 @@ class SubscriptionServiceTest {
     user.getSubscription().setSubscriptionPeriods(new ArrayList<>());
     user.setRoles(new TreeSet<>());
     user.getRoles().add(UserxRole.PREMIUM_USER);
-    try {
-      subscriptionService.revokeSubscription(user);
-    } catch (NoEmailProvidedException e) {
-      assertNull(user.getSubscription());
-      assertFalse(user.getRoles().contains(UserxRole.PREMIUM_USER));
-    }
+    assertThrows(
+        NoEmailProvidedException.class,
+        () -> {
+          subscriptionService.revokeSubscription(user);
+        });
+
+    user.setEmail("abc@mail.com");
+    assertThrows(
+        MailAuthenticationException.class,
+        () -> {
+          subscriptionService.revokeSubscription(user);
+        });
+    assertNull(user.getSubscription());
+    assertFalse(user.getRoles().contains(UserxRole.PREMIUM_USER));
   }
 
   @DirtiesContext
