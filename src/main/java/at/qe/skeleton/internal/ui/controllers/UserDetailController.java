@@ -79,6 +79,7 @@ public class UserDetailController implements Serializable {
   public void setNewPassword(String newPassword) {
     this.newPassword = newPassword;
   }
+
   /** Action to force a reload of the currently displayed user. */
   public void doReloadUser() {
     user = userService.loadUser(user.getUsername());
@@ -87,11 +88,17 @@ public class UserDetailController implements Serializable {
   /** Action to save the currently displayed user. */
   public void doSaveUser() throws NoCreditCardFoundException {
     resetPassword();
-    if(!user.isPremium() && initializeRoles.contains(UserxRole.PREMIUM_USER)) {
+    if (!user.isPremium() && initializeRoles.contains(UserxRole.PREMIUM_USER)) {
       try {
         subscriptionService.activatePremiumSubscription(user);
       } catch (NoCreditCardFoundException e) {
-        FacesContext.getCurrentInstance().addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, "Error", "No credit card found. Please assign a credit card to the user."));
+        FacesContext.getCurrentInstance()
+            .addMessage(
+                null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Error",
+                    "No credit card found. Please assign a credit card to the user."));
         initializeRoles.remove(UserxRole.PREMIUM_USER);
       }
     }
@@ -101,7 +108,13 @@ public class UserDetailController implements Serializable {
           }
           catch (NoSubscriptionFoundException | NoActivePremiumSubscriptionFoundException |
                  MoneyGlitchAvoidanceException e){
-            FacesContext.getCurrentInstance().addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, "Error", "User just signed up. Please try again later."));
+            FacesContext.getCurrentInstance()
+                    .addMessage(
+                            null, 
+                            new jakarta.faces.application.FacesMessage(
+                                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                                    "Error",
+                                    "User just signed up. Please try again later."));
             initializeRoles.add(UserxRole.PREMIUM_USER);
           }
         }
@@ -115,33 +128,28 @@ public class UserDetailController implements Serializable {
     user = null;
   }
 
-  /**
-   * Resets the password of the currently displayed user if a new password has been set.
-   */
+  /** Resets the password of the currently displayed user if a new password has been set. */
   public void resetPassword() {
     if (newPassword != null && !newPassword.trim().isEmpty()) {
       user.setPassword(passwordEncoder.encode(newPassword));
     }
   }
 
-    /**
-     * Sends a password reset email to the currently displayed user.
-     */
+  /** Sends a password reset email to the currently displayed user. */
   public void sendResetPasswordAdmin() {
     passwordResetService.sendForgetPasswordEmail(user);
   }
 
-    /**
-     * Returns a list of all available user roles.
-     *
-     * @return all available user roles
-     */
+  /**
+   * Returns a list of all available user roles.
+   *
+   * @return all available user roles
+   */
   public Set<UserxRole> getUserxRoles() {
     return userxRoles;
   }
-  /**
-   * Initialize current user roles.
-   */
+
+  /** Initialize current user roles. */
   private void initializeRoles() {
     if (user != null && user.getRoles() != null) {
       initializeRoles = new HashSet<>(user.getRoles());

@@ -44,6 +44,7 @@ public class WebSecurityConfig {
   public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
     return new ChangeSessionIdAuthenticationStrategy();
   }
+
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
