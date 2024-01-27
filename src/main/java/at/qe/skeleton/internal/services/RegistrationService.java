@@ -20,12 +20,24 @@ import java.util.Set;
 @Scope("application")
 public class RegistrationService {
 
-  @Autowired private UserxRepository userRepository;
+  private final UserxRepository userRepository;
 
-  @Autowired private PasswordEncoder passwordEncoder;
-  @Autowired private EmailService emailService;
+  private final PasswordEncoder passwordEncoder;
+  private final EmailService emailService;
 
-  @Autowired private TokenService tokenService;
+  private final TokenService tokenService;
+
+  public RegistrationService(
+      PasswordEncoder passwordEncoder,
+      EmailService emailService,
+      TokenService tokenService,
+      UserxRepository userxRepository) {
+
+    this.passwordEncoder = passwordEncoder;
+    this.emailService = emailService;
+    this.tokenService = tokenService;
+    this.userRepository = userxRepository;
+  }
 
   public void sendRegistrationEmail(String email, String token) {
     emailService.sendEmail(
