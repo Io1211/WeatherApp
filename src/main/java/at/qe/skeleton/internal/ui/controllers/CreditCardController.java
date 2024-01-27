@@ -31,19 +31,16 @@ public class CreditCardController {
         sessionInfoBean.getCurrentUser().getUsername());
   }
 
-  public void setCreditCard(CreditCard creditCard) {
-    this.creditCard = creditCard;
-  }
-
-  public void reloadCreditCard() {
-    creditCard = creditCardService.loadCreditCard(creditCard.getUser());
-  }
-
-  public void saveCreditCard() {
-    creditCardService.saveCreditCard(creditCard);
-  }
-
-  public void deleteCreditCard() {
+  public String deleteCreditCard() {
     creditCardService.deleteCreditCard(getCreditcard());
+
+    return "credit_card_details.xhtml?faces-redirect=true";
   }
 }
+
+// todo: try to make logical distinction between creditCardController
+// and creditCardBean or put both in one class.
+
+// todo: add a message to the delete CreditCard method
+
+// todo: only use the creditCardService not the directory.

@@ -66,9 +66,9 @@ public class CreditCardBean {
     return creditCard;
   }
 
-  private void addMessage(String summary) {
+  private void addMessage(String summary, FacesMessage.Severity severity) {
     FacesContext.getCurrentInstance()
-        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, "detail"));
+        .addMessage(null, new FacesMessage(severity, summary, "detail"));
   }
 
   /**
@@ -81,9 +81,9 @@ public class CreditCardBean {
       creditCard.setUser(sessionInfoBean.getCurrentUser());
       creditCardService.saveCreditCard(creditCard);
       sessionInfoBean.getCurrentUser().setCreditCard(creditCard);
-      addMessage("Credit card saved.");
+      addMessage("Credit card saved.", FacesMessage.SEVERITY_INFO);
     } catch (IllegalArgumentException e) {
-      addMessage(e.getMessage());
+      addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
     return "credit_card_details.xhtml";
