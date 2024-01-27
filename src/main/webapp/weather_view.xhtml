@@ -9,6 +9,17 @@
                 template="/WEB-INF/templates/main.xhtml">
 
     <ui:define name="content">
+
+        <style>
+
+            .weather-icon {
+                display: inline;
+                width: 150px;
+                height: 150px;
+            }
+
+        </style>
+
         <h:form id="weatherForm">
             <p:panel header="Weather overview for the next few days:" id="Response">
                 <div>
@@ -59,6 +70,12 @@
 
                         </h:panelGrid>
 
+                        <h:graphicImage 
+                            alt="Weather Icon" 
+                            url="#{iconController.getIcon(weatherBean.weatherDTO.currentWeather().weather().icon())}" 
+                            styleClass="weather-icon"
+                            style="margin-left: 40px; margin-top: 15px;"
+                        />
 
                         <br/>
 
