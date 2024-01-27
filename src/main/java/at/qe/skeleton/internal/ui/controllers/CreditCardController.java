@@ -24,6 +24,8 @@ public class CreditCardController {
 
   private CreditCard creditCard;
 
+  // todo: use creditcardservice only! dont use creditCardRepo
+
   public CreditCard getCreditcard() {
     return creditCardRepository.findByUserId_Username(
         sessionInfoBean.getCurrentUser().getUsername());

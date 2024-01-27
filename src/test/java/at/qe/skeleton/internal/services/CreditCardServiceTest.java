@@ -4,9 +4,7 @@ import at.qe.skeleton.internal.model.CardType;
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -123,13 +121,159 @@ class CreditCardServiceTest {
   }
 
   @Test
-  void deleteCreditCard() {}
+  @DirtiesContext
+  @WithMockUser(
+      username = "admin",
+      authorities = {"ADMIN"})
+  void safeAlreadySavedCreditCard() {
+    // creditCard for testing
+    this.creditCard = new CreditCard();
+    // crediditCard testData
+    user2 = userxService.loadUser("user2");
+    CardType amex = CardType.AMERICANEXPRESS;
+    String cardNumber = "ABCD EFGH 1234 5678";
+    String expirationDateValid = "12/2030";
+
+    // setting up credit card
+    creditCard.setUser(user2);
+    creditCard.setCardType(amex);
+    creditCard.setCardnumber(cardNumber);
+    creditCard.setExpirationDate(expirationDateValid);
+
+    // save credit card twice
+    creditCardService.saveCreditCard(creditCard);
+    Assertions.assertFalse(creditCardRepository.findAll().isEmpty());
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> creditCardService.saveCreditCard(creditCard),
+        "saving the same credit card twice should throw exception");
+
+    // try saving another credit card.
+    // first prepare data for other credit card
+    Userx adminUser = userxService.loadUser("admin");
+    String otherExpirationDate = "05/2040";
+    String otherCardNumber = "1233 1233 1223 1222";
+    CardType otherCardType = CardType.MASTERCARD;
+
+    // now setup other creditcard
+    CreditCard otherCreditCard = new CreditCard();
+    otherCreditCard.setUser(adminUser);
+    otherCreditCard.setCardType(otherCardType);
+    otherCreditCard.setExpirationDate(otherExpirationDate);
+    otherCreditCard.setCardnumber(otherCardNumber);
+
+    Assertions.assertDoesNotThrow(() -> creditCardService.saveCreditCard(otherCreditCard));
+    Assertions.assertEquals(2, creditCardRepository.findAll().size());
+  }
 
   @Test
-  void deleteCreditCardFromUser() {}
+  @DirtiesContext
+  public void safeCreditCardWithMissingUser() {
+    // creditCard for testing
+    this.creditCard = new CreditCard();
+    // crediditCard testData
+    CardType amex = CardType.AMERICANEXPRESS;
+    String cardNumber = "ABCD EFGH 1234 5678";
+    String expirationDateValid = "12/2030";
+    // setting up credit card without user
+    creditCard.setCardType(amex);
+    creditCard.setCardnumber(cardNumber);
+    creditCard.setExpirationDate(expirationDateValid);
+
+    Assertions.assertThrows(
+        Exception.class,
+        () -> creditCardService.saveCreditCard(creditCard),
+        "saving a credit card without user should throw exception");
+  }
 
   @Test
-  void loadCreditCardByUsername() {}
+  @DirtiesContext
+  @WithMockUser(username = "user2", authorities = "REGISTERED_USER")
+  void deleteCreditCard() {
+    // creditCard for testing
+    this.creditCard = new CreditCard();
+    // crediditCard testData
+    user2 = userxService.loadUser("user2");
+    CardType amex = CardType.AMERICANEXPRESS;
+    String cardNumber = "ABCD EFGH 1234 5678";
+    String expirationDateValid = "12/2030";
+
+    // setting up credit card
+    creditCard.setUser(user2);
+    creditCard.setCardType(amex);
+    creditCard.setCardnumber(cardNumber);
+    creditCard.setExpirationDate(expirationDateValid);
+
+    // adding credit Card
+    creditCardService.saveCreditCard(creditCard);
+
+    // db should contain exactly one creditCard now
+    Assertions.assertEquals(1, creditCardRepository.findAll().size());
+
+    // deleting the creditcard should result in zero creditcards in db
+    creditCardService.deleteCreditCard(creditCard);
+    Assertions.assertTrue(
+        creditCardRepository.findAll().isEmpty(), "db should not contain any creditCards now");
+  }
+
+  @Test
+  @DirtiesContext
+  @WithMockUser(username = "user2", authorities = "REGISTERED_USER")
+  void deleteCreditCardFromUser() {
+    // creditCard for testing
+    this.creditCard = new CreditCard();
+    // crediditCard testData
+    user2 = userxService.loadUser("user2");
+    CardType amex = CardType.AMERICANEXPRESS;
+    String cardNumber = "ABCD EFGH 1234 5678";
+    String expirationDateValid = "12/2030";
+
+    // setting up credit card
+    creditCard.setUser(user2);
+    creditCard.setCardType(amex);
+    creditCard.setCardnumber(cardNumber);
+    creditCard.setExpirationDate(expirationDateValid);
+
+    // adding credit Card
+    creditCardService.saveCreditCard(creditCard);
+
+    // db should contain exactly one creditCard now
+    Assertions.assertEquals(1, creditCardRepository.findAll().size());
+
+    // deleting the creditcard should result in zero creditcards in db
+    creditCardService.deleteCreditCardFromUser("user2");
+    Assertions.assertTrue(
+        creditCardRepository.findAll().isEmpty(), "db should not contain any creditCards now");
+  }
+
+  @Test
+  @DirtiesContext
+  @WithMockUser(username = "user2", authorities = "REGISTERED_USER")
+  void loadCreditCardByUsername() {
+    // creditCard for testing
+    this.creditCard = new CreditCard();
+    // crediditCard testData
+    user2 = userxService.loadUser("user2");
+    CardType amex = CardType.AMERICANEXPRESS;
+    String cardNumber = "ABCD EFGH 1234 5678";
+    String expirationDateValid = "12/2030";
+
+    // setting up credit card
+    creditCard.setUser(user2);
+    creditCard.setCardType(amex);
+    creditCard.setCardnumber(cardNumber);
+    creditCard.setExpirationDate(expirationDateValid);
+
+    // adding credit Card
+    creditCardService.saveCreditCard(creditCard);
+
+    CreditCard creditCardCopy = creditCardService.loadCreditCardByUsername("user2");
+
+    Assertions.assertNotNull(creditCardCopy);
+    Assertions.assertEquals(user2, creditCardCopy.getUser());
+    Assertions.assertEquals(expirationDateValid, creditCardCopy.getExpirationDate());
+    Assertions.assertEquals(creditCard.getId(), creditCardCopy.getId());
+  }
 
   @Test
   public void testValidateDatetrue() {
