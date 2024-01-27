@@ -90,8 +90,8 @@ public class SessionInfoBean implements Serializable {
   }
 
   public boolean isUserPremium() {
-    Userx currentUser = getCurrentUser();
-    return currentUser != null && currentUser.isPremium();
+    Userx user = getCurrentUser();
+    return user != null && user.isPremium();
   }
 
   /**
