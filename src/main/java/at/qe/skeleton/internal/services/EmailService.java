@@ -20,7 +20,7 @@ public class EmailService {
 
   @Autowired private JavaMailSender mailSender;
 
-  @Value("${spring.maouril.username}")
+  @Value("${spring.mail.username}")
   private String projectEmail;
 
   public void sendEmail(String email, String subject, String message) throws MailException {
