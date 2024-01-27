@@ -25,10 +25,9 @@
                 <div>
                     <h4>Location searched for:
                         #{weatherBean.location.city},
+                        <h:outputText value="#{weatherBean.location.state}," rendered="#{not empty weatherBean.location.state}"/>
                         #{weatherBean.location.country}
-                        <!-- check wether this gets rendered even when state is null-->
-                        <h:outputText value=",#{weatherBean.location.state}"
-                                      rendered="#{not empty weatherBean.location.state}"/>
+
                         <p:commandButton id="toggleFavorite"
                                          action="#{weatherBean.toggleFavorite()}"
                                          rendered="#{sessionInfoBean.loggedIn}"
