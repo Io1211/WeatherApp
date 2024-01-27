@@ -24,9 +24,9 @@
             <p:panel header="Weather overview for the next few days:" id="Response">
                 <div>
                     <h4>Location searched for:
-                        #{weatherBean.location.city},
-                        <h:outputText value="#{weatherBean.location.state}," rendered="#{not empty weatherBean.location.state}"/>
-                        #{weatherBean.location.country}
+                        <h:outputText value="#{weatherBean.location.city}, " rendered="#{not empty weatherBean.location.city}"/>
+                        <h:outputText value="#{weatherBean.location.state}, " rendered="#{not empty weatherBean.location.state}"/>
+                        <h:outputText value="#{weatherBean.location.country} " rendered="#{not empty weatherBean.location.country}"/>
 
                         <p:commandButton id="toggleFavorite"
                                          action="#{weatherBean.toggleFavorite()}"
