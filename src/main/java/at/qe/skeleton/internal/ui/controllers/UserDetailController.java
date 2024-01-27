@@ -9,7 +9,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import at.qe.skeleton.internal.services.exceptions.MoneyGlitchAvoidanceException;
+import at.qe.skeleton.internal.services.exceptions.NoActivePremiumSubscriptionFoundException;
 import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
+import at.qe.skeleton.internal.services.exceptions.NoSubscriptionFoundException;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,15 +87,24 @@ public class UserDetailController implements Serializable {
   /** Action to save the currently displayed user. */
   public void doSaveUser() throws NoCreditCardFoundException {
     resetPassword();
-    if(!user.isPremium() && initializeRoles.contains(UserxRole.PREMIUM_USER)){
-        try{
-          subscriptionService.activatePremiumSubscription(user);
-        }
-        catch (NoCreditCardFoundException e){
-          FacesContext.getCurrentInstance().addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, "Error", "No credit card found. Please assign a credit card to the user."));
-          initializeRoles.remove(UserxRole.PREMIUM_USER);
-        }
+    if(!user.isPremium() && initializeRoles.contains(UserxRole.PREMIUM_USER)) {
+      try {
+        subscriptionService.activatePremiumSubscription(user);
+      } catch (NoCreditCardFoundException e) {
+        FacesContext.getCurrentInstance().addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, "Error", "No credit card found. Please assign a credit card to the user."));
+        initializeRoles.remove(UserxRole.PREMIUM_USER);
+      }
     }
+        if(user.isPremium() && !initializeRoles.contains(UserxRole.PREMIUM_USER)){
+          try{
+            subscriptionService.deactivatePremiumSubscription(user);
+          }
+          catch (NoSubscriptionFoundException | NoActivePremiumSubscriptionFoundException |
+                 MoneyGlitchAvoidanceException e){
+            FacesContext.getCurrentInstance().addMessage(null, new jakarta.faces.application.FacesMessage(jakarta.faces.application.FacesMessage.SEVERITY_ERROR, "Error", "User just signed up. Please try again later."));
+            initializeRoles.add(UserxRole.PREMIUM_USER);
+          }
+        }
     user.setRoles(initializeRoles);
     user = this.userService.saveUser(user);
   }
