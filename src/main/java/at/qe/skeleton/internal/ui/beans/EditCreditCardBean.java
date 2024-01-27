@@ -2,7 +2,6 @@ package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.internal.model.CardType;
 import at.qe.skeleton.internal.model.CreditCard;
-import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.services.CreditCardService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
@@ -22,7 +21,7 @@ import java.util.List;
  */
 @Component
 @Scope("session")
-public class CreditCardBean {
+public class EditCreditCardBean {
 
   private CreditCard creditCard;
 

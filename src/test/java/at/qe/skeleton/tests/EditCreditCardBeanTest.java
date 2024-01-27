@@ -4,7 +4,7 @@ import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.services.CreditCardService;
-import at.qe.skeleton.internal.ui.beans.CreditCardBean;
+import at.qe.skeleton.internal.ui.beans.EditCreditCardBean;
 import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 import jakarta.faces.context.FacesContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
-/** Some very basic tests for UserBean. {@link CreditCardBean} */
-public class CreditCardBeanTest {
+/** Some very basic tests for UserBean. {@link EditCreditCardBean} */
+public class EditCreditCardBeanTest {
 
-  @InjectMocks private CreditCardBean creditCardBean;
+  @InjectMocks private EditCreditCardBean editCreditCardBean;
 
   @Mock private CreditCardService creditCardService;
 
@@ -35,9 +35,9 @@ public class CreditCardBeanTest {
 
   @Test
   public void testInit() {
-    creditCardBean.init();
-    assertNotNull("CardTypes should not be null", creditCardBean.getCardTypes());
-    assertNotNull("CreditCard should not be null", creditCardBean.getCreditCard());
+    editCreditCardBean.init();
+    assertNotNull("CardTypes should not be null", editCreditCardBean.getCardTypes());
+    assertNotNull("CreditCard should not be null", editCreditCardBean.getCreditCard());
   }
 
   // test for validate date
@@ -67,9 +67,9 @@ public class CreditCardBeanTest {
       testCreditCard.setUser(mockedUser);
       when(sessionInfoBean.getCurrentUser()).thenReturn(mockedUser);
 
-      creditCardBean.setCreditCard(testCreditCard);
+      editCreditCardBean.setCreditCard(testCreditCard);
 
-      String result = creditCardBean.saveCreditCard();
+      String result = editCreditCardBean.saveCreditCard();
 
       verify(creditCardService, times(1)).saveCreditCard(testCreditCard);
 
@@ -91,9 +91,9 @@ public class CreditCardBeanTest {
       testCreditCard.setUser(mockedUser);
       when(sessionInfoBean.getCurrentUser()).thenReturn(mockedUser);
 
-      creditCardBean.setCreditCard(testCreditCard);
+      editCreditCardBean.setCreditCard(testCreditCard);
 
-      String result = creditCardBean.updateCreditCard();
+      String result = editCreditCardBean.updateCreditCard();
 
       verify(creditCardService, times(1)).saveCreditCard(testCreditCard);
 

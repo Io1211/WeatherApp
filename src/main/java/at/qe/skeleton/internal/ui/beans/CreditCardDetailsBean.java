@@ -1,9 +1,10 @@
-package at.qe.skeleton.internal.ui.controllers;
+package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.internal.model.CreditCard;
-import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.services.CreditCardService;
 import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("view")
-public class CreditCardController {
+public class CreditCardDetailsBean {
 
   @Autowired private CreditCardService creditCardService;
 
@@ -25,16 +26,15 @@ public class CreditCardController {
         sessionInfoBean.getCurrentUser().getUsername());
   }
 
-  public String deleteCreditCard() {
-    creditCardService.deleteCreditCard(getCreditcard());
+  private void addMessage(String summary, FacesMessage.Severity severity) {
+    FacesContext.getCurrentInstance()
+        .addMessage(null, new FacesMessage(severity, summary, "detail"));
+  }
 
-    return "credit_card_details.xhtml?faces-redirect=true";
+  public void deleteCreditCard() {
+    creditCardService.deleteCreditCard(getCreditcard());
+    addMessage("Credit Card deleted", FacesMessage.SEVERITY_INFO);
   }
 }
 
-// todo: try to make logical distinction between creditCardController
-// and creditCardBean or put both in one class.
-
 // todo: add a message to the delete CreditCard method
-
-// todo: only use the creditCardService not the directory.
