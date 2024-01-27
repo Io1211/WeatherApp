@@ -36,5 +36,3 @@ public class CreditCardDetailsBean {
     addMessage("Credit Card deleted", FacesMessage.SEVERITY_INFO);
   }
 }
-
-// todo: add a message to the delete CreditCard method

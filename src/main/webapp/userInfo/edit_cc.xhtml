@@ -26,8 +26,7 @@
                     <p:outputLabel for="cardType" value="Card Type:"/>
                     <p:selectOneMenu id="cardType" value="#{editCreditCardBean.creditCard.cardType}" required="true"
                                      requiredMessage="Card Type is required">
-                        <f:selectItems value="#{editCreditCardBean.cardTypes}" var="type" itemValue="#{type}"
-                                       itemLabel="#{type}"/>
+                        <f:selectItems value="#{editCreditCardBean.cardTypes}"/>
                     </p:selectOneMenu>
 
                     <p:commandButton value="Update" action="#{editCreditCardBean.updateCreditCard}"

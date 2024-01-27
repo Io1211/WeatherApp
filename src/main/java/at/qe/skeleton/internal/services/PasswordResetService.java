@@ -46,3 +46,5 @@ public class PasswordResetService {
     }
   }
 }
+
+// todo: write tests

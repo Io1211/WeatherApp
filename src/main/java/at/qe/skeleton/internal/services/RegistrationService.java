@@ -90,3 +90,5 @@ public class RegistrationService {
     return userRepository.findFirstByUsername(username);
   }
 }
+
+// todo write tests
