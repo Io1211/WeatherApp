@@ -92,3 +92,7 @@ VALUES
     ('testPremium', 'REGISTERED_USER'), ('testPremium', 'PREMIUM_USER'),
     ('testPremiumBad', 'REGISTERED_USER'),
     ('testManager', 'REGISTERED_USER'), ('testManager', 'MANAGER');
+
+INSERT INTO CREDIT_CARD(ID, USERID, NUMBER, CARDTYPE)
+VALUES
+    ('000001', 'testPremiumBad', '12345678', 'VISA');
