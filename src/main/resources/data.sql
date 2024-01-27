@@ -37,7 +37,7 @@ VALUES
 
 INSERT INTO USERX_USERX_ROLE (USERX_USERNAME, ROLES) 
 VALUES
-    ('admin', 'ADMIN'), ('admin', 'REGISTERED_USER'),
+    ('admin2', 'ADMIN'), ('admin2', 'REGISTERED_USER'),
     ('user1', 'MANAGER'), ('user1', 'REGISTERED_USER'),
     ('user2', 'REGISTERED_USER'),
     ('elvis', 'ADMIN'), ('elvis', 'REGISTERED_USER'),
@@ -62,33 +62,33 @@ VALUES
     ('000004', TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
     ('000005', TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE);
 
+INSERT INTO SUBSCRIPTION(ID, SIGNUP_DATE) 
+VALUES 
+    (91, DATE '2024-01-08'),
+    (92, DATE '2023-11-01');
+
+INSERT INTO SUBSCRIPTION_PERIOD (ACTIVE, START, STOP, ID) 
+VALUES 
+    (TRUE, DATE '2024-01-08', NULL, 91),
+    (FALSE, DATE '2023-11-01', DATE '2023-12-31', 92);
+
+INSERT INTO SUBSCRIPTION_SUBSCRIPTION_PERIODS (SUBSCRIPTION_ID, SUBSCRIPTION_PERIODS_ID)
+VALUES 
+    (91, 91),
+    (92, 92);
+
 INSERT INTO USERX (ENABLED, FIRST_NAME, LAST_NAME, PASSWORD, USERNAME, CREATE_USER_USERNAME, CREATE_DATE, FAVORITE_DATA_CONFIG_ID, SUBSCRIPTION_ID) 
 VALUES 
-    (TRUE, 'TestUser', 'admin', '$2a$10$4ENBx/wSbkRKzj9D5vcnjuif.QpkahXzSNyxi9Ki9Na8O/A/M.HDy', 'admin', 'admin', '2000-01-01 00:00:00', '000001', NULL),
-    (TRUE, 'TestUser', 'testUser', '$2a$10$4ENBx/wSbkRKzj9D5vcnjuif.QpkahXzSNyxi9Ki9Na8O/A/M.HDy', 'testUser', 'admin', '2000-01-01 00:00:00', '000002', NULL),
-    (TRUE, 'TestUser', 'testPremium', '$2a$10$4ENBx/wSbkRKzj9D5vcnjuif.QpkahXzSNyxi9Ki9Na8O/A/M.HDy', 'testPremium', 'admin', '2000-01-01 00:00:00', '000003', 100),
-    (TRUE, 'TestUser', 'testPremiumBad', '$2a$10$4ENBx/wSbkRKzj9D5vcnjuif.QpkahXzSNyxi9Ki9Na8O/A/M.HDy', 'testPremiumBad', 'admin', '2000-01-01 00:00:00', '000004', 200),
-    (TRUE, 'TestUser', 'testManager', '$2a$10$4ENBx/wSbkRKzj9D5vcnjuif.QpkahXzSNyxi9Ki9Na8O/A/M.HDy', 'testManager', 'admin', '2000-01-01 00:00:00', '000005', NULL);
+    (TRUE, 'TestUser', 'admin', '$2a$10$4ENBx/wSbkRKzj9D5vcnjuif.QpkahXzSNyxi9Ki9Na8O/A/M.HDy', 'admin', 'admin', '2016-01-01 00:00:00', '000001', NULL),
+    (TRUE, 'TestUser', 'testUser', '$2a$10$4ENBx/wSbkRKzj9D5vcnjuif.QpkahXzSNyxi9Ki9Na8O/A/M.HDy', 'testUser', 'admin', '2016-01-01 00:00:00', '000002', NULL),
+    (TRUE, 'TestUser', 'testPremium', '$2a$10$4ENBx/wSbkRKzj9D5vcnjuif.QpkahXzSNyxi9Ki9Na8O/A/M.HDy', 'testPremium', 'admin', '2016-01-01 00:00:00', '000003', 91),
+    (TRUE, 'TestUser', 'testPremiumBad', '$2a$10$4ENBx/wSbkRKzj9D5vcnjuif.QpkahXzSNyxi9Ki9Na8O/A/M.HDy', 'testPremiumBad', 'admin', '2016-01-01 00:00:00', '000004', 92),
+    (TRUE, 'TestUser', 'testManager', '$2a$10$4ENBx/wSbkRKzj9D5vcnjuif.QpkahXzSNyxi9Ki9Na8O/A/M.HDy', 'testManager', 'admin', '2016-01-01 00:00:00', '000005', NULL);
 
 INSERT INTO USERX_USERX_ROLE (USERX_USERNAME, ROLES) 
 VALUES
-    ('admin', 'REGISTERED_USER'), ('admin', 'admin'),
+    ('admin', 'REGISTERED_USER'), ('admin', 'ADMIN'),
     ('testUser', 'REGISTERED_USER'),
     ('testPremium', 'REGISTERED_USER'), ('testPremium', 'PREMIUM_USER'),
     ('testPremiumBad', 'REGISTERED_USER'), ('testPremiumBad', 'PREMIUM_USER'),
     ('testManager', 'REGISTERED_USER'), ('testManager', 'MANAGER');
-
-INSERT INTO SUBSCRIPTION(ID, SIGNUP_DATE) 
-VALUES 
-    (100, DATE '2024-01-08'),
-    (200, DATE '2024-01-01');
-
-INSERT INTO SUBSCRIPTION_SUBSCRIPTION_PERIODS (SUBSCRIPTION_ID, SUBSCRIPTION_PERIODS_ID)
-VALUES 
-    (100, 101),
-    (200, 201);
-
-INSERT INTO SUBSCRIPTION_PERIOD (ACTIVE, START, STOP, ID) 
-VALUES 
-    (TRUE, DATE '2023-01-08', NULL, 101),
-    (FALSE, DATE '2023-11-01', DATE '2023-12-31', 201);
