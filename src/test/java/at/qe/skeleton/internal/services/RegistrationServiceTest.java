@@ -3,8 +3,7 @@ package at.qe.skeleton.internal.services;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.repositories.UserxRepository;
-import at.qe.skeleton.internal.services.exceptions.RegistrationEmailAlreadyExistsException;
-import at.qe.skeleton.internal.services.exceptions.RegistrationUsernameAlreadyExistsException;
+import at.qe.skeleton.internal.services.exceptions.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,15 +26,15 @@ class RegistrationServiceTest {
   @InjectMocks RegistrationService registrationService;
 
   @Autowired UserxRepository userxRepository;
+  @Autowired TokenService tokenService;
 
   @BeforeEach
   public void init() {
     // since we don`t use Constructor Injection we need to use this method for injecting the real
     // autowired UserxRepo
     ReflectionTestUtils.setField(registrationService, "userRepository", userxRepository);
+    ReflectionTestUtils.setField(registrationService, "tokenService", tokenService);
   }
-
-  // todo: update the exact Exceptions
 
   @Test
   void sendRegistrationEmail() {
@@ -80,18 +79,68 @@ class RegistrationServiceTest {
     Assertions.assertFalse(registeredUser.isEnabled());
   }
 
+  @DirtiesContext
   @Test
-  void registrationOfInvalidUser() {}
+  void registerThrowsUsernameAlreadyExistsException() {
+    String username = "uwe";
+    Userx user = new Userx();
+    user.setUsername(username);
+    userxRepository.save(user);
+    Assertions.assertThrows(
+        RegistrationUsernameAlreadyExistsException.class,
+        () -> registrationService.registerUser(user, "abcd"));
+  }
+
+  @DirtiesContext
+  @Test
+  void registerThrowsEmailAlreadyExistsException() {
+    // create two users with different usernames but the same email
+    String email = "mail";
+    Userx user1 = new Userx();
+    user1.setUsername("uwe");
+    user1.setEmail(email);
+    userxRepository.save(user1);
+    String username2 = "beate";
+    Userx user2 = new Userx();
+    user2.setUsername(username2);
+    user2.setEmail(email);
+
+    Assertions.assertThrows(
+        RegistrationEmailAlreadyExistsException.class,
+        () -> registrationService.registerUser(user2, "abcd"));
+  }
+
+  @DirtiesContext
+  @Test
+  void confirmThrowsInvalidTokenException() {
+    Userx user1 = new Userx();
+    user1.setUsername("uwe");
+    userxRepository.save(user1);
+
+    Assertions.assertThrows(
+        RegistrationInvalidTokenException.class,
+        () -> registrationService.confirmRegistrationOfUser("uwe", "token", "notTheSameToken"));
+  }
 
   @Test
-  void confirmRegistrationOfUser() {}
+  void resendThrowsNoUserFoundException() {
+    Assertions.assertThrows(
+        NoUserFoundException.class,
+        () -> registrationService.resendRegistrationEmailToUser("notExistingEmail", "token"));
+  }
 
+  @DirtiesContext
   @Test
-  void resendRegistrationEmailToUser() {}
+  void resendThrowsUserAlreadyEnabledException() {
+    String email = "mail";
+    Userx user1 = new Userx();
+    user1.setUsername("uwe");
+    user1.setEmail(email);
+    user1.setEnabled(true);
+    userxRepository.save(user1);
 
-  @Test
-  void loadUserByEmail() {}
-
-  @Test
-  void loadUserByUsername() {}
+    Assertions.assertThrows(
+        RegistrationUserAlreadyEnabledException.class,
+        () -> registrationService.resendRegistrationEmailToUser(email, "token"));
+  }
 }
