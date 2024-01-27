@@ -68,9 +68,8 @@ public class WeatherBean {
               "weatherForm:locationSearch",
               new FacesMessage(
                   FacesMessage.SEVERITY_INFO,
-                  "",
                   "Sorry, we couldn't find a location with the name: %s"
-                      .formatted(locationSearchInput)));
+                      .formatted(locationSearchInput), null));
       return null;
     }
     this.weatherDTO =
