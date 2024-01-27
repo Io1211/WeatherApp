@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Scope("session")
 public class SessionInfoBean implements Serializable {
 
-  @Autowired private UserxService userService;
+  @Autowired private transient UserxService userService;
 
   /** Attribute to cache the current user. */
   private Userx currentUser;
