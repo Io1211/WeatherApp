@@ -97,7 +97,6 @@ class WeatherApiRequestServiceTest {
     Assertions.assertEquals(0.13, actualDTOCreationResult.hourlyWeather().get(0).rain());
   }
 
-  // todo: hier vllt eher noch überlegen was bei einem timeout passiert?
   @Test
   public void simulateConnectionError() {
     RestClient mockedRestClient = Mockito.mock(RestClient.class);
@@ -109,8 +108,6 @@ class WeatherApiRequestServiceTest {
         Exception.class,
         () -> disconnectedApiRequestService.retrieveCurrentAndForecastWeather(0, 0));
   }
-
-  // todo: add test for empty list as answer
 
   // the following represents another approach for testing api calls with a MockWebServer from
   // okhttp3 library.

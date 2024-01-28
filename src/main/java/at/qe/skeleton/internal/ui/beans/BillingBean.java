@@ -1,14 +1,13 @@
 package at.qe.skeleton.internal.ui.beans;
 
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.SubscriptionPeriod;
 import at.qe.skeleton.internal.model.Userx;
-import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.SubscriptionService;
 import at.qe.skeleton.internal.services.UserxService;
 import at.qe.skeleton.internal.services.exceptions.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import java.time.*;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -24,7 +23,7 @@ public class BillingBean {
 
   @Autowired private SubscriptionService subscriptionService;
 
-  @Autowired private EmailService emailService;
+  @Autowired private WarningHelper warningHelper;
 
   private Userx user; // holds the user edited in the detailed view
 
@@ -58,7 +57,6 @@ public class BillingBean {
             ? LocalDate.now().getYear() - 1
             : LocalDate.now()
                 .getYear(); // if this month is january, the previous month is in last year
-    facesMessage(FacesMessage.SEVERITY_INFO, "Showing billing for %s of %s".formatted(year, month));
   }
 
   public Collection<Userx> getUsers() {
@@ -69,9 +67,9 @@ public class BillingBean {
     if ((year > ZonedDateTime.now().getYear())
         || ((year == ZonedDateTime.now().getYear())
             && month.getValue() >= ZonedDateTime.now().getMonthValue())) {
-      facesMessage(
-          FacesMessage.SEVERITY_ERROR,
-          "Billing info is only available for past months. You are trying to access it for this or future months.");
+      warningHelper.addMessage(
+          "Billing info is only available for past months. You are trying to access it for this or future months.",
+          FacesMessage.SEVERITY_ERROR);
     }
   }
 
@@ -107,7 +105,7 @@ public class BillingBean {
         return "-";
       }
     } catch (NotYetAvailableException e) {
-      facesMessage(FacesMessage.SEVERITY_WARN, e.getMessage());
+      warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_WARN);
       return "-";
     }
     return subscriptionService.isMonthPaid(user, queryDate) ? "PAID" : "PENDING";
@@ -128,20 +126,20 @@ public class BillingBean {
       try {
         subscriptionService.addPayment(user, LocalDate.of(year, month, 1));
       } catch (ArrayIndexOutOfBoundsException | NotYetAvailableException e) {
-        facesMessage(FacesMessage.SEVERITY_WARN, e.getMessage());
+        warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_WARN);
         return;
       }
-      facesMessage(
-          FacesMessage.SEVERITY_INFO,
+      warningHelper.addMessage(
           "The payment status for %s has been set to paid for %s of %s"
-              .formatted(user.getId(), month, year));
+              .formatted(user.getId(), month, year),
+          FacesMessage.SEVERITY_INFO);
     } else {
       LocalDate queryDate = LocalDate.of(year, month, 1);
       if (subscriptionService.isMonthPaid(user, queryDate)) {
         try {
           subscriptionService.removePayment(user, queryDate);
         } catch (NoSubscriptionFoundException e) {
-          facesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage());
+          warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
         }
       }
     }
@@ -153,15 +151,15 @@ public class BillingBean {
     }
     try {
       subscriptionService.revokeSubscription(user);
-      facesMessage(
-          FacesMessage.SEVERITY_INFO,
+      warningHelper.addMessage(
           "Payment status set to failed for user %s. Their subscription has been terminated."
-              .formatted(user.getId()));
+              .formatted(user.getId()),
+          FacesMessage.SEVERITY_INFO);
     } catch (NoEmailProvidedException e) {
-      facesMessage(
-          FacesMessage.SEVERITY_WARN,
+      warningHelper.addMessage(
           "The subscription was cancelled, however there was a problem when contacting the user. "
-              + e.getMessage());
+              + e.getMessage(),
+          FacesMessage.SEVERITY_WARN);
     }
   }
 
@@ -227,9 +225,5 @@ public class BillingBean {
 
   public void setRevokeSubscription(boolean revokeSubscription) {
     this.revokeSubscription = revokeSubscription;
-  }
-
-  public void facesMessage(FacesMessage.Severity severity, String message) {
-    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, message, null));
   }
 }

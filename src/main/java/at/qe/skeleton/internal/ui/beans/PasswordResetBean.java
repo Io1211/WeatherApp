@@ -1,12 +1,13 @@
 package at.qe.skeleton.internal.ui.beans;
 
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.services.PasswordResetService;
 import at.qe.skeleton.internal.services.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 
 /**
  * Bean for managing the password reset. {@link PasswordResetService}
@@ -23,6 +24,8 @@ public class PasswordResetBean {
   @Autowired private PasswordResetService passwordResetService;
 
   @Autowired private TokenService tokenService;
+
+  @Autowired private WarningHelper warningHelper;
 
   private String email;
   private String token;
@@ -75,7 +78,8 @@ public class PasswordResetBean {
       setToken(tokenService.generateToken());
       passwordResetService.sendPasswordResetEmailAndToken(getEmail(), getToken());
     } catch (IllegalArgumentException e) {
-      addMessage("User not found for email " + getEmail(), FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage(
+          "User not found for email " + getEmail(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
     return "reset_password";
@@ -85,34 +89,34 @@ public class PasswordResetBean {
     return tokenService.validateToken(getToken(), getInsertedToken());
   }
 
-  private void addMessage(String summary, FacesMessage.Severity severity) {
-    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
-  }
-
   public String resetPassword() {
     if (insertedToken == null || insertedToken.isEmpty()) {
-      addMessage("Please enter your token", FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage("Please enter your token", FacesMessage.SEVERITY_ERROR);
       return null;
     }
     if (!validatePasswordResetToken()) {
-      addMessage("Invalid token", FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage("Invalid token", FacesMessage.SEVERITY_ERROR);
       return null;
     }
     if (newPassword == null || newPassword.isEmpty()) {
-      addMessage("Please enter a new password", FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage("Please enter a new password", FacesMessage.SEVERITY_ERROR);
       return null;
     }
     if (newPasswordRepeat == null || newPasswordRepeat.isEmpty()) {
-      addMessage("Please repeat your new password", FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage("Please repeat your new password", FacesMessage.SEVERITY_ERROR);
       return null;
     }
     if (!newPassword.equals(newPasswordRepeat)) {
-      addMessage("Passwords do not match", FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage("Passwords do not match", FacesMessage.SEVERITY_ERROR);
       return null;
     }
 
-    // todo: add try catch with warning helper
-    passwordResetService.resetPassword(email, newPassword);
+    try {
+      passwordResetService.resetPassword(email, newPassword);
+    } catch (MailException e) {
+      warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
+    }
+
     return "login";
   }
 }

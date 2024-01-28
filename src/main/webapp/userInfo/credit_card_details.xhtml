@@ -9,7 +9,6 @@
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
         <h:form id="creditcardForm">
-            <p:messages autoUpdate="true" closable="true"/>
             <p:dataTable id="creditcardTable" var="creditcard" value="#{creditCardController.creditcard}" lazy="false">
                 <p:column headerText="Number">
                     <h:outputText value="#{creditcard.cardnumber}"/>

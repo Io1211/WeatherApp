@@ -1,12 +1,12 @@
 package at.qe.skeleton.internal.ui.beans;
 
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.FavoriteDataConfig;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.UserxService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.Authentication;
@@ -24,6 +24,7 @@ import java.util.List;
 public class OverviewConfigBean {
 
   @Autowired private UserxService userxService;
+  @Autowired private WarningHelper warningHelper;
   private List<Favorite> favorites;
   private FavoriteDataConfig favoriteDataConfig;
 
@@ -42,7 +43,8 @@ public class OverviewConfigBean {
               .sorted(Comparator.comparingInt(Favorite::getPriority))
               .toList();
     } catch (Exception e) {
-      this.addMessage("An error occurred while loading the favorites", FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage(
+          "An error occurred while loading the favorites", FacesMessage.SEVERITY_ERROR);
     }
   }
 
@@ -56,15 +58,12 @@ public class OverviewConfigBean {
 
       userxService.saveUser(this.user);
     } catch (Exception e) {
-      this.addMessage("An error occurred while saving the changes", FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage(
+          "An error occurred while saving the changes", FacesMessage.SEVERITY_ERROR);
       return;
     }
 
-    this.addMessage("Changes saved", FacesMessage.SEVERITY_INFO);
-  }
-
-  private void addMessage(String summary, FacesMessage.Severity severity) {
-    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
+    warningHelper.addMessage("Changes saved", FacesMessage.SEVERITY_INFO);
   }
 
   public List<Favorite> getFavorites() {

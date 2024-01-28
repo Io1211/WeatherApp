@@ -1,11 +1,11 @@
 package at.qe.skeleton.internal.ui.controllers;
 
 import at.qe.skeleton.external.model.location.LocationAnswerDTO;
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.services.CurrentAndForecastAnswerService;
 import at.qe.skeleton.internal.services.LocationService;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -24,14 +24,17 @@ import org.springframework.stereotype.Component;
 public class AutoCompleteController {
   LocationService locationService;
   CurrentAndForecastAnswerService currentAndForecastAnswerService;
+  WarningHelper warningHelper;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AutoCompleteController.class);
 
   public AutoCompleteController(
       LocationService locationService,
-      CurrentAndForecastAnswerService currentAndForecastAnswerService) {
+      CurrentAndForecastAnswerService currentAndForecastAnswerService,
+      WarningHelper warningHelper) {
     this.locationService = locationService;
     this.currentAndForecastAnswerService = currentAndForecastAnswerService;
+    this.warningHelper = warningHelper;
   }
 
   /**
@@ -48,17 +51,8 @@ public class AutoCompleteController {
       String queryLowerCase = query.toLowerCase();
       List<LocationAnswerDTO> locationAnswerDTOList = locationService.callApi(queryLowerCase, 5);
       return locationAnswerDTOList.stream().map(this::retrieveLocationName).toList();
-    }
-    // todo: we already use this exact code piece twice, will need it probably more often,
-    // should make a separate method for it, refactor it.
-    catch (FailedApiRequest e) {
-      FacesContext.getCurrentInstance()
-          .addMessage(
-              "searchError",
-              new FacesMessage(
-                  FacesMessage.SEVERITY_WARN,
-                  "There was an error in an api request",
-                  e.getMessage()));
+    } catch (FailedApiRequest e) {
+      warningHelper.addMessage("There was an error in an api request", FacesMessage.SEVERITY_WARN);
       LOGGER.error(e.getMessage());
       return new ArrayList<>();
     } catch (Exception e) {
