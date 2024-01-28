@@ -10,12 +10,7 @@ import at.qe.skeleton.internal.services.FavoriteService;
 import at.qe.skeleton.internal.services.UserxService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 

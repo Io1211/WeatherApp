@@ -4,7 +4,6 @@ import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.CardType;
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.services.CreditCardService;
-import at.qe.skeleton.internal.services.UserxService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import org.springframework.beans.factory.annotation.Autowired;
