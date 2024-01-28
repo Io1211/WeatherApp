@@ -15,6 +15,8 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.session.ChangeSessionIdAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -33,11 +35,15 @@ public class WebSecurityConfig {
   private static final String REGISTERED_USER = UserxRole.REGISTERED_USER.name();
   private static final String LOGIN = "/login.xhtml";
 
-  private static final String WEATHERFORECAST = "/weatherForecast.xhtml";
+  private static final String WEATHERFORECAST = "/weather_view.xhtml";
   private static final String ACCESSDENIED = "/error/access_denied.xhtml";
 
   @Autowired DataSource dataSource;
 
+  @Bean
+  public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+    return new ChangeSessionIdAuthenticationStrategy();
+  }
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 

@@ -21,10 +21,8 @@ import java.util.Set;
 public class RegistrationService {
 
   @Autowired private UserxRepository userRepository;
-
   @Autowired private PasswordEncoder passwordEncoder;
   @Autowired private EmailService emailService;
-
   @Autowired private TokenService tokenService;
 
   public void sendRegistrationEmail(String email, String token) {

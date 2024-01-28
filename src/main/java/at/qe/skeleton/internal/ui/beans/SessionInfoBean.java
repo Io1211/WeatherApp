@@ -89,6 +89,11 @@ public class SessionInfoBean implements Serializable {
     }
   }
 
+  public boolean isUserPremium() {
+    Userx currentUser = getCurrentUser();
+    return currentUser != null && currentUser.isPremium();
+  }
+
   /**
    * Checks if the user for this session has the given role (c.f. {@link UserxRole}).
    *
@@ -107,5 +112,12 @@ public class SessionInfoBean implements Serializable {
       }
     }
     return false;
+  }
+
+  public void reloadCurrentUser() {
+    String currentUserName = getCurrentUserName();
+    if (!currentUserName.isEmpty()) {
+      currentUser = userService.loadUser(currentUserName);
+    }
   }
 }

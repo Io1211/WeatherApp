@@ -9,11 +9,10 @@
                 template="/WEB-INF/templates/main.xhtml">
 
     <ui:define name="content">
-        <h:form id="addCreditCardForm">
+        <h:form id="editCreditCardForm">
             <p:messages autoUpdate="true" closable="true"/>
-            <p:panel header="Add New Credit Card">
+            <p:panel header="Update your Credit Card">
                 <h:panelGrid columns="2" cellpadding="5">
-
                     <p:outputLabel for="cardNumber" value="Card Number:"/>
                     <p:inputMask id="cardNumber" maxlength="19" value="#{creditCardBean.creditCard.cardnumber}"
                                  required="true" requiredMessage="Card Number is required">
@@ -33,8 +32,8 @@
                                        itemLabel="#{type}"/>
                     </p:selectOneMenu>
 
-                    <p:commandButton value="Save" action="#{creditCardBean.saveCreditCard}"
-                                     update=":addCreditCardForm"/>
+                    <p:commandButton value="Update" action="#{creditCardBean.updateCreditCard}"
+                                     update=":editCreditCardForm"/>
                 </h:panelGrid>
             </p:panel>
         </h:form>

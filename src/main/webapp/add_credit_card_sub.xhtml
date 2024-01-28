@@ -11,9 +11,8 @@
     <ui:define name="content">
         <h:form id="addCreditCardForm">
             <p:messages autoUpdate="true" closable="true"/>
-            <p:panel header="Add New Credit Card">
+            <p:panel header="Add your Credit Card to activate Premium">
                 <h:panelGrid columns="2" cellpadding="5">
-
                     <p:outputLabel for="cardNumber" value="Card Number:"/>
                     <p:inputMask id="cardNumber" maxlength="19" value="#{creditCardBean.creditCard.cardnumber}"
                                  required="true" requiredMessage="Card Number is required">
@@ -33,8 +32,9 @@
                                        itemLabel="#{type}"/>
                     </p:selectOneMenu>
 
-                    <p:commandButton value="Save" action="#{creditCardBean.saveCreditCard}"
+                    <p:commandButton value="Save" action="#{creditCardBean.saveCreditCardPremium}"
                                      update=":addCreditCardForm"/>
+
                 </h:panelGrid>
             </p:panel>
         </h:form>

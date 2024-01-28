@@ -1,7 +1,6 @@
 package at.qe.skeleton.internal.model;
 
 import jakarta.persistence.*;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -57,6 +56,12 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   private String lastName;
   private String email;
   private String phone;
+
+  @OneToOne(
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.EAGER)
+  private Subscription subscription;
 
   boolean enabled;
 
@@ -136,6 +141,14 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   public void setRoles(Set<UserxRole> roles) {
     this.roles = roles;
+  }
+
+  public void addRole(UserxRole role) {
+    this.roles.add(role);
+  }
+
+  public void removeRole(UserxRole role) {
+    this.roles.remove(role);
   }
 
   public List<Favorite> getFavorites() {
@@ -235,5 +248,17 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   @Override
   public int compareTo(Userx o) {
     return this.username.compareTo(o.getUsername());
+  }
+
+  public boolean isPremium() {
+    return getRoles().contains(UserxRole.PREMIUM_USER);
+  }
+
+  public Subscription getSubscription() {
+    return subscription;
+  }
+
+  public void setSubscription(Subscription subscription) {
+    this.subscription = subscription;
   }
 }

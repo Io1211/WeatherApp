@@ -4,6 +4,8 @@ import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.services.CreditCardService;
 import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -29,6 +31,11 @@ public class CreditCardController {
         sessionInfoBean.getCurrentUser().getUsername());
   }
 
+  private void addMessage(String summary) {
+    FacesContext.getCurrentInstance()
+        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, "detail"));
+  }
+
   public void setCreditCard(CreditCard creditCard) {
     this.creditCard = creditCard;
   }
@@ -42,6 +49,10 @@ public class CreditCardController {
   }
 
   public void deleteCreditCard() {
-    creditCardService.deleteCreditCard(getCreditcard());
+    try {
+      creditCardService.deleteCreditCard(getCreditcard());
+    } catch (IllegalArgumentException e) {
+      addMessage(e.getMessage());
+    }
   }
 }
