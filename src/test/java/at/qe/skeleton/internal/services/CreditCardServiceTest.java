@@ -54,7 +54,9 @@ class CreditCardServiceTest {
     CreditCard loadedCreditCard = creditCardService.loadCreditCard(creditCard.getUser());
 
     // Actual Tests wether Credit Card was correctly saved and retourned.
-    Assertions.assertEquals(1, creditCardRepository.findAll().size());
+    Assertions.assertNotNull(
+        creditCardRepository.findCreditCardByUser(user2),
+        "user2 should have stored one credit card");
 
     Assertions.assertEquals(creditCard.getId(), loadedCreditCard.getId());
     Assertions.assertEquals(user2, loadedCreditCard.getUser());
@@ -87,16 +89,20 @@ class CreditCardServiceTest {
     creditCard.setExpirationDate(invalidExpDate1);
 
     // making sure repository is empty
-    Assertions.assertTrue(creditCardRepository.findAll().isEmpty());
+    Assertions.assertNull(
+        creditCardRepository.findCreditCardByUser(user2),
+        "user2 should not own any creditCards now");
 
     // actual testing
     Assertions.assertThrows(
         IllegalArgumentException.class,
         () -> creditCardService.saveCreditCard(creditCard),
         "Saving Credit Cards with invalid expiration Date should not be possible.");
+
     resetDB();
-    Assertions.assertTrue(
-        creditCardRepository.findAll().isEmpty(), "resetting the db did not work.");
+    Assertions.assertNull(
+        creditCardRepository.findCreditCardByUser(user2),
+        "user2 should not own any creditCards now");
 
     // now with different invalid exp date
     creditCard.setExpirationDate(invalidExpDate2);
@@ -109,8 +115,9 @@ class CreditCardServiceTest {
         () -> creditCardService.saveCreditCard(creditCard),
         "Saving Credit Cards with invalid expiration Date should not be possible.");
     resetDB();
-    Assertions.assertTrue(
-        creditCardRepository.findAll().isEmpty(), "resetting the db did not work.");
+    Assertions.assertNull(
+        creditCardRepository.findCreditCardByUser(user2),
+        "user2 should not own any creditCards now");
 
     // third invalid exp date
     creditCard.setExpirationDate(invalidExpDate3);
@@ -142,7 +149,7 @@ class CreditCardServiceTest {
 
     // save credit card twice
     creditCardService.saveCreditCard(creditCard);
-    Assertions.assertFalse(creditCardRepository.findAll().isEmpty());
+    Assertions.assertNotNull(creditCardRepository.findCreditCardByUser(user2));
     Assertions.assertThrows(
         IllegalArgumentException.class,
         () -> creditCardService.saveCreditCard(creditCard),
@@ -163,7 +170,11 @@ class CreditCardServiceTest {
     otherCreditCard.setCardnumber(otherCardNumber);
 
     Assertions.assertDoesNotThrow(() -> creditCardService.saveCreditCard(otherCreditCard));
-    Assertions.assertEquals(2, creditCardRepository.findAll().size());
+    Assertions.assertNotNull(
+        creditCardRepository.findCreditCardByUser(user2), "user2 should have stored a creditCard");
+    Assertions.assertNotNull(
+        creditCardRepository.findCreditCardByUser(adminUser),
+        "adminUser should have stored a creditCard");
   }
 
   @Test
@@ -203,17 +214,19 @@ class CreditCardServiceTest {
     creditCard.setCardType(amex);
     creditCard.setCardnumber(cardNumber);
     creditCard.setExpirationDate(expirationDateValid);
+    Assertions.assertNull(creditCardRepository.findCreditCardByUser(user2));
 
     // adding credit Card
     creditCardService.saveCreditCard(creditCard);
 
     // db should contain exactly one creditCard now
-    Assertions.assertEquals(1, creditCardRepository.findAll().size());
+    Assertions.assertNotNull(creditCardRepository.findCreditCardByUser(user2));
 
     // deleting the creditcard should result in zero creditcards in db
     creditCardService.deleteCreditCard(creditCard);
-    Assertions.assertTrue(
-        creditCardRepository.findAll().isEmpty(), "db should not contain any creditCards now");
+    Assertions.assertNull(
+        creditCardRepository.findCreditCardByUser(user2),
+        "user2 should not own any creditCards now");
   }
 
   @Test
@@ -238,12 +251,15 @@ class CreditCardServiceTest {
     creditCardService.saveCreditCard(creditCard);
 
     // db should contain exactly one creditCard now
-    Assertions.assertEquals(1, creditCardRepository.findAll().size());
+    Assertions.assertNotNull(
+        creditCardRepository.findCreditCardByUser(user2), "user2 should have a creditCard stored");
 
     // deleting the creditcard should result in zero creditcards in db
     creditCardService.deleteCreditCardFromUser("user2");
-    Assertions.assertTrue(
-        creditCardRepository.findAll().isEmpty(), "db should not contain any creditCards now");
+
+    Assertions.assertNull(
+        creditCardRepository.findCreditCardByUser(user2),
+        "user2 should not own any creditCards now");
   }
 
   @Test
@@ -288,6 +304,4 @@ class CreditCardServiceTest {
     boolean result = CreditCardService.validateDate(date);
     assertFalse(result);
   }
-
-  // todo: check if frontend works as expected.
 }

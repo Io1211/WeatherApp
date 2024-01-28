@@ -1,22 +1,27 @@
 <ui:composition xmlns="http://www.w3c.org/1999/xhtml"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
         <h:form id="config_form">
-            <p:messages id="messages" showDetail="false" autoUpdate="true" closable="true"/>
             <div style="text-align: center">
-                <p:commandButton id="submit" value="Save" action="#{overviewConfigBean.save}" update="messages"
+                <p:commandButton id="submit" value="Save" action="#{overviewConfigBean.save}"
                                  style="margin-top: 10px; width: 200px; float: center"/>
             </div>
-            <p:panelGrid columns="#{sessionInfoBean.hasRole('PREMIUM_USER') ? 2 : 1}">
-                <p:orderList value="#{overviewConfigBean.favorites}" var="favorite"
-                             itemLabel="#{favorite.location.city}" itemValue="#{favorite}"
-                             converter="#{favoriteConverter}" responsive="true"/>
-                <p:panelGrid columns="2" rendered="#{sessionInfoBean.hasRole('PREMIUM_USER')}"
+            <p:panelGrid columns="#{sessionInfoBean.isUserPremium() ? 2 : 1}">
+                <p:orderList
+                        value="#{overviewConfigBean.favorites}"
+                        var="favorite"
+                        itemLabel="#{favorite.location.city}, #{(not empty favorite.location.state) ? favorite.location.state.concat(',') : ''} #{favorite.location.country}"
+                        itemValue="#{favorite}"
+                        converter="#{favoriteConverter}"
+                        responsive="true"/>
+                <p:panelGrid columns="2" rendered="#{sessionInfoBean.isUserPremium()}"
                              style="width: 50%" columnClasses="row-height, row-height">
+                    <h:outputText value="Icon: " style="line-height: 2.5"/>
+                    <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showIcon}" onLabel="Show"
+                                           offLabel="Hide"/>
                     <h:outputText value="Clouds: " style="line-height: 2.5"/>
                     <p:selectBooleanButton value="#{overviewConfigBean.favoriteDataConfig.showClouds}" onLabel="Show"
                                            offLabel="Hide"/>

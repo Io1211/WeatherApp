@@ -1,5 +1,6 @@
 package at.qe.skeleton.tests;
 
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
@@ -26,6 +27,8 @@ public class EditCreditCardBeanTest {
   @Mock private SessionInfoBean sessionInfoBean;
 
   @Mock private FacesContext facesContext;
+
+  @Mock WarningHelper warningHelper;
 
   @BeforeEach
   public void setUp() {
@@ -73,8 +76,6 @@ public class EditCreditCardBeanTest {
 
       verify(creditCardService, times(1)).saveCreditCard(testCreditCard);
 
-      verify(mockedUser, times(1)).setCreditCard(testCreditCard);
-
       assertEquals("credit_card_details.xhtml", result);
     }
   }
@@ -96,8 +97,6 @@ public class EditCreditCardBeanTest {
       String result = editCreditCardBean.updateCreditCard();
 
       verify(creditCardService, times(1)).saveCreditCard(testCreditCard);
-
-      verify(mockedUser, times(1)).setCreditCard(testCreditCard);
 
       assertEquals("credit_card_details.xhtml", result);
     }

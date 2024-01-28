@@ -36,7 +36,6 @@ public class WebSecurityConfig {
   private static final String LOGIN = "/login.xhtml";
 
   private static final String WEATHERFORECAST = "/weather_view.xhtml";
-  private static final String ACCESSDENIED = "/error/access_denied.xhtml";
 
   @Autowired DataSource dataSource;
 
@@ -44,6 +43,7 @@ public class WebSecurityConfig {
   public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
     return new ChangeSessionIdAuthenticationStrategy();
   }
+
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 

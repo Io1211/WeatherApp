@@ -143,7 +143,6 @@ class GeocodingApiLocationDtoTest {
     Assertions.assertEquals("Tyrol", actualLocationAnswerDTO.state());
   }
 
-  // todo: add test for empty answer from api
   @Test
   public void shouldThrowEmptyListException() {
     String locationName = "thisIsNotARealLocationName";

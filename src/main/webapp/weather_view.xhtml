@@ -9,16 +9,27 @@
                 template="/WEB-INF/templates/main.xhtml">
 
     <ui:define name="content">
+
+        <style>
+
+            .weather-icon {
+                display: inline;
+                width: 150px;
+                height: 150px;
+            }
+
+        </style>
+
         <h:form id="weatherForm">
             <p:panel id="Response">
                 <div>
                     <h2>
-                        #{weatherBean.location.city},
-                        #{weatherBean.location.country}
-
-                        <!-- check wether this gets rendered even when state is null-->
-                        <h:outputText value=",#{weatherBean.location.state}"
+                        <h:outputText value="#{weatherBean.location.city}, "
+                                      rendered="#{not empty weatherBean.location.city}"/>
+                        <h:outputText value="#{weatherBean.location.state}, "
                                       rendered="#{not empty weatherBean.location.state}"/>
+                        <h:outputText value="#{weatherBean.location.country} "
+                                      rendered="#{not empty weatherBean.location.country}"/>
 
                         <p:commandButton id="toggleFavorite"
                                          action="#{weatherBean.toggleFavorite()}"
@@ -41,18 +52,20 @@
                             <h:outputText value="#{weatherBean.weatherDTO.currentWeather().weather().description()}"/>
 
                             <h:outputText value="Temperature:" style="font-weight: bold;"/>
-                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().temperature()} °C"/>
+                            <h:outputText
+                                    value="#{weatherHelper.roundTemp(weatherBean.weatherDTO.currentWeather().temperature())} °C"/>
 
                             <h:outputText value="Feels Like Temperature:" style="font-weight: bold;"/>
-                            <h:outputText value="#{weatherBean.weatherDTO.currentWeather().feelsLikeTemperature()} °C"/>
+                            <h:outputText
+                                    value="#{weatherHelper.roundTemp(weatherBean.weatherDTO.currentWeather().feelsLikeTemperature())} °C"/>
 
                             <h:outputText value="Wind Speed:" style="font-weight: bold;"/>
                             <h:outputText
-                                    value="#{weatherBean.msToKmh(weatherBean.weatherDTO.currentWeather().windSpeed())} km/h"/>
+                                    value="#{weatherHelper.msToKmh(weatherBean.weatherDTO.currentWeather().windSpeed())} km/h"/>
 
                             <h:outputText value="Wind Direction:" style="font-weight: bold;"/>
                             <h:outputText
-                                    value="#{weatherBean.degreesToCardinal(weatherBean.weatherDTO.currentWeather().windDirection())}"/>
+                                    value="#{weatherHelper.degreesToCardinal(weatherBean.weatherDTO.currentWeather().windDirection())}"/>
 
                             <!-- There is no POP value in weatherDTO/current weatherDTO, instead the current one from hourly weather is taken. -->
                             <h:outputText value="Pop:" style="font-weight: bold;"/>
@@ -61,6 +74,12 @@
 
                         </h:panelGrid>
 
+                        <h:graphicImage
+                                alt="Weather Icon"
+                                url="#{iconController.getIcon(weatherBean.weatherDTO.currentWeather().weather().icon())}"
+                                styleClass="weather-icon"
+                                style="margin-left: 40px; margin-top: 15px;"
+                        />
 
                         <br/>
 
@@ -73,13 +92,12 @@
                     <h:form>
                         <div class="card" style="margin-bottom: 50px;">
                             <p:dataTable var="hourlyWeatherEntries" value="#{weatherBean.getHourlyWeatherEntries()}"
-                                         style="font-size: 14px;" paginator="true"
-                                         paginatorPosition="bottom"
+                                         style="font-size: 14px" paginator="true" paginatorPosition="bottom"
                                          rows="10">
 
                                 <p:column headerText="Time">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), hourlyWeatherEntries.timestamp(), 'dd.MM.yyyy: HH:mm')}"/>
+                                            value="#{weatherHelper.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), hourlyWeatherEntries.timestamp(), 'dd.MM.yyyy: HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Weather" style="width: 12%;">
@@ -88,20 +106,22 @@
                                 </p:column>
 
                                 <p:column headerText="Temperature [C]">
-                                    <h:outputText value="#{hourlyWeatherEntries.temperature()}"/>
+                                    <h:outputText
+                                            value="#{weatherHelper.roundTemp(hourlyWeatherEntries.temperature())}"/>
                                 </p:column>
 
                                 <p:column headerText="Feels Like Temperature [C]">
-                                    <h:outputText value="#{hourlyWeatherEntries.feelsLikeTemperature()}"/>
+                                    <h:outputText
+                                            value="#{weatherHelper.roundTemp(hourlyWeatherEntries.feelsLikeTemperature())}"/>
                                 </p:column>
 
                                 <p:column headerText="Wind speed [km/h]">
-                                    <h:outputText value="#{weatherBean.msToKmh(hourlyWeatherEntries.windSpeed())}"/>
+                                    <h:outputText value="#{weatherHelper.msToKmh(hourlyWeatherEntries.windSpeed())}"/>
                                 </p:column>
 
                                 <p:column headerText="Wind direction">
                                     <h:outputText
-                                            value="#{weatherBean.degreesToCardinal(hourlyWeatherEntries.windDirection())}"/>
+                                            value="#{weatherHelper.degreesToCardinal(hourlyWeatherEntries.windDirection())}"/>
                                 </p:column>
 
                                 <p:column headerText="Pop">
@@ -141,7 +161,7 @@
 
                                 <p:column headerText="Day">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.timestamp(), 'dd.MM.yyyy')}"/>
+                                            value="#{weatherHelper.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.timestamp(), 'dd.MM.yyyy')}"/>
                                 </p:column>
 
                                 <p:column headerText="Summary" style="width: 8%;">
@@ -150,56 +170,64 @@
 
                                 <p:column headerText="Sunrise">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.sunrise(), 'HH:mm')}"/>
+                                            value="#{weatherHelper.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.sunrise(), 'HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Sunset">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.sunset(), 'HH:mm')}"/>
+                                            value="#{weatherHelper.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.sunset(), 'HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Temperature [C]">
                                     <h:outputText
-                                            value="#{dailyWeatherEntries.dailyTemperatureAggregation().dayTemperature()}"/>
+                                            value="#{weatherHelper.roundTemp(dailyWeatherEntries.dailyTemperatureAggregation().dayTemperature())}"/>
                                 </p:column>
 
                                 <p:column headerText="min. Temperature [C]">
                                     <h:outputText
-                                            value="#{dailyWeatherEntries.dailyTemperatureAggregation().minimumDailyTemperature()}"/>
+                                            value="#{weatherHelper.roundTemp(dailyWeatherEntries.dailyTemperatureAggregation().minimumDailyTemperature())}"/>
                                 </p:column>
 
                                 <p:column headerText="max. Temperature [C]">
                                     <h:outputText
-                                            value="#{dailyWeatherEntries.dailyTemperatureAggregation().maximumDailyTemperature()}"/>
+                                            value="#{weatherHelper.roundTemp(dailyWeatherEntries.dailyTemperatureAggregation().maximumDailyTemperature())}"/>
                                 </p:column>
 
                                 <p:column headerText="Feels Like Temperature [C]">
                                     <h:outputText
-                                            value="#{dailyWeatherEntries.feelsLikeTemperatureAggregation().dayTemperature()}"/>
+                                            value="#{weatherHelper.roundTemp(dailyWeatherEntries.feelsLikeTemperatureAggregation().dayTemperature())}"/>
                                 </p:column>
 
                                 <p:column headerText="Wind speed [km/h]">
-                                    <h:outputText value="#{weatherBean.msToKmh(dailyWeatherEntries.windSpeed())}"/>
+                                    <h:outputText value="#{weatherHelper.msToKmh(dailyWeatherEntries.windSpeed())}"/>
                                 </p:column>
 
                                 <p:column headerText="Wind direction">
                                     <h:outputText
-                                            value="#{weatherBean.degreesToCardinal(dailyWeatherEntries.windDirection())}"/>
+                                            value="#{weatherHelper.degreesToCardinal(dailyWeatherEntries.windDirection())}"/>
                                 </p:column>
 
                                 <p:column headerText="Wind gust [km/h]">
-                                    <h:outputText value="#{weatherBean.msToKmh(dailyWeatherEntries.windGust())}"/>
+                                    <h:outputText value="#{weatherHelper.msToKmh(dailyWeatherEntries.windGust())}"/>
                                 </p:column>
 
                                 <p:column headerText="Pop">
                                     <h:outputText value="#{dailyWeatherEntries.probabilityOfPrecipitation()}"/>
                                 </p:column>
 
-                                <p:column headerText="Rain [mm/h]">
+                                <p:column headerText="Rain [mm/h]" rendered="#{empty dailyWeatherEntries.rain()}">
+                                    <h:outputText value="No rain"/>
+                                </p:column>
+
+                                <p:column headerText="Rain [mm/h]" rendered="#{not empty dailyWeatherEntries.rain()}">
                                     <h:outputText value="#{dailyWeatherEntries.rain()}"/>
                                 </p:column>
 
-                                <p:column headerText="Snow [mm/h]">
+                                <p:column headerText="Snow [mm/h]" rendered="#{empty dailyWeatherEntries.snow()}">
+                                    <h:outputText value="No snow"/>
+                                </p:column>
+
+                                <p:column headerText="Snow [mm/h]" rendered="#{not empty dailyWeatherEntries.snow()}">
                                     <h:outputText value="#{dailyWeatherEntries.snow()}"/>
                                 </p:column>
 
@@ -214,7 +242,7 @@
                                 </p:column>
 
                                 <p:column headerText="Dew point [C]" rendered="#{sessionInfoBean.isUserPremium()}">
-                                    <h:outputText value="#{dailyWeatherEntries.dewPoint()}"/>
+                                    <h:outputText value="#{weatherHelper.roundTemp(dailyWeatherEntries.dewPoint())}"/>
                                 </p:column>
 
                                 <p:column headerText="Cloudiness [%]" rendered="#{sessionInfoBean.isUserPremium()}">

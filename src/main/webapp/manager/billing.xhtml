@@ -8,10 +8,6 @@
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
         <h:form id="billingForm">
-            <p:messages id="messages" showDetail="false" closable="true">
-                <p:autoUpdate/>
-            </p:messages>
-
             <div id="searchInfo" style="margin-bottom: 2rem; margin-top: 2rem; margin-left: 0.5rem">
                 <p:outputLabel for="month" value="Month: "/>
                 <p:selectOneMenu id="month" value="#{billingBean.month}" style="width:150px;  margin-right: 1rem">
@@ -26,7 +22,8 @@
                 </p:selectOneMenu>
             </div>
 
-            <p:dataTable id="billingTable" var="user" value="#{billingBean.users}" stickyHeader="true" paginator="true" paginatorPosition="bottom" rows="10">
+            <p:dataTable id="billingTable" var="user" value="#{billingBean.users}" stickyHeader="true"
+                         paginator="true" paginatorPosition="bottom" rows="10">
                 <p:column field="username" sortable="false" headerText="Username"/>
                 <p:column headerText="Premium Status">
                     <h:outputText value="#{billingBean.isActive(user)}"/>
@@ -47,44 +44,54 @@
             </p:dataTable>
 
 
-            <p:dialog header="Manage Billing" id="userEditDialog" widgetVar="userEditDialog" modal="true" showEffect="fade"
+            <p:dialog header="Manage Billing" id="userEditDialog" widgetVar="userEditDialog" modal="true"
+                      showEffect="fade"
                       hideEffect="fade" resizable="false" style="min-width: 550px">
                 <p:outputPanel id="userData" rendered="#{not empty billingBean.user}">
                     <p:tabView>
                         <p:tab title="Overview">
-                    <h:panelGrid columns="1">
-                        <p:outputLabel id="username" value="Username: #{billingBean.user.username}"/>
-                        <p:outputLabel id="firstName" value="First Name: #{billingBean.user.firstName}"/>
-                        <p:outputLabel id="lastName" value="Last Name: #{billingBean.user.lastName}"/>
-                        <p:outputLabel id="email" value="E-Mail: #{billingBean.user.email}"/>
-                        <p:outputLabel id="phone" value="Phone: #{billingBean.user.phone}" mask="+99? 999 9999999"/>
-                        <p:outputLabel id="singup" value="Signup date: #{billingBean.user.subscription.signupDate}"/>
-                        <p:outputLabel id="total"
-                                       value="Total days as premium: #{billingBean.getTotalPremiumDays(billingBean.user)}"/>
-                    </h:panelGrid>
-                    <p:separator/>
-                    <h:panelGrid columns="2">
-                        <p:outputLabel for="paid" value="Payment successful: "/>
-                        <p:selectBooleanButton id="paid" value="#{billingBean.paid}" onLabel="Yes" offLabel="No"
-                                               style="width:6rem"/>
-                    </h:panelGrid>
-                    <h:panelGrid columns="2" style="margin-bottom: 0.5rem">
-                        <p:outputLabel for="revokeSub" value="Revoke subscription: "/>
-                        <p:selectBooleanButton id="revokeSub" value="#{billingBean.revokeSubscription}" onLabel="Yes" offLabel="No"
-                                               style="width:6rem"/>
-                    </h:panelGrid>
-                    <p:outputLabel value="ATTENTION! Revoking a subscription cannot be undone!" style="color: red; font-weight: bold;"/>
-                    <h:panelGrid columns="3" style="margin-top: 0.5rem">
-                        <p:commandButton value="Save" action="#{billingBean.handlePaymentStatus(billingBean.user)}"
-                                         oncomplete="PF('userEditDialog').hide()" update=":billingForm:billingTable">
-                            <f:actionListener binding="#{billingBean.handleRevokeSubscription(billingBean.user)}"/>
-                        </p:commandButton>
-                        <p:commandButton value="Abort" onclick="PF('userEditDialog').hide()"/>
-                    </h:panelGrid>
+                            <h:panelGrid columns="1">
+                                <p:outputLabel id="username" value="Username: #{billingBean.user.username}"/>
+                                <p:outputLabel id="firstName" value="First Name: #{billingBean.user.firstName}"/>
+                                <p:outputLabel id="lastName" value="Last Name: #{billingBean.user.lastName}"/>
+                                <p:outputLabel id="email" value="E-Mail: #{billingBean.user.email}"/>
+                                <p:outputLabel id="phone" value="Phone: #{billingBean.user.phone}"
+                                               mask="+99? 999 9999999"/>
+                                <p:outputLabel id="singup"
+                                               value="Signup date: #{billingBean.user.subscription.signupDate}"/>
+                                <p:outputLabel id="total"
+                                               value="Total days as premium: #{billingBean.getTotalPremiumDays(billingBean.user)}"/>
+                            </h:panelGrid>
+                            <p:separator/>
+                            <h:panelGrid columns="2">
+                                <p:outputLabel for="paid" value="Payment successful: "/>
+                                <p:selectBooleanButton id="paid" value="#{billingBean.paid}" onLabel="Yes" offLabel="No"
+                                                       style="width:6rem"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2" style="margin-bottom: 0.5rem">
+                                <p:outputLabel for="revokeSub" value="Revoke subscription: "/>
+                                <p:selectBooleanButton id="revokeSub" value="#{billingBean.revokeSubscription}"
+                                                       onLabel="Yes" offLabel="No"
+                                                       style="width:6rem"/>
+                            </h:panelGrid>
+                            <p:outputLabel value="ATTENTION! Revoking a subscription cannot be undone!"
+                                           style="color: red; font-weight: bold;"/>
+                            <h:panelGrid columns="3" style="margin-top: 0.5rem">
+                                <p:commandButton value="Save"
+                                                 action="#{billingBean.handlePaymentStatus(billingBean.user)}"
+                                                 oncomplete="PF('userEditDialog').hide()"
+                                                 update=":billingForm:billingTable">
+                                    <f:actionListener
+                                            binding="#{billingBean.handleRevokeSubscription(billingBean.user)}"/>
+                                </p:commandButton>
+                                <p:commandButton value="Abort" onclick="PF('userEditDialog').hide()"/>
+                            </h:panelGrid>
                         </p:tab>
                         <p:tab title="Subscription Periods">
                             <h3 style="margin-left: 11.5rem">Start - Stop</h3>
-                            <p:chronoline value="#{billingBean.getSubscriptionPeriods(billingBean.user)}" var="subPeriod" rendered="#{billingBean.userHasSubscription(billingBean.user)}">
+                            <p:chronoline value="#{billingBean.getSubscriptionPeriods(billingBean.user)}"
+                                          var="subPeriod"
+                                          rendered="#{billingBean.userHasSubscription(billingBean.user)}">
                                 #{subPeriod.getStop()}
                                 <f:facet name="opposite">
                                     #{subPeriod.getStart()}

@@ -1,9 +1,9 @@
 package at.qe.skeleton.internal.ui.beans;
 
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.services.CreditCardService;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -20,24 +20,25 @@ public class CreditCardDetailsBean {
 
   @Autowired private SessionInfoBean sessionInfoBean;
 
-  public CreditCard getCreditcard() {
-    return creditCardService.loadCreditCardByUsername(
-        sessionInfoBean.getCurrentUser().getUsername());
-  }
+  @Autowired private WarningHelper warningHelper;
 
-  private void addMessage(String summary, FacesMessage.Severity severity) {
-    FacesContext.getCurrentInstance()
-        .addMessage(null, new FacesMessage(severity, summary, "detail"));
+  private CreditCard creditCard;
+
+  public CreditCard getCreditcard() {
+    if (this.creditCard == null) {
+      this.creditCard =
+          creditCardService.loadCreditCardByUsername(
+              sessionInfoBean.getCurrentUser().getUsername());
+    }
+    return this.creditCard;
   }
 
   public void deleteCreditCard() {
     try {
       creditCardService.deleteCreditCard(getCreditcard());
-      addMessage("Credit Card deleted", FacesMessage.SEVERITY_INFO);
+      warningHelper.addMessage("Credit Card deleted", FacesMessage.SEVERITY_INFO);
     } catch (IllegalArgumentException e) {
-      addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
     }
   }
-
-  // todo: message auslagern nach andis merge
 }
