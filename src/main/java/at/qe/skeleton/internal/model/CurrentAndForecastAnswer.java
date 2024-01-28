@@ -11,10 +11,11 @@ public class CurrentAndForecastAnswer implements Persistable<Long>, Serializable
 
   @Id @GeneratedValue private Long id;
 
-  private ZonedDateTime timestampLastCall;
+  private ZonedDateTime timestampLastCall; //ZonedDateTime is used, because we need to know the timezone of the location
 
-  @Lob private byte[] weatherData;
+  @Lob private byte[] weatherData; //byte[] is used, because we need to store the data as a blob
 
+  /**The {@link Location} entity associated with this currentAndForecastAnswer.*/
   @OneToOne(mappedBy = "weather", cascade = CascadeType.ALL)
   private Location location;
 

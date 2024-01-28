@@ -9,12 +9,11 @@ import org.springframework.data.domain.Persistable;
 public class SubscriptionPeriod implements Persistable<Long>, Serializable {
 
   @Id @GeneratedValue private Long id;
+  private boolean active; // true if the subscription is active, false if it is inactive
 
-  private boolean active;
+  private LocalDate start; // LocalDate is used, because we only need the date for the start
 
-  private LocalDate start;
-
-  private LocalDate stop;
+  private LocalDate stop; // LocalDate is used, because we only need the date for the stop
 
   public LocalDate getStart() {
     return start;

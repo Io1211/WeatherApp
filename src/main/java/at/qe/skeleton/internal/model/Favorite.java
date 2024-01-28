@@ -14,11 +14,12 @@ public class Favorite implements Persistable<Long>, Serializable {
 
   @Id @GeneratedValue private Long id;
 
+  /**The {@link Location} for this favorite.*/
   @ManyToOne(optional = false)
   private Location location;
 
   /** Used for ordering list of favorites */
-  private Integer priority;
+  private Integer priority; // Integer is used, because we need to be able to sort the list
 
   /** User who owns this favorite (bidirectional for setting the priority) */
   @ManyToOne private Userx user;

@@ -79,6 +79,12 @@ public class UserRegistrationBean {
       return null;
     }
   }
+  /**
+   * Resends the registration email with the token to the user based on the inserted email address.
+   *
+   * @throws RegistrationUserAlreadyEnabledException when user is already enabled
+   * @throws NoUserFoundException when no user is found
+   */
 
   public String resendRegistrationEmail() {
     try {

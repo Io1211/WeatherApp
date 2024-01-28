@@ -12,7 +12,7 @@ public class Payment implements Persistable<Long>, Serializable {
 
   @Id @GeneratedValue private Long id;
 
-  private LocalDate paymentDate;
+  private LocalDate paymentDate;// LocalDate is used, because we only need the date for the payment
 
   private boolean paid;
 

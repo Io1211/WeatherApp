@@ -19,11 +19,7 @@ public class CreditCard implements Persistable<Long>, Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id; // Long is used for the ID because, because we need a wide range of values.
 
-  /**
-   * Gets the {@link Userx} entity associated with this credit card.
-   *
-   * @return the user associated with this credit card
-   */
+  /**The {@link Userx} entity associated with this credit card.*/
   @NotNull
   @OneToOne
   @JoinColumn(name = "userID")
@@ -34,7 +30,7 @@ public class CreditCard implements Persistable<Long>, Serializable {
 
   @Column(name = "expiration_date")
   private String
-      expirationDate; // String is used for the expiration date because afterwards we don't need to
+      expirationDate; // String is used for the expiration date because afterward we don't need to
 
   // do any calculations with it.
 
