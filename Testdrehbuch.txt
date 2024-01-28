@@ -1,0 +1,107 @@
+######################################
+
+Nicht implementierte / nicht angefangene Funktionalitäten:
+- Urlaubsplanung
+
+##### Aktueller Stand der Tests ######
+
+Beurteilung:
+
+o - OK
+k - Kosmetische Abweichungen
+m - Mittlere Abweichungen
+g - Große Abweichungen
+# - System unbenutzbar
+
+#######################################
+
+Testfälle:
+
+	2.1 Login
+	
+o		TC Auth1.0: Unregistrierter Zugriff: 
+					keine Startseite, Login verplichtend, keine Detailwetterdaten
+o		TC Auth1.1: Login Nutzer:
+					Funktionen sind nur verfügbar wenn der Benutzer eingeloggt ist
+o		TC Auth1.2: Login Nutzer (Falsches Passwort): 
+					Funktionen sind nur verfügbar wenn der Benutzer eingeloggt ist, keine Anmeldung bei falschem Passwort
+o		TC Auth1.3: Login Nutzer (Falscher Nutzername): 
+					Funktionen sind nur verfügbar wenn der Benutzer eingeloggt ist, keine Anmeldung bei falschem Benutzername
+o		TC Auth1.4: Selbstregistrierung:
+					Bestätigung des Accounts nach Eingabe des Sicherheitstokens
+o		TC Auth1.5: Selbstregistrierung (ohne Bestätigung):
+					Login schlägt fehl solange die Email nicht bestätigt wurde.
+o		TC Auth1.6: Selbstregistrierung (Edge-Cases):
+					Felder beeinhalten sinnvolle Einschränkungen
+o		TC Auth1.7: Passwort vergessen E-Mail auslösen:
+					Passwort kann nach Sicherheitstokencheck zurückgesetzt werden
+		
+	2.3 Testfälle F1
+	
+o		TC F1.1: Suche nach Ort:
+				 OK
+				 
+	2.4 Testfälle F2
+	
+o		TC F2.1: Detailseite Wetterdaten:
+				 OK, ein Zugriff auf Data, mehrere auf Geo
+				 
+	2.5 Testfälle F3
+	
+o 		TC F3.1: Favoriten speichern:
+				 Option nur eingeloggt verfügbar, Funktionalität gegeben
+o 		TC F3.2: Favoriten speichern: (eingeloggt)
+				 OK
+o		TC F3.3: Favoriten sortieren:
+				 OK
+o		TC F3.4: Favoriten löschen:
+				 OK
+		
+	2.6 Testfälle F4
+	
+o		TC F4.1: Favoriteneinstellungen: 
+				 OK
+				 
+	2.7 Testfälle F5
+	
+o		TC F5.1: Premiumanzeige
+				 OK
+	
+	2.8 Testfälle F6
+	
+n		TC F6.1: Urlaubsplanung
+				 nicht implementiert
+n		TC F6.2: Urlaubsplanung (Edge Case)
+				 nicht implementiert
+				 
+	2.9 Testfälle Premium Abonnement
+	
+o		TC Premium.1: Premium Abo abschließen: (Zahlungsdaten noch nicht hinterlegt)
+					  OK
+o		TC Premium.2: Premium Abo abschließen: (Zahlungsdaten bereits  hinterlegt)
+					  OK
+o		TC Premium.3: Premium Abo beenden
+					  Abo kann nicht am Tag des Abschlusses beendet werden
+					  
+	2.10 Testfälle Abrechnung
+	
+o		TC Abrechnung.1: Rechnungsprüfung:
+					  	 Email für Test User nicht eingerichtet, Funktionalität gegeben 
+						
+	2.11 Testfälle Nutzermanagement	
+
+o		TC Nutzermanagement.1: Anzeige aller Nutzer
+							   Suche nach Nutzern nicht implementiert auf der Adminseite
+o		TC Nutzermanagement.2: Ändern von Nutzerdaten
+							   Premium kann nur bei hinterlegten Zahlungsdaten gegeben werden
+o		TC Nutzermanagement.3: Löschen von Nutzern
+							   OK
+o		TC Nutzermanagement.4: Passwort vergessen E-Mail auslösen durch Admin
+							   OK
+		
+	2.12 Testfälle Weitere allgemeine Testfälle
+	
+o		TC Usability.1
+o		TC Performance.1
+o		TC Security.1
+		
