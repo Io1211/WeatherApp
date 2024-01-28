@@ -59,7 +59,7 @@ public class UserRegistrationBean {
     this.insertedToken = insertedToken;
   }
 
-  private void addMessage(String summary, FacesMessage.Severity severity) {
+  public void addMessage(String summary, FacesMessage.Severity severity) {
     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
   }
 

@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <h:form id="billingForm">
+            <p:messages id="messages" showDetail="false" closable="true">
+                <p:autoUpdate/>
+            </p:messages>
+
+            <div id="searchInfo" style="margin-bottom: 2rem; margin-top: 2rem; margin-left: 0.5rem">
+                <p:outputLabel for="month" value="Month: "/>
+                <p:selectOneMenu id="month" value="#{billingBean.month}" style="width:150px;  margin-right: 1rem">
+                    <p:ajax listener="#{billingBean.onYearOrMonthChange()}" update="billingTable"/>
+                    <f:selectItems value="#{billingBean.months}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel for="year" value="Year: "/>
+                <p:selectOneMenu id="year" value="#{billingBean.year}" style="width:150px">
+                    <p:ajax listener="#{billingBean.onYearOrMonthChange()}" update="billingTable"/>
+                    <f:selectItems value="#{billingBean.years}"/>
+                </p:selectOneMenu>
+            </div>
+
+            <p:dataTable id="billingTable" var="user" value="#{billingBean.users}" stickyHeader="true" paginator="true" paginatorPosition="bottom" rows="10">
+                <p:column field="username" sortable="false" headerText="Username"/>
+                <p:column headerText="Premium Status">
+                    <h:outputText value="#{billingBean.isActive(user)}"/>
+                </p:column>
+                <p:column headerText="Days Billed">
+                    <h:outputText value="#{billingBean.getBilledDays(user)}"/>
+                </p:column>
+                <p:column headerText="Payment">
+                    <h:outputText value="#{billingBean.getPaymentStatus(user)}"/>
+                </p:column>
+                <p:column style="width:100px;text-align: center">
+                    <p:commandButton update=":billingForm:userEditDialog" oncomplete="PF('userEditDialog').show()"
+                                     icon="pi pi-user-edit" title="Edit"
+                                     rendered="#{billingBean.userHasSubscription(user)}">
+                        <f:setPropertyActionListener value="#{user}" target="#{billingBean.user}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+
+            <p:dialog header="Manage Billing" id="userEditDialog" widgetVar="userEditDialog" modal="true" showEffect="fade"
+                      hideEffect="fade" resizable="false" style="min-width: 550px">
+                <p:outputPanel id="userData" rendered="#{not empty billingBean.user}">
+                    <p:tabView>
+                        <p:tab title="Overview">
+                    <h:panelGrid columns="1">
+                        <p:outputLabel id="username" value="Username: #{billingBean.user.username}"/>
+                        <p:outputLabel id="firstName" value="First Name: #{billingBean.user.firstName}"/>
+                        <p:outputLabel id="lastName" value="Last Name: #{billingBean.user.lastName}"/>
+                        <p:outputLabel id="email" value="E-Mail: #{billingBean.user.email}"/>
+                        <p:outputLabel id="phone" value="Phone: #{billingBean.user.phone}" mask="+99? 999 9999999"/>
+                        <p:outputLabel id="singup" value="Signup date: #{billingBean.user.subscription.signupDate}"/>
+                        <p:outputLabel id="total"
+                                       value="Total days as premium: #{billingBean.getTotalPremiumDays(billingBean.user)}"/>
+                    </h:panelGrid>
+                    <p:separator/>
+                    <h:panelGrid columns="2">
+                        <p:outputLabel for="paid" value="Payment successful: "/>
+                        <p:selectBooleanButton id="paid" value="#{billingBean.paid}" onLabel="Yes" offLabel="No"
+                                               style="width:6rem"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2" style="margin-bottom: 0.5rem">
+                        <p:outputLabel for="revokeSub" value="Revoke subscription: "/>
+                        <p:selectBooleanButton id="revokeSub" value="#{billingBean.revokeSubscription}" onLabel="Yes" offLabel="No"
+                                               style="width:6rem"/>
+                    </h:panelGrid>
+                    <p:outputLabel value="ATTENTION! Revoking a subscription cannot be undone!" style="color: red; font-weight: bold;"/>
+                    <h:panelGrid columns="3" style="margin-top: 0.5rem">
+                        <p:commandButton value="Save" action="#{billingBean.handlePaymentStatus(billingBean.user)}"
+                                         oncomplete="PF('userEditDialog').hide()" update=":billingForm:billingTable">
+                            <f:actionListener binding="#{billingBean.handleRevokeSubscription(billingBean.user)}"/>
+                        </p:commandButton>
+                        <p:commandButton value="Abort" onclick="PF('userEditDialog').hide()"/>
+                    </h:panelGrid>
+                        </p:tab>
+                        <p:tab title="Subscription Periods">
+                            <h3 style="margin-left: 11.5rem">Start - Stop</h3>
+                            <p:chronoline value="#{billingBean.getSubscriptionPeriods(billingBean.user)}" var="subPeriod" rendered="#{billingBean.userHasSubscription(billingBean.user)}">
+                                #{subPeriod.getStop()}
+                                <f:facet name="opposite">
+                                    #{subPeriod.getStart()}
+                                </f:facet>
+                            </p:chronoline>
+                        </p:tab>
+                    </p:tabView>
+                </p:outputPanel>
+            </p:dialog>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="300">
+                <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check"/>
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times"/>
+            </p:confirmDialog>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

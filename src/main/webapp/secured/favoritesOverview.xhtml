@@ -27,8 +27,8 @@
 
             .weather-icon {
                 display: inline;
-                width: 100px;
-                height: 100px;
+                width: 70px;
+                height: 70px;
             }
 
             .favorites-panelgrid {
@@ -42,6 +42,18 @@
             }
 
         </style>
+
+        <script>
+                function smallText(element) {
+                        if (element.innerText.length >= 12) element.style.transform = "scale(0.6)";
+                        element.style.overflow = ((element.innerText.length >= 22) ? "hidden" : "visible");
+                }
+                function largeText(element) {
+                        element.style.transform = "scale(1)";
+                        element.style.overflow = "hidden";
+                }
+        </script>
+
         <h:form id="favoritesOverview">
             <p:panel rendered="#{empty favoriteOverviewBean.favorites}" closable="true">
                 <h:outputText value="You dont have any favorites."/>
@@ -53,8 +65,13 @@
                 <p:card styleClass="favorites-card">
                     <h:panelGrid columns="2" cellpadding="10" styleClass="favorites-panelgrid">
                         <div class="city-country-div">
-                            <h2 class="city">#{favoriteLocation.location.city}</h2>
-                            <h5 class="country">#{favoriteLocation.location.country}</h5>
+
+                                <h2 class="city" onmouseover="smallText(this)" onmouseout="largeText(this)" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; transform-origin: left;">
+                                        #{favoriteLocation.location.city}
+                                </h2>
+                                    
+                                <h5 class="country">#{favoriteLocation.location.country}</h5>
+                        
                         </div>
                         <h:graphicImage alt="Weather Icon" url="#{iconController.getIcon(
                         favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()
@@ -78,11 +95,11 @@
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().temperature()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}"/>
 
-                        <!--   USE TIME SERVICE CLASS FOR SUNRISE AND SUNSET  -->
+                                
                         <h:outputText value="Sunrise"
                                       rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise()}"
+                                value="#{favoriteOverviewBean.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
 
 
@@ -90,7 +107,7 @@
                                 value="Sunset"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset()}"
+                                value="#{favoriteOverviewBean.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
 
 

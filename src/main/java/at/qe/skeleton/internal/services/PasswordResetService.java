@@ -58,17 +58,16 @@ public class PasswordResetService {
     }
   }
 
-  /**
-   * Sends a password reset email to the user.
-   *
-   * @param user the user to send the email to
-   */
+  /** Sends a password reset email to the user. */
   public void sendForgetPasswordEmail(Userx user) {
     emailService.sendEmail(
         user.getEmail(),
         "Reset your password",
-        "\nTo reset your password follow this link:\n"
-            + "http://localhost:8080/request_new_password.xhtml"
-            + "\n\nIf you did not request a password reset, please ignore this email.");
+        """
+To reset your password follow this link:
+http://localhost:8080/request_new_password.xhtml
+
+If you did not request a password reset, please ignore this email.
+""");
   }
 }
