@@ -5,6 +5,7 @@ import at.qe.skeleton.internal.services.PasswordResetService;
 import at.qe.skeleton.internal.services.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
 import jakarta.faces.application.FacesMessage;
 
@@ -110,7 +111,12 @@ public class PasswordResetBean {
       return null;
     }
 
-    passwordResetService.resetPassword(email, newPassword);
+    try {passwordResetService.resetPassword(email, newPassword);}
+    catch (MailException e) {
+        warningHelper.addMessage("User does not have an email address", FacesMessage.SEVERITY_ERROR);
+    }
+
+
     return "login";
   }
 }

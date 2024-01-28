@@ -68,6 +68,6 @@ public class AutoCompleteController {
       return String.format("%s, %s", locationDTO.name(), locationDTO.state());
     }
     return String.format(
-        "%s, %s, %s", locationDTO.name(), locationDTO.country(), locationDTO.state());
+        "%s, %s, %s", locationDTO.name(), locationDTO.state(), locationDTO.country());
   }
 }

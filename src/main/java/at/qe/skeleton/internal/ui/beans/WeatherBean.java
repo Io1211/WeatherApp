@@ -8,7 +8,6 @@ import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
 import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyListException;
-import at.qe.skeleton.internal.ui.controllers.IconController;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import java.util.List;
@@ -34,7 +33,6 @@ public class WeatherBean {
   @Autowired private LocationService locationService;
   @Autowired private UserxService userxService;
   @Autowired private FavoriteService favoriteService;
-  @Autowired private IconController iconController;
   @Autowired private SessionInfoBean sessionInfoBean;
   @Autowired private WarningHelper warningHelper;
 
@@ -68,25 +66,6 @@ public class WeatherBean {
         currentAndForecastAnswerService.deserializeDTO(location.getWeather().getWeatherData());
     return "/weather_view.xhtml?faces-redirect=true";
   }
-
-  // TODO: refactor - for inspiration look at favorite-overview
-  public String getIcon() {
-    String iconId = this.weatherDTO.currentWeather().weather().icon();
-    return iconController.getIcon(iconId);
-  }
-
-  // todo: think about how to display location (with state or without? what about null values?)
-  //
-  //  public String getLocationLabel() {
-  //    if (location.getState() == null) {
-  //      return String.format("%s, %s", location.getCity(), location.getCountry());
-  //    }
-  //    if (location.getCountry() == null) {
-  //      return String.format("%s, %s", location.getCountry(), location.getState());
-  //    }
-  //    return String.format(
-  //            "%s, %s, %s", location.getCity(), location.getCountry(), location.getState());
-  //  }
 
   /** Toggles the favorite status for the current location. */
   public void toggleFavorite() {

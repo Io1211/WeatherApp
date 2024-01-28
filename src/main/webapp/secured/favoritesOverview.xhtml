@@ -94,7 +94,7 @@
                         <h:outputText value="Temperature [C]:"
                                       rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().temperature()}"
+                                value="#{weatherHelper.roundTemp(favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().temperature())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}"/>
 
 
@@ -117,7 +117,7 @@
                                 value="Feels Like [C]:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().feelsLikeTemperature()}"
+                                value="#{weatherHelper.roundTemp(favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().feelsLikeTemperature())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>
 
 
@@ -140,7 +140,7 @@
                                 value="Dew-Point [C]"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().dewPoint()}"
+                                value="#{weatherHelper.roundTemp(favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().dewPoint())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}"/>
 
                         <h:outputText
