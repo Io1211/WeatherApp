@@ -44,14 +44,15 @@
         </style>
 
         <script>
-                function smallText(element) {
-                        if (element.innerText.length >= 12) element.style.transform = "scale(0.6)";
-                        element.style.overflow = ((element.innerText.length >= 22) ? "hidden" : "visible");
-                }
-                function largeText(element) {
-                        element.style.transform = "scale(1)";
-                        element.style.overflow = "hidden";
-                }
+            function smallText(element) {
+                if (element.innerText.length >= 12) element.style.transform = "scale(0.6)";
+                element.style.overflow = ((element.innerText.length >= 22) ? "hidden" : "visible");
+            }
+
+            function largeText(element) {
+                element.style.transform = "scale(1)";
+                element.style.overflow = "hidden";
+            }
         </script>
 
         <h:form id="favoritesOverview">
@@ -66,12 +67,13 @@
                     <h:panelGrid columns="2" cellpadding="10" styleClass="favorites-panelgrid">
                         <div class="city-country-div">
 
-                                <h2 class="city" onmouseover="smallText(this)" onmouseout="largeText(this)" style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; transform-origin: left;">
-                                        #{favoriteLocation.location.city}
-                                </h2>
-                                    
-                                <h5 class="country">#{favoriteLocation.location.country}</h5>
-                        
+                            <h2 class="city" onmouseover="smallText(this)" onmouseout="largeText(this)"
+                                style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; transform-origin: left;">
+                                #{favoriteLocation.location.city}
+                            </h2>
+
+                            <h5 class="country">#{favoriteLocation.location.country}</h5>
+
                         </div>
                         <h:graphicImage alt="Weather Icon" url="#{iconController.getIcon(
                         favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().icon()
@@ -82,37 +84,37 @@
                             since the WeatherIcon is part of panelGrid, otherwise it would mess up the whole panelGrid -->
                         <h:outputText value="" rendered="#{not favoriteOverviewBean.favoriteDataConfig.showIcon}"/>
 
-                        <h:outputText value="Clouds:"
+                        <h:outputText value="Cloudiness [%]:"
                                       rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().clouds()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showClouds}"/>
 
 
-                        <h:outputText value="Temperature"
+                        <h:outputText value="Temperature [C]:"
                                       rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().temperature()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTemperature}"/>
 
-                                
-                        <h:outputText value="Sunrise"
+
+                        <h:outputText value="Sunrise:"
                                       rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise())}"
+                                value="#{weatherHelper.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunrise())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunrise}"/>
 
 
                         <h:outputText
-                                value="Sunset"
+                                value="Sunset:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset())}"
+                                value="#{weatherHelper.formatCAFADTOToTime(favoriteOverviewBean.getCurrentWeather(favoriteLocation), favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().sunset())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSunset}"/>
 
 
                         <h:outputText
-                                value="Feels Like"
+                                value="Feels Like [C]:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showFeelsLikeTemperature}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().feelsLikeTemperature()}"
@@ -120,7 +122,7 @@
 
 
                         <h:outputText
-                                value="Pressure"
+                                value="Pressure [hPa]"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showPressure}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().pressure()}"
@@ -128,63 +130,69 @@
 
 
                         <h:outputText
-                                value="Humidity"
+                                value="Humidity [%]"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showHumidity}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().humidity()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showHumidity}"/>
 
                         <h:outputText
-                                value="Dew-Point"
+                                value="Dew-Point [C]"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().dewPoint()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showDewPoint}"/>
 
                         <h:outputText
-                                value="UVI"
+                                value="UV Index:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showUvi}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().uvi()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showUvi}"/>
 
                         <h:outputText
-                                value="Visibility"
+                                value="Visibility [m]:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showVisibility}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().visibility()}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showVisibility}"/>
 
                         <h:outputText
-                                value="Wind Speed"
+                                value="Wind Speed [km/h]:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindSpeed}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windSpeed()}"
+                                value="#{weatherHelper.msToKmh(favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windSpeed())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindSpeed}"/>
 
                         <h:outputText
-                                value="Wind Direction"
+                                value="Wind Direction:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindDirection}"/>
                         <h:outputText
-                                value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windDirection()}"
+                                value="#{weatherHelper.degreesToCardinal(favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().windDirection())}"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showWindDirection}"/>
 
                         <h:outputText
-                                value="Rain Amount"
+                                value="Rain [mm/h]:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showRain}"/>
+                        <h:outputText
+                                value="No rain"
+                                rendered="#{empty favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().rain() and favoriteOverviewBean.favoriteDataConfig.showRain}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().rain()}"
-                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showRain}"/>
+                                rendered="#{not empty favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().rain() and favoriteOverviewBean.favoriteDataConfig.showRain}"/>
 
                         <h:outputText
-                                value="Snow Amount"
+                                value="Snow [mm/h]:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
+                        <h:outputText
+                                value="No snow"
+                                rendered="#{empty favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().snow() and favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().snow()}"
-                                rendered="#{favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
+                                rendered="#{not empty favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().snow() and favoriteOverviewBean.favoriteDataConfig.showSnow}"/>
 
                         <h:outputText
-                                value="Weather"
+                                value="Weather:"
                                 rendered="#{favoriteOverviewBean.favoriteDataConfig.showTitle}"/>
                         <h:outputText
                                 value="#{favoriteOverviewBean.getCurrentWeather(favoriteLocation).currentWeather().weather().title()}"

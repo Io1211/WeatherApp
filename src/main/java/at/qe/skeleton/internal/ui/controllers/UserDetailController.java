@@ -5,7 +5,6 @@ import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.services.PasswordResetService;
 import at.qe.skeleton.internal.services.SubscriptionService;
 import at.qe.skeleton.internal.services.UserxService;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,6 +16,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("view")
-public class UserDetailController implements Serializable {
+public class UserDetailController {
 
   @Autowired private UserxService userService;
 
@@ -37,6 +37,8 @@ public class UserDetailController implements Serializable {
   @Autowired private PasswordResetService passwordResetService;
 
   @Autowired private SubscriptionService subscriptionService;
+
+  // todo: add warning handler
 
   private Set<UserxRole> userxRoles;
 
@@ -55,8 +57,6 @@ public class UserDetailController implements Serializable {
   /**
    * Sets the currently displayed user and reloads it form db. This user is targeted by any further
    * calls of {@link #doReloadUser()}, {@link #doSaveUser()} and {@link #doDeleteUser()}.
-   *
-   * @param user
    */
   public void setUser(Userx user) {
     this.user = user;
@@ -64,11 +64,7 @@ public class UserDetailController implements Serializable {
     doReloadUser();
   }
 
-  /**
-   * Returns the currently displayed user.
-   *
-   * @return
-   */
+  /** Returns the currently displayed user. */
   public Userx getUser() {
     return user;
   }
@@ -138,7 +134,11 @@ public class UserDetailController implements Serializable {
 
   /** Sends a password reset email to the currently displayed user. */
   public void sendResetPasswordAdmin() {
-    passwordResetService.sendForgetPasswordEmail(user);
+    try {
+      passwordResetService.sendForgetPasswordEmail(user);
+    } catch (MailException e) {
+      // todo: use warning helper to display if no email is available.
+    }
   }
 
   /**

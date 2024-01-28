@@ -9,7 +9,6 @@
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
         <h:form id="userForm">
-            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
             <p:dataTable id="usersTable" var="user" value="#{userListController.users}">
                 <p:column headerText="Username">
                     <h:outputText value="#{user.username}"/>
@@ -82,15 +81,14 @@
                     <h:panelGrid columns="2">
                         <p:outputLabel for="roles" value="Roles:"/>
                         <p:selectCheckboxMenu id="roles" value="#{userDetailController.initializedRoles}" label="Roles">
-                            <f:selectItems value="#{userDetailController.userxRoles}" var="role"
-                                           itemLabel="#{role}" itemValue="#{role}"/>
+                            <f:selectItems value="#{userDetailController.userxRoles}"/>
                         </p:selectCheckboxMenu>
                     </h:panelGrid>
                     <p:separator/>
                     <h:panelGrid columns="3">
                         <p:commandButton value="Save" action="#{userDetailController.doSaveUser()}"
                                          oncomplete="PF('userEditDialog').hide()"
-                                         update=":userForm:usersTable :userForm:messages"/>
+                                         update=":userForm:usersTable"/>
                         <p:commandButton value="Reload" action="#{userDetailController.doReloadUser()}"
                                          update=":userForm:userData"/>
                         <p:commandButton value="Abort" onclick="PF('userEditDialog').hide()"/>

@@ -3,10 +3,12 @@ package at.qe.skeleton.internal.ui.beans;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.RegistrationService;
 import at.qe.skeleton.internal.services.TokenService;
+import at.qe.skeleton.internal.services.exceptions.*;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -68,7 +70,11 @@ public class UserRegistrationBean {
       setToken(tokenService.generateToken());
       registrationService.registerUser(user, getToken());
       return "confirm_registration";
-    } catch (RuntimeException e) {
+    } catch (MailException e) {
+      addMessage("Invalid email", FacesMessage.SEVERITY_ERROR);
+      return null;
+    } catch (RegistrationUsernameAlreadyExistsException
+        | RegistrationEmailAlreadyExistsException e) {
       addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
@@ -80,7 +86,10 @@ public class UserRegistrationBean {
       registrationService.resendRegistrationEmailToUser(user.getEmail(), getToken());
       user = registrationService.loadUserByEmail(user.getEmail());
       return "confirm_registration";
-    } catch (RuntimeException e) {
+    } catch (MailException e) {
+      addMessage("Invalid email", FacesMessage.SEVERITY_ERROR);
+      return null;
+    } catch (NoUserFoundException | RegistrationUserAlreadyEnabledException e) {
       addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
@@ -90,7 +99,7 @@ public class UserRegistrationBean {
     try {
       registrationService.confirmRegistrationOfUser(user.getUsername(), token, insertedToken);
       return "login";
-    } catch (RuntimeException e) {
+    } catch (RegistrationInvalidTokenException e) {
       addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
