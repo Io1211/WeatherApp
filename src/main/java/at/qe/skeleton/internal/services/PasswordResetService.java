@@ -45,4 +45,17 @@ public class PasswordResetService {
       userRepository.save(user);
     }
   }
+
+  /** Sends a password reset email to the user. */
+  public void sendForgetPasswordEmail(Userx user) {
+    emailService.sendEmail(
+        user.getEmail(),
+        "Reset your password",
+        """
+To reset your password follow this link:
+http://localhost:8080/request_new_password.xhtml
+
+If you did not request a password reset, please ignore this email.
+""");
+  }
 }
