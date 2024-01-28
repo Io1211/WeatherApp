@@ -12,16 +12,18 @@ public class Subscription implements Persistable<Long>, Serializable {
   @Id @GeneratedValue private Long id;
 
   /**
-   * The list of {@link SubscriptionPeriod} entities for this subscription. The list is ordered by the start date of the subscription period.
+   * The list of {@link SubscriptionPeriod} entities for this subscription. The list is ordered by
+   * the start date of the subscription period.
    */
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   private List<SubscriptionPeriod> subscriptionPeriods;
 
   private LocalDate signupDate; // LocalDate is used, because we only need the date for the signup
 
-    /**
-     * The list of {@link Payment} entities for this subscription. The list is ordered by the payment date.
-     */
+  /**
+   * The list of {@link Payment} entities for this subscription. The list is ordered by the payment
+   * date.
+   */
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   private List<Payment> payments;
 

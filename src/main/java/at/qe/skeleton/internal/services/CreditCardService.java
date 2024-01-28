@@ -60,13 +60,13 @@ public class CreditCardService {
   public CreditCard loadCreditCardByUsername(String username) {
     return creditCardRepository.findByUserId_Username(username);
   }
+
   /**
    * Validates the expiration date of the credit card.
    *
    * @param date the expiration date of the credit card
    * @return true if the date is in the future, false otherwise
    */
-
   public static boolean validateDate(String date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
 

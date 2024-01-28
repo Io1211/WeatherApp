@@ -19,7 +19,7 @@ public class CreditCard implements Persistable<Long>, Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id; // Long is used for the ID because, because we need a wide range of values.
 
-  /**The {@link Userx} entity associated with this credit card.*/
+  /** The {@link Userx} entity associated with this credit card. */
   @NotNull
   @OneToOne
   @JoinColumn(name = "userID")

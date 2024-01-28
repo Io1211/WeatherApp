@@ -14,7 +14,7 @@ public class Favorite implements Persistable<Long>, Serializable {
 
   @Id @GeneratedValue private Long id;
 
-  /**The {@link Location} for this favorite.*/
+  /** The {@link Location} for this favorite. */
   @ManyToOne(optional = false)
   private Location location;
 

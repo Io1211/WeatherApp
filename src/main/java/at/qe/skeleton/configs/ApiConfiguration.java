@@ -73,12 +73,11 @@ public class ApiConfiguration {
     }
   }
 
-    @Bean
-    protected RestClient defaultRestClient() {
-        return RestClient.builder()
-                .baseUrl(baseUrl)
-                .requestInterceptor(new QueryAddingRequestInterceptor())
-                .build();
-    }
-
+  @Bean
+  protected RestClient defaultRestClient() {
+    return RestClient.builder()
+        .baseUrl(baseUrl)
+        .requestInterceptor(new QueryAddingRequestInterceptor())
+        .build();
+  }
 }
