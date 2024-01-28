@@ -15,8 +15,7 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-/**
- * Test class for the PasswordResetService class. {@link PasswordResetService} */
+/** Test class for the PasswordResetService class. {@link PasswordResetService} */
 class PasswordResetServiceTest {
 
   @Mock private EmailService emailService;

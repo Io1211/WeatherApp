@@ -45,13 +45,12 @@ public class PasswordResetService {
       userRepository.save(user);
     }
   }
+
   /**
-   * Reset password for user by admin.
+   * Sends a password reset email to the user.
    *
    * @param user
-   * @param newPassword
    */
-
   public void sendForgetPasswordEmail(Userx user) {
     emailService.sendEmail(
         user.getEmail(),
