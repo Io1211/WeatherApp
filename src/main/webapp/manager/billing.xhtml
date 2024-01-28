@@ -26,7 +26,7 @@
                 </p:selectOneMenu>
             </div>
 
-            <p:dataTable id="billingTable" var="user" value="#{billingBean.users}" stickyHeader="true" paginator="true" paginatorPosition="bottom">
+            <p:dataTable id="billingTable" var="user" value="#{billingBean.users}" stickyHeader="true" paginator="true" paginatorPosition="bottom" rows="10">
                 <p:column field="username" sortable="false" headerText="Username"/>
                 <p:column headerText="Premium Status">
                     <h:outputText value="#{billingBean.isActive(user)}"/>
