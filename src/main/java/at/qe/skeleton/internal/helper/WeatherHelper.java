@@ -59,13 +59,13 @@ public class WeatherHelper {
   }
 
   /**
-   * Method to round the weather to integer degrees. 
-   * The default precision of 0.01 is just not realistic.
+   * Method to round the weather to integer degrees. The default precision of 0.01 is just not
+   * realistic.
    */
   public Long roundTemp(double temp) {
     return Math.round(temp);
   }
-  
+
   public Long msToKmh(Double mps) {
     return Math.round(mps * 3.6);
   }

@@ -9,18 +9,16 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /*
- * Used to display all the audit logs. 
+ * Used to display all the audit logs.
  */
 
 @Component
 @Scope("view")
 public class AuditLogController {
 
-    @Autowired
-    private AuditLogService auditLogService;
+  @Autowired private AuditLogService auditLogService;
 
-    public List<AuditLog> findLogs() {
-        return auditLogService.findAll();
-    }
+  public List<AuditLog> findLogs() {
+    return auditLogService.findAll();
+  }
 }
-

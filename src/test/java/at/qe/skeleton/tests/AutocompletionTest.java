@@ -60,10 +60,10 @@ public class AutocompletionTest {
     when(locationService.callApi(queryToLowerCase, LIMIT)).thenReturn(locationAnswerDTOList);
 
     List<String> expectedAnswers = new ArrayList<>();
-    expectedAnswers.add("Rome, IT, Lazio");
-    expectedAnswers.add("Rom, FR, Nouvelle-Aquitaine");
-    expectedAnswers.add("Rom, DE, Mecklenburg-Vorpommern");
-    expectedAnswers.add("Rømø, DK, Region of Southern Denmark");
+    expectedAnswers.add("Rome, Lazio, IT");
+    expectedAnswers.add("Rom, Nouvelle-Aquitaine, FR");
+    expectedAnswers.add("Rom, Mecklenburg-Vorpommern, DE");
+    expectedAnswers.add("Rømø, Region of Southern Denmark, DK");
     expectedAnswers.add("Rom, NO");
 
     List<String> actualAnswers = controller.autoCompleteLocation(query);
