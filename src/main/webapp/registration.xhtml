@@ -24,7 +24,7 @@
                 <p:inputText id="email" value="#{userRegistrationBean.user.email}" required="true" maxlength="40"/>
 
                 <p:outputLabel for="phone" value="Phone:"/>
-                <p:inputMask id="phone" value="#{userRegistrationBean.user.phone}" mask="+999999999999999" maxlength="30" />
+                <p:inputMask id="phone" value="#{userRegistrationBean.user.phone}" maxlength="30" mask="+99 999 999[9999999]" />
 
                 <p:commandButton value="Register" action="#{userRegistrationBean.register}" update="messages"/>
                 <h:outputLink value="/resend_registration_token.xhtml">Resend token</h:outputLink>
