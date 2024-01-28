@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.Favorite;
 import at.qe.skeleton.internal.model.FavoriteDataConfig;
 import at.qe.skeleton.internal.model.Userx;
@@ -9,7 +10,6 @@ import at.qe.skeleton.internal.services.FavoriteService;
 import at.qe.skeleton.internal.services.UserxService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 
 import java.util.Comparator;
 import java.util.List;
@@ -30,6 +30,9 @@ public class FavoriteOverviewBean {
   @Autowired private FavoriteService favoriteService;
 
   @Autowired private CurrentAndForecastAnswerService currentAndForecastAnswerService;
+
+  @Autowired private WarningHelper warningHelper;
+
   private List<Favorite> favorites;
   private FavoriteDataConfig favoriteDataConfig;
   private Userx user;
@@ -48,7 +51,7 @@ public class FavoriteOverviewBean {
       favoriteDataConfig = user.getFavoriteDataConfig();
 
     } catch (Exception e) {
-      this.addMessage(
+      warningHelper.addMessage(
           "An error occurred while loading the favorites or favorite-configurations",
           FacesMessage.SEVERITY_ERROR);
     }
@@ -64,17 +67,13 @@ public class FavoriteOverviewBean {
     return "/secured/favoritesOverview.xhtml?faces-redirect=true";
   }
 
-  private void addMessage(String summary, FacesMessage.Severity severity) {
-    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
-  }
-
   public FavoriteDataConfig getFavoriteDataConfig() {
     return favoriteDataConfig;
   }
 
   public List<Favorite> getFavorites() {
     if (favorites.isEmpty()) {
-      this.addMessage("You haven´t added any favorites yet.", FacesMessage.SEVERITY_INFO);
+      warningHelper.addMessage("You haven´t added any favorites yet.", FacesMessage.SEVERITY_INFO);
     }
     return favorites;
   }

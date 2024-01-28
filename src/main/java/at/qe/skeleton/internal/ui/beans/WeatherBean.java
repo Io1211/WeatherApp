@@ -3,6 +3,7 @@ package at.qe.skeleton.internal.ui.beans;
 import at.qe.skeleton.external.model.currentandforecast.CurrentAndForecastAnswerDTO;
 import at.qe.skeleton.external.model.currentandforecast.misc.DailyWeatherDTO;
 import at.qe.skeleton.external.model.currentandforecast.misc.HourlyWeatherDTO;
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.Location;
 import at.qe.skeleton.internal.services.*;
 import at.qe.skeleton.internal.services.exceptions.FailedApiRequest;
@@ -10,7 +11,6 @@ import at.qe.skeleton.internal.services.exceptions.GeocodingApiReturnedEmptyList
 import at.qe.skeleton.internal.ui.controllers.IconController;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -36,6 +36,7 @@ public class WeatherBean {
   @Autowired private FavoriteService favoriteService;
   @Autowired private IconController iconController;
   @Autowired private SessionInfoBean sessionInfoBean;
+  @Autowired private WarningHelper warningHelper;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WeatherBean.class);
 
@@ -53,24 +54,14 @@ public class WeatherBean {
     try {
       this.location = locationService.handleLocationSearch(locationSearchInput);
     } catch (FailedApiRequest e) {
-      FacesContext.getCurrentInstance()
-          .addMessage(
-              null,
-              new FacesMessage(
-                  FacesMessage.SEVERITY_ERROR,
-                  "There was an error in an api request: ",
-                  e.getMessage()));
+      warningHelper.addMessage(
+          "There was an error in an api request: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
       LOGGER.error(e.getMessage());
       return null;
     } catch (GeocodingApiReturnedEmptyListException e) {
-      FacesContext.getCurrentInstance()
-          .addMessage(
-              "weatherForm:locationSearch",
-              new FacesMessage(
-                  FacesMessage.SEVERITY_INFO,
-                  "",
-                  "Sorry, we couldn't find a location with the name: %s"
-                      .formatted(locationSearchInput)));
+      warningHelper.addMessage(
+          "Sorry, we couldn't find a location with the name: %s".formatted(locationSearchInput),
+          FacesMessage.SEVERITY_INFO);
       return null;
     }
     this.weatherDTO =

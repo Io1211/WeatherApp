@@ -1,5 +1,6 @@
 package at.qe.skeleton.internal.ui.beans;
 
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.SubscriptionService;
 import at.qe.skeleton.internal.services.exceptions.MoneyGlitchAvoidanceException;
@@ -7,7 +8,6 @@ import at.qe.skeleton.internal.services.exceptions.NoActivePremiumSubscriptionFo
 import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
 import at.qe.skeleton.internal.services.exceptions.NoSubscriptionFoundException;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,8 @@ public class SubscriptionBean {
 
   @Autowired private SessionInfoBean sessionInfoBean;
 
+  @Autowired private WarningHelper warningHelper;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionBean.class);
 
   /**
@@ -39,13 +41,6 @@ public class SubscriptionBean {
     Userx user = sessionInfoBean.getCurrentUser();
     try {
       subscriptionService.activatePremiumSubscription(user);
-      FacesContext.getCurrentInstance()
-          .addMessage(
-              null,
-              new FacesMessage(
-                  FacesMessage.SEVERITY_INFO,
-                  "Success",
-                  "Premium activated successfully. Please login again to get access to premium features."));
       LOGGER.info("Subscription activated for user {}", user.getId());
       sessionInfoBean.reloadCurrentUser();
       return "/success_page";
@@ -62,15 +57,11 @@ public class SubscriptionBean {
     } catch (NoSubscriptionFoundException
         | NoActivePremiumSubscriptionFoundException
         | MoneyGlitchAvoidanceException e) {
-      showMessageInPrimefaces(FacesMessage.SEVERITY_WARN, e.getMessage());
+      warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_WARN);
       return "/home";
     }
-    showMessageInPrimefaces(FacesMessage.SEVERITY_INFO, "Premium deactivated successfully.");
+    warningHelper.addMessage("Premium deactivated successfully.", FacesMessage.SEVERITY_INFO);
     sessionInfoBean.reloadCurrentUser();
     return "/success_page";
-  }
-
-  private void showMessageInPrimefaces(FacesMessage.Severity severity, String summary) {
-    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
   }
 }
