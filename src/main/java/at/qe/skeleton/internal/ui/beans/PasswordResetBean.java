@@ -1,6 +1,5 @@
 package at.qe.skeleton.internal.ui.beans;
 
-import at.qe.skeleton.internal.services.EmailService;
 import at.qe.skeleton.internal.services.PasswordResetService;
 import at.qe.skeleton.internal.services.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +19,6 @@ import jakarta.faces.context.FacesContext;
 @Component
 @Scope("session")
 public class PasswordResetBean {
-
-  @Autowired private EmailService emailService;
 
   @Autowired private PasswordResetService passwordResetService;
 
@@ -114,6 +111,7 @@ public class PasswordResetBean {
       return null;
     }
 
+    // todo: add try catch with warning helper
     passwordResetService.resetPassword(email, newPassword);
     return "login";
   }

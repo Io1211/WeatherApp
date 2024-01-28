@@ -26,11 +26,11 @@ public class UserServiceTest {
 
   @Test
   @WithMockUser(
-      username = "admin",
+      username = "admin3",
       authorities = {"ADMIN"})
   public void testDataintialization() {
     Assertions.assertEquals(
-        5,
+        10,
         userService.getAllUsers().size(),
         "Insufficient amount of users initialized for test data source");
     for (Userx user : userService.getAllUsers()) {
@@ -41,15 +41,15 @@ public class UserServiceTest {
       Assertions.assertNull(user.getUpdateUser(), "User \"" + user + "\" has a updateUser defined");
       Assertions.assertNull(user.getUpdateDate(), "User \"" + user + "\" has a updateDate defined");
 
-      if ("admin".equals(user.getUsername())) {
+      if ("admin".equals(user.getUsername()) || "admin2".equals(user.getUsername())) {
         Assertions.assertTrue(
             user.getRoles().contains(UserxRole.ADMIN),
             "User \"" + user + "\" does not have role ADMIN");
-      } else if ("user1".equals(user.getUsername())) {
+      } else if ("user1".equals(user.getUsername()) || "testManager".equals(user.getUsername())) {
         Assertions.assertTrue(
             user.getRoles().contains(UserxRole.MANAGER),
             "User \"" + user + "\" does not have role MANAGER");
-      } else if ("user2".equals(user.getUsername())) {
+      } else if ("user2".equals(user.getUsername()) || "testUser".equals(user.getUsername())) {
         Assertions.assertTrue(
             user.getRoles().contains(UserxRole.REGISTERED_USER),
             "User \"" + user + "\" does not have role REGISTERED_USER");
@@ -57,8 +57,12 @@ public class UserServiceTest {
         Assertions.assertTrue(
             user.getRoles().contains(UserxRole.ADMIN),
             "User \"" + user + "\" does not have role ADMIN");
-      } else if ("premium1".equals(user.getUsername())) {
+      } else if ("premium1".equals(user.getUsername()) || "testPremium".equals(user.getUsername())) {
         Assertions.assertTrue(
+            user.getRoles().contains(UserxRole.PREMIUM_USER),
+            "User \"" + user + "\" does not have role ADMIN");
+      } else if ("testPremiumBad".equals(user.getUsername())) {
+        Assertions.assertFalse(
             user.getRoles().contains(UserxRole.PREMIUM_USER),
             "User \"" + user + "\" does not have role ADMIN");
       } else {
@@ -86,7 +90,7 @@ public class UserServiceTest {
     userService.deleteUser(toBeDeletedUser);
 
     Assertions.assertEquals(
-        4,
+        9,
         userService.getAllUsers().size(),
         "No user has been deleted after calling UserService.deleteUser");
     Userx deletedUser = userService.loadUser(username);
