@@ -22,6 +22,12 @@ public class PasswordResetService {
 
   @Autowired private EmailService emailService;
 
+  /**
+   * Sends a password reset email to the user.
+   *
+   * @param email the email address of the user
+   * @param token the token to reset the password
+   */
   public void sendPasswordResetEmailAndToken(String email, String token) {
     if (userRepository.findFirstByEmail(email) == null) {
       throw new IllegalArgumentException("User not found for email " + email);
@@ -35,6 +41,12 @@ public class PasswordResetService {
     }
   }
 
+  /**
+   * Resets the password of the user.
+   *
+   * @param email the email address of the user
+   * @param newPassword the new password
+   */
   public void resetPassword(String email, String newPassword) {
     Userx user = userRepository.findFirstByEmail(email);
     if (user == null) {
