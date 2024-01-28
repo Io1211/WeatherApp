@@ -50,7 +50,6 @@ public class PasswordResetService {
   public void resetPassword(String email, String newPassword) {
     Userx user = userRepository.findFirstByEmail(email);
     if (user == null) {
-      // TO DO: exception handling for application internal errors
       throw new IllegalArgumentException("User not found for email " + email);
     } else {
       user.setPassword(passwordEncoder.encode(newPassword));

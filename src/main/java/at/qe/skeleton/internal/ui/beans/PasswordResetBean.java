@@ -111,11 +111,11 @@ public class PasswordResetBean {
       return null;
     }
 
-    try {passwordResetService.resetPassword(email, newPassword);}
-    catch (MailException e) {
-        warningHelper.addMessage("User does not have an email address", FacesMessage.SEVERITY_ERROR);
+    try {
+      passwordResetService.resetPassword(email, newPassword);
+    } catch (MailException e) {
+      warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
     }
-
 
     return "login";
   }

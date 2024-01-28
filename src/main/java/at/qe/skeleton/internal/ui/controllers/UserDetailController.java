@@ -1,5 +1,6 @@
 package at.qe.skeleton.internal.ui.controllers;
 
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.services.PasswordResetService;
@@ -13,7 +14,7 @@ import at.qe.skeleton.internal.services.exceptions.NoActivePremiumSubscriptionFo
 import at.qe.skeleton.internal.services.exceptions.NoCreditCardFoundException;
 import at.qe.skeleton.internal.services.exceptions.NoSubscriptionFoundException;
 import jakarta.annotation.PostConstruct;
-import jakarta.faces.context.FacesContext;
+import jakarta.faces.application.FacesMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.mail.MailException;
@@ -38,7 +39,7 @@ public class UserDetailController {
 
   @Autowired private SubscriptionService subscriptionService;
 
-  // todo: add warning handler
+  @Autowired private WarningHelper warningHelper;
 
   private Set<UserxRole> userxRoles;
 
@@ -89,13 +90,9 @@ public class UserDetailController {
       try {
         subscriptionService.activatePremiumSubscription(user);
       } catch (NoCreditCardFoundException e) {
-        FacesContext.getCurrentInstance()
-            .addMessage(
-                null,
-                new jakarta.faces.application.FacesMessage(
-                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                    "Error",
-                    "No credit card found. Please assign a credit card to the user."));
+        warningHelper.addMessage(
+            "No credit card found. Please assign a credit card to the user.",
+            FacesMessage.SEVERITY_ERROR);
         initializeRoles.remove(UserxRole.PREMIUM_USER);
       }
     }
@@ -105,13 +102,8 @@ public class UserDetailController {
       } catch (NoSubscriptionFoundException
           | NoActivePremiumSubscriptionFoundException
           | MoneyGlitchAvoidanceException e) {
-        FacesContext.getCurrentInstance()
-            .addMessage(
-                null,
-                new jakarta.faces.application.FacesMessage(
-                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                    "Error",
-                    "User just signed up. Please try again later."));
+        warningHelper.addMessage(
+            "User just signed up. Please try again later.", FacesMessage.SEVERITY_ERROR);
         initializeRoles.add(UserxRole.PREMIUM_USER);
       }
     }
@@ -137,7 +129,7 @@ public class UserDetailController {
     try {
       passwordResetService.sendForgetPasswordEmail(user);
     } catch (MailException e) {
-      // todo: use warning helper to display if no email is available.
+      warningHelper.addMessage("User does not have an email address.", FacesMessage.SEVERITY_ERROR);
     }
   }
 
