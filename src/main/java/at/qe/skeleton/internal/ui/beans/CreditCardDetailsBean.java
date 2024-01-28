@@ -35,4 +35,6 @@ public class CreditCardDetailsBean {
     creditCardService.deleteCreditCard(getCreditcard());
     addMessage("Credit Card deleted", FacesMessage.SEVERITY_INFO);
   }
+
+  // todo: message auslagern nach andis merge
 }
