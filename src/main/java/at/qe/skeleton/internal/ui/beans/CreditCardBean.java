@@ -1,11 +1,11 @@
 package at.qe.skeleton.internal.ui.beans;
 
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.CardType;
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.services.CreditCardService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -28,6 +28,8 @@ public class CreditCardBean {
   @Autowired SessionInfoBean sessionInfoBean;
 
   @Autowired private CreditCardService creditCardService;
+
+  @Autowired private WarningHelper warningHelper;
 
   private List<CardType> cardTypes;
 
@@ -63,16 +65,6 @@ public class CreditCardBean {
     return creditCard;
   }
 
-  private void addErrorMessage(String summary) {
-    FacesContext.getCurrentInstance()
-        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, "detail"));
-  }
-
-  private void addMessage(String summary) {
-    FacesContext.getCurrentInstance()
-        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, summary, "detail"));
-  }
-
   /**
    * Saves the credit card of the current user. If the credit card already exists, it is updated.
    *
@@ -82,9 +74,9 @@ public class CreditCardBean {
     try {
       creditCard.setUserId(sessionInfoBean.getCurrentUser());
       creditCardService.saveCreditCard(creditCard);
-      addMessage("Credit card saved.");
+      warningHelper.addMessage("Credit card saved.", FacesMessage.SEVERITY_INFO);
     } catch (IllegalArgumentException e) {
-      addErrorMessage(e.getMessage());
+      warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
     return "credit_card_details.xhtml";
@@ -100,7 +92,7 @@ public class CreditCardBean {
       creditCard.setUserId(sessionInfoBean.getCurrentUser());
       creditCardService.saveCreditCard(creditCard);
     } catch (IllegalArgumentException e) {
-      addErrorMessage(e.getMessage());
+      warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
     return "premium_activation_cc.xhtml";

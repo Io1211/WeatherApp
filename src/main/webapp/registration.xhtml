@@ -5,7 +5,6 @@
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
         <h:form id="registration_form">
-            <p:messages id="messages" showDetail="false" autoUpdate="true" closable="true"/>
             <h:panelGrid columns="2">
                 <p:outputLabel for="username" value="Username:"/>
                 <p:inputText id="username" value="#{userRegistrationBean.user.username}" required="true"
@@ -29,7 +28,7 @@
                 <p:inputMask id="phone" value="#{userRegistrationBean.user.phone}" maxlength="30"
                              mask="+99 999 999[9999999]"/>
 
-                <p:commandButton value="Register" action="#{userRegistrationBean.register}" update="messages"/>
+                <p:commandButton value="Register" action="#{userRegistrationBean.register}"/>
                 <h:outputLink value="/resend_registration_token.xhtml">Resend token</h:outputLink>
             </h:panelGrid>
         </h:form>

@@ -1,11 +1,11 @@
 package at.qe.skeleton.internal.ui.beans;
 
+import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.RegistrationService;
 import at.qe.skeleton.internal.services.TokenService;
 import at.qe.skeleton.internal.services.exceptions.*;
 import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.mail.MailException;
@@ -28,6 +28,8 @@ public class UserRegistrationBean {
   @Autowired private RegistrationService registrationService;
 
   @Autowired TokenService tokenService;
+
+  @Autowired private WarningHelper warningHelper;
 
   private String token;
 
@@ -61,21 +63,17 @@ public class UserRegistrationBean {
     this.insertedToken = insertedToken;
   }
 
-  public void addMessage(String summary, FacesMessage.Severity severity) {
-    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severity, summary, null));
-  }
-
   public String register() {
     try {
       setToken(tokenService.generateToken());
       registrationService.registerUser(user, getToken());
       return "confirm_registration";
     } catch (MailException e) {
-      addMessage("Invalid email", FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage("Invalid email", FacesMessage.SEVERITY_ERROR);
       return null;
     } catch (RegistrationUsernameAlreadyExistsException
         | RegistrationEmailAlreadyExistsException e) {
-      addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
   }
@@ -87,10 +85,10 @@ public class UserRegistrationBean {
       user = registrationService.loadUserByEmail(user.getEmail());
       return "confirm_registration";
     } catch (MailException e) {
-      addMessage("Invalid email", FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage("Invalid email", FacesMessage.SEVERITY_ERROR);
       return null;
     } catch (NoUserFoundException | RegistrationUserAlreadyEnabledException e) {
-      addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
   }
@@ -100,7 +98,7 @@ public class UserRegistrationBean {
       registrationService.confirmRegistrationOfUser(user.getUsername(), token, insertedToken);
       return "login";
     } catch (RegistrationInvalidTokenException e) {
-      addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
   }
