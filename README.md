@@ -34,6 +34,7 @@ our email server with the email address group8weatherapp@gmail.com:
 ```bash
 export SWA_EMAIL_PASSWORD=<email-token>
 ```
+We send you the actual token via email.
 
 This project works with Java 17.
 Execute  "mvn spring-boot:run" to start the skeleton project and connect to

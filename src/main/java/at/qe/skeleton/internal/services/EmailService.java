@@ -23,6 +23,13 @@ public class EmailService {
   @Value("${spring.mail.username}")
   private String projectEmail;
 
+  /**
+   * Sends an email to the user.
+   *
+   * @param email the email address of the user
+   * @param subject the subject of the email
+   * @param message the message of the email
+   */
   public void sendEmail(String email, String subject, String message)
       throws IllegalArgumentException, MailException {
     if (email == null || email.isEmpty()) {
