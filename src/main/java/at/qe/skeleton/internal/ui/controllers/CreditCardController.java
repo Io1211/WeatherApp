@@ -1,7 +1,6 @@
 package at.qe.skeleton.internal.ui.controllers;
 
 import at.qe.skeleton.internal.model.CreditCard;
-import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.services.CreditCardService;
 import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 import jakarta.faces.application.FacesMessage;
@@ -22,13 +21,15 @@ public class CreditCardController {
 
   @Autowired private SessionInfoBean sessionInfoBean;
 
-  @Autowired private CreditCardRepository creditCardRepository;
-
   private CreditCard creditCard;
 
   public CreditCard getCreditcard() {
-    return creditCardRepository.findByUserId_Username(
-        sessionInfoBean.getCurrentUser().getUsername());
+    if (this.creditCard == null) {
+      this.creditCard =
+          creditCardService.loadCreditCardByUsername(
+              sessionInfoBean.getCurrentUser().getUsername());
+    }
+    return this.creditCard;
   }
 
   private void addMessage(String summary) {

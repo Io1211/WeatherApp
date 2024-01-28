@@ -2,6 +2,10 @@ package at.qe.skeleton.internal.services;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import at.qe.skeleton.internal.model.*;
 import at.qe.skeleton.internal.repositories.*;
@@ -13,6 +17,8 @@ import java.util.TreeSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.MailException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -24,6 +30,8 @@ class SubscriptionServiceTest {
   @Autowired CreditCardRepository creditCardRepository;
 
   @Autowired FavoriteRepository favoriteRepository;
+
+  @MockBean EmailService emailService;
 
   @Autowired UserxRepository userxRepository;
 
@@ -106,21 +114,27 @@ class SubscriptionServiceTest {
 
     final Userx userx = user;
     assertThrows(
-        NoEmailProvidedException.class,
-        () -> {
-          subscriptionService.revokeSubscription(userx);
-        });
+        NoEmailProvidedException.class, () -> subscriptionService.revokeSubscription(userx));
 
     user.setSubscription(new Subscription());
     user.getSubscription().setPayments(new ArrayList<>());
     user.getSubscription().setSubscriptionPeriods(new ArrayList<>());
     user.setRoles(new TreeSet<>());
     user.getRoles().add(UserxRole.PREMIUM_USER);
+    assertThrows(
+        NoEmailProvidedException.class, () -> subscriptionService.revokeSubscription(user));
+
+    user.setEmail("abc@mail.com");
+    userxRepository.save(user);
     try {
       subscriptionService.revokeSubscription(user);
-    } catch (NoEmailProvidedException e) {
+      verify(emailService, times(1)).sendEmail(eq(user.getEmail()), anyString(), anyString());
       assertNull(user.getSubscription());
       assertFalse(user.getRoles().contains(UserxRole.PREMIUM_USER));
+    } catch (MailException ignored) {
+      // This is ignored since it can only be thrown if the desired code is reached and therefore
+      // tested.
+      // This only depends on the email set in the test here.
     }
   }
 

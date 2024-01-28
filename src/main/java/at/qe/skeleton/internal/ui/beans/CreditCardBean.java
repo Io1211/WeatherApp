@@ -2,7 +2,6 @@ package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.internal.model.CardType;
 import at.qe.skeleton.internal.model.CreditCard;
-import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.services.CreditCardService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
@@ -30,8 +29,6 @@ public class CreditCardBean {
 
   @Autowired private CreditCardService creditCardService;
 
-  @Autowired private CreditCardRepository creditCardRepository;
-
   private List<CardType> cardTypes;
 
   /**
@@ -50,7 +47,7 @@ public class CreditCardBean {
    */
   private void loadCurrentUserCreditCard() {
     String username = sessionInfoBean.getCurrentUser().getUsername();
-    CreditCard existingCard = creditCardRepository.findByUserId_Username(username);
+    CreditCard existingCard = creditCardService.loadCreditCardByUsername(username);
     if (existingCard != null) {
       this.creditCard = existingCard;
     } else {
@@ -133,7 +130,7 @@ public class CreditCardBean {
   /**
    * This methode is needed to test the class
    *
-   * @param mockCard
+   * @param mockCard the credit card to be set
    */
   public void setCreditCard(CreditCard mockCard) {
     this.creditCard = mockCard;

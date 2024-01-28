@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Scope("session")
 public class SessionInfoBean implements Serializable {
 
-  @Autowired private UserxService userService;
+  @Autowired private transient UserxService userService;
 
   /** Attribute to cache the current user. */
   private Userx currentUser;
@@ -90,8 +90,8 @@ public class SessionInfoBean implements Serializable {
   }
 
   public boolean isUserPremium() {
-    Userx currentUser = getCurrentUser();
-    return currentUser != null && currentUser.isPremium();
+    Userx user = getCurrentUser();
+    return user != null && user.isPremium();
   }
 
   /**
