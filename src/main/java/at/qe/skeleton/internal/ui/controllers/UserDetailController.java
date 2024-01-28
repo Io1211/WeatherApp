@@ -16,6 +16,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,8 @@ public class UserDetailController {
 
   @Autowired private SubscriptionService subscriptionService;
 
+  // todo: add warning handler
+
   private Set<UserxRole> userxRoles;
 
   private Set<UserxRole> initializeRoles;
@@ -54,8 +57,6 @@ public class UserDetailController {
   /**
    * Sets the currently displayed user and reloads it form db. This user is targeted by any further
    * calls of {@link #doReloadUser()}, {@link #doSaveUser()} and {@link #doDeleteUser()}.
-   *
-   * @param user
    */
   public void setUser(Userx user) {
     this.user = user;
@@ -63,11 +64,7 @@ public class UserDetailController {
     doReloadUser();
   }
 
-  /**
-   * Returns the currently displayed user.
-   *
-   * @return
-   */
+  /** Returns the currently displayed user. */
   public Userx getUser() {
     return user;
   }
@@ -137,7 +134,11 @@ public class UserDetailController {
 
   /** Sends a password reset email to the currently displayed user. */
   public void sendResetPasswordAdmin() {
-    passwordResetService.sendForgetPasswordEmail(user);
+    try {
+      passwordResetService.sendForgetPasswordEmail(user);
+    } catch (MailException e) {
+      // todo: use warning helper to display if no email is available.
+    }
   }
 
   /**

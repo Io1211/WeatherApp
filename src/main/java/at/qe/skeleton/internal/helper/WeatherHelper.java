@@ -11,8 +11,9 @@ import java.time.format.DateTimeFormatter;
 @Component
 public class WeatherHelper {
   /**
-   * Formats a given CurrentAndForecastAnswerDTO into a time with the format HH:mm. The timezone is
-   * also considered int the conversion. To get the timestamp, currentWeather.timestamp() is used.
+   * Extracts timezone from a given CurrentAndForecastAnswerDTO and converts the given timestamp
+   * instant into a Time with the format HH:mm using that timezone. To get the timestamp,
+   * currentWeather.timestamp() is used.
    *
    * @param timestamp the Instant timestamp which should be converted
    * @param answerDTO the CurrentAndForecastAnswerDTO which contains the timezone
