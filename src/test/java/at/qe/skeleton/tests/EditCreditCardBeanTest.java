@@ -3,42 +3,44 @@ package at.qe.skeleton.tests;
 import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import at.qe.skeleton.internal.services.CreditCardService;
-import at.qe.skeleton.internal.ui.beans.CreditCardBean;
+import at.qe.skeleton.internal.ui.beans.EditCreditCardBean;
 import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 import jakarta.faces.context.FacesContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
 
-/** Some very basic tests for UserBean. {@link CreditCardBean} */
-class CreditCardBeanTest {
+/** Some very basic tests for UserBean. {@link EditCreditCardBean} */
+public class EditCreditCardBeanTest {
 
-  @InjectMocks private CreditCardBean creditCardBean;
+  @InjectMocks private EditCreditCardBean editCreditCardBean;
 
   @Mock private CreditCardService creditCardService;
 
+  @Mock private CreditCardRepository creditCardRepository;
+
   @Mock private SessionInfoBean sessionInfoBean;
 
-  @Mock private WarningHelper warningHelper;
+  @Mock private FacesContext facesContext;
+
+  @Mock WarningHelper warningHelper;
 
   @BeforeEach
   public void setUp() {
     MockitoAnnotations.openMocks(this);
     when(sessionInfoBean.getCurrentUser()).thenReturn(new Userx());
-    ReflectionTestUtils.setField(creditCardBean, "warningHelper", warningHelper);
   }
 
   @Test
   public void testInit() {
-    creditCardBean.init();
-    assertNotNull("CardTypes should not be null", creditCardBean.getCardTypes());
-    assertNotNull("CreditCard should not be null", creditCardBean.getCreditCard());
+    editCreditCardBean.init();
+    assertNotNull("CardTypes should not be null", editCreditCardBean.getCardTypes());
+    assertNotNull("CreditCard should not be null", editCreditCardBean.getCreditCard());
   }
 
   // test for validate date
@@ -46,14 +48,14 @@ class CreditCardBeanTest {
   public void testValidateDatetrue() {
     String date = "12/2026";
     boolean result = CreditCardService.validateDate(date);
-    assertTrue(result);
+    assertEquals(true, result);
   }
 
   @Test
   public void testValidateDatefalse() {
     String date = "12/2020";
     boolean result = CreditCardService.validateDate(date);
-    assertFalse(result);
+    assertEquals(false, result);
   }
 
   @Test
@@ -65,12 +67,12 @@ class CreditCardBeanTest {
       Userx mockedUser = mock(Userx.class);
       when(sessionInfoBean.getCurrentUser()).thenReturn(mockedUser);
       CreditCard testCreditCard = new CreditCard();
-      testCreditCard.setUserId(mockedUser);
+      testCreditCard.setUser(mockedUser);
       when(sessionInfoBean.getCurrentUser()).thenReturn(mockedUser);
 
-      creditCardBean.setCreditCard(testCreditCard);
+      editCreditCardBean.setCreditCard(testCreditCard);
 
-      String result = creditCardBean.saveCreditCard();
+      String result = editCreditCardBean.saveCreditCard();
 
       verify(creditCardService, times(1)).saveCreditCard(testCreditCard);
 
@@ -87,12 +89,12 @@ class CreditCardBeanTest {
       Userx mockedUser = mock(Userx.class);
       when(sessionInfoBean.getCurrentUser()).thenReturn(mockedUser);
       CreditCard testCreditCard = new CreditCard();
-      testCreditCard.setUserId(mockedUser);
+      testCreditCard.setUser(mockedUser);
       when(sessionInfoBean.getCurrentUser()).thenReturn(mockedUser);
 
-      creditCardBean.setCreditCard(testCreditCard);
+      editCreditCardBean.setCreditCard(testCreditCard);
 
-      String result = creditCardBean.updateCreditCard();
+      String result = editCreditCardBean.updateCreditCard();
 
       verify(creditCardService, times(1)).saveCreditCard(testCreditCard);
 

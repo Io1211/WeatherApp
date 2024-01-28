@@ -201,7 +201,7 @@ class SubscriptionServiceTest {
 
     // set credit card info to prevent exceptions in following tests
     user.setCreditCard(new CreditCard());
-    user.getCreditCard().setUserId(user);
+    user.getCreditCard().setUser(user);
     user.setFavorites(new ArrayList<>()); // necessary because of restrictions set in the entity
     user = userxRepository.save(user);
 

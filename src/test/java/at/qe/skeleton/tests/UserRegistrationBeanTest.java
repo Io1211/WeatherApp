@@ -49,7 +49,7 @@ class UserRegistrationBeanTest {
   @Test
   void testConfirmRegistrationOfUser() throws RegistrationInvalidTokenException {
     Userx user = new Userx();
-    user.setUsername("user");
+    user.setEmail("test@mail.com");
     user.setEnabled(false);
     userRegistrationBean.setToken("12345");
     userRegistrationBean.setUser(user);
@@ -58,6 +58,6 @@ class UserRegistrationBeanTest {
     userRegistrationBean.setInsertedToken("12345");
     userRegistrationBean.confirmRegistration();
 
-    verify(registrationService).confirmRegistrationOfUser(user.getUsername(), "12345", "12345");
+    verify(registrationService).confirmRegistrationOfUser(user.getEmail(), "12345", "12345");
   }
 }

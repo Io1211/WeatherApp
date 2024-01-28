@@ -11,14 +11,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 class GeocodingApiLocationDtoTest {
@@ -155,5 +160,32 @@ class GeocodingApiLocationDtoTest {
         () -> geocodingApiRequestService.retrieveLocationsLonLat(locationName, LIMIT));
 
     mockServer.verify();
+  }
+
+  @Test
+  void clientError() {
+    String locationName = "locationName";
+    HttpStatus status = HttpStatus.valueOf(400);
+
+    mockServer
+        .expect(requestTo("/geo/1.0/direct?q=" + locationName + "&limit=" + LIMIT))
+        .andRespond(withStatus(status));
+
+    Assertions.assertThrows(
+        HttpClientErrorException.class,
+        () -> geocodingApiRequestService.retrieveLocationsLonLat(locationName, LIMIT));
+  }
+
+  @Test
+  void serverError() {
+    String locationName = "locationName";
+    HttpStatus status = HttpStatus.valueOf(501);
+    mockServer
+        .expect(requestTo("/geo/1.0/direct?q=" + locationName + "&limit=" + LIMIT))
+        .andRespond(withStatus(status));
+
+    Assertions.assertThrows(
+        HttpServerErrorException.class,
+        () -> geocodingApiRequestService.retrieveLocationsLonLat(locationName, LIMIT));
   }
 }

@@ -1,5 +1,4 @@
 <ui:composition xmlns="http://www.w3c.org/1999/xhtml"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
@@ -12,12 +11,12 @@
             </div>
             <p:panelGrid columns="#{sessionInfoBean.isUserPremium() ? 2 : 1}">
                 <p:orderList
-                    value="#{overviewConfigBean.favorites}"
-                    var="favorite"
-                    itemLabel="#{favorite.location.city}, #{(not empty favorite.location.state) ? favorite.location.state.concat(',') : ''} #{favorite.location.country}"
-                    itemValue="#{favorite}"
-                    converter="#{favoriteConverter}"
-                    responsive="true"/>
+                        value="#{overviewConfigBean.favorites}"
+                        var="favorite"
+                        itemLabel="#{favorite.location.city}, #{(not empty favorite.location.state) ? favorite.location.state.concat(',') : ''} #{favorite.location.country}"
+                        itemValue="#{favorite}"
+                        converter="#{favoriteConverter}"
+                        responsive="true"/>
                 <p:panelGrid columns="2" rendered="#{sessionInfoBean.isUserPremium()}"
                              style="width: 50%" columnClasses="row-height, row-height">
                     <h:outputText value="Icon: " style="line-height: 2.5"/>

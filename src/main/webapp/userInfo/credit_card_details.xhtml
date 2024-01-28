@@ -2,14 +2,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3c.org/1999/xhtml"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
         <h:form id="creditcardForm">
-            <p:dataTable id="creditcardTable" var="creditcard" value="#{creditCardController.creditcard}" lazy="false">
+
+            <p:dataTable id="creditcardTable" var="creditcard" value="#{creditCardDetailsBean.creditcard}" lazy="false"
+                         emptyMessage="You have not stored a credit card at the moment.
+                         Add a credit card before activating Premium!">
                 <p:column headerText="Number">
                     <h:outputText value="#{creditcard.cardnumber}"/>
                 </p:column>
@@ -22,7 +24,8 @@
             </p:dataTable>
             <br/>
             <p:commandButton value="Add new Credit Card" action="add_credit_card.xhtml" style="margin-right: 30px;"/>
-            <p:commandButton value="Delete" action="#{creditCardController.deleteCreditCard}" update=":creditcardForm"
+            <p:commandButton value="Delete" action="#{creditCardDetailsBean.deleteCreditCard}"
+                             update=":headerForm creditcardForm"
                              style="margin-right: 30px;"/>
             <p:commandButton value="Edit" action="edit_cc.xhtml"/>
 

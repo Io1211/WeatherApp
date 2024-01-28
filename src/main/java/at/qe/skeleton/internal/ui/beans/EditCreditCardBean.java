@@ -4,6 +4,7 @@ import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.CardType;
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.services.CreditCardService;
+import at.qe.skeleton.internal.services.UserxService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ import java.util.List;
  */
 @Component
 @Scope("session")
-public class CreditCardBean {
+public class EditCreditCardBean {
 
   private CreditCard creditCard;
 
@@ -72,14 +73,14 @@ public class CreditCardBean {
    */
   public String saveCreditCard() {
     try {
-      creditCard.setUserId(sessionInfoBean.getCurrentUser());
+      creditCard.setUser(sessionInfoBean.getCurrentUser());
       creditCardService.saveCreditCard(creditCard);
       warningHelper.addMessage("Credit card saved.", FacesMessage.SEVERITY_INFO);
+      return "credit_card_details.xhtml";
     } catch (IllegalArgumentException e) {
       warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;
     }
-    return "credit_card_details.xhtml";
   }
 
   /**
@@ -89,8 +90,9 @@ public class CreditCardBean {
    */
   public String saveCreditCardPremium() {
     try {
-      creditCard.setUserId(sessionInfoBean.getCurrentUser());
+      creditCard.setUser(sessionInfoBean.getCurrentUser());
       creditCardService.saveCreditCard(creditCard);
+      warningHelper.addMessage("Credit card saved.", FacesMessage.SEVERITY_INFO);
     } catch (IllegalArgumentException e) {
       warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
       return null;

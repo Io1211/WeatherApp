@@ -30,7 +30,7 @@ public class CreditCard implements Persistable<Long>, Serializable {
 
   @Column(name = "expiration_date")
   private String
-      expirationDate; // String is used for the expiration date because afterward we don't need to
+      expirationDate; // String is used for the expiration date because afterwards we don't need to
 
   // do any calculations with it.
 
@@ -38,20 +38,12 @@ public class CreditCard implements Persistable<Long>, Serializable {
   @Enumerated(EnumType.STRING)
   private CardType cardType; // CardType is used to represent a set of possible card types.
 
-  public String getUserId() {
-    return userId.getId();
-  }
-
   public Userx getUser() {
     return userId;
   }
 
-  public void setUserId(String userId) {
-    this.userId.setId(userId);
-  }
-
-  public void setUserId(Userx userId) {
-    this.userId = userId;
+  public void setUser(Userx user) {
+    this.userId = user;
   }
 
   public String getCardnumber() {

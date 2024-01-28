@@ -1,9 +1,8 @@
-package at.qe.skeleton.internal.ui.controllers;
+package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.internal.helper.WarningHelper;
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.services.CreditCardService;
-import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 import jakarta.faces.application.FacesMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("view")
-public class CreditCardController {
+public class CreditCardDetailsBean {
 
   @Autowired private CreditCardService creditCardService;
 
@@ -34,21 +33,10 @@ public class CreditCardController {
     return this.creditCard;
   }
 
-  public void setCreditCard(CreditCard creditCard) {
-    this.creditCard = creditCard;
-  }
-
-  public void reloadCreditCard() {
-    creditCard = creditCardService.loadCreditCard(creditCard.getId());
-  }
-
-  public void saveCreditCard() {
-    creditCardService.saveCreditCard(creditCard);
-  }
-
   public void deleteCreditCard() {
     try {
       creditCardService.deleteCreditCard(getCreditcard());
+      warningHelper.addMessage("Credit Card deleted", FacesMessage.SEVERITY_INFO);
     } catch (IllegalArgumentException e) {
       warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
     }

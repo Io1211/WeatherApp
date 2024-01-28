@@ -88,7 +88,6 @@ public class UserRegistrationBean {
     try {
       setToken(tokenService.generateToken());
       registrationService.resendRegistrationEmailToUser(user.getEmail(), getToken());
-      user = registrationService.loadUserByEmail(user.getEmail());
       return "confirm_registration";
     } catch (MailException e) {
       warningHelper.addMessage("Invalid email", FacesMessage.SEVERITY_ERROR);
@@ -101,7 +100,7 @@ public class UserRegistrationBean {
 
   public String confirmRegistration() {
     try {
-      registrationService.confirmRegistrationOfUser(user.getUsername(), token, insertedToken);
+      registrationService.confirmRegistrationOfUser(user.getEmail(), token, insertedToken);
       return "login";
     } catch (RegistrationInvalidTokenException e) {
       warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
