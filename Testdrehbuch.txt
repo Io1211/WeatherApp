@@ -105,13 +105,3 @@ o		TC Usability.1
 o		TC Performance.1
 o		TC Security.1
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
