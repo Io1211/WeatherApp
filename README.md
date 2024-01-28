@@ -88,15 +88,20 @@ The following users and roles are added on start-up of the project:
 
 To run the project these commands can be used:
 (Note that the API key AND the email password have to be defined before running.)
-- export SWA_API_KEY=<psswd>
-- export SWA_EMAIL_PASSWORD=<psswd>
+- export SWA_API_KEY=(key)
+- export SWA_EMAIL_PASSWORD=(key)
 - mvn spring-boot:run
 - mvn test
-- mvn test -Dtest=<testclass> e.g. mvn test -Dtest=at.qe.skeleton.tests.WeatherBeanTest#formatInstantToDateTimeTest
+- mvn test -Dtest=(testclass) e.g. mvn test -Dtest=at.qe.skeleton.tests.WeatherBeanTest#formatInstantToDateTimeTest
 
 
 
 **Decisions**
+
+Visibility of registered/premium features:
+
+* Registered features, such as adding favorites, are only visible if the user is registered.
+* Premium features, such as choosing which values should be displayed for each favorite, are only visible if the user has the role premium. 
 
 Subscription service decisions:
 
