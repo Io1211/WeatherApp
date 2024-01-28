@@ -3,21 +3,21 @@ package at.qe.skeleton.internal.services;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.repositories.UserxRepository;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -30,6 +30,7 @@ class RegistrationServiceTest {
   @Autowired UserxRepository userxRepository;
   @Autowired TokenService tokenService;
   @Autowired PasswordEncoder passwordEncoder;
+  @Autowired UserxService userxService;
 
   /**
    * Since we don`t use Constructor Injection we need to use this method for injecting the real
@@ -42,9 +43,11 @@ class RegistrationServiceTest {
     registrationService =
         new RegistrationService(
             this.passwordEncoder, this.mockedEmailService, this.tokenService, this.userxRepository);
-    //    ReflectionTestUtils.setField(registrationService, "userRepository", userxRepository);
-    //    ReflectionTestUtils.setField(registrationService, "tokenService", tokenService);
-    //    ReflectionTestUtils.setField(registrationService, "passwordEncoder", passwordEncoder);
+  }
+
+  @AfterEach
+  public void resetMocks() {
+    Mockito.reset(mockedEmailService);
   }
 
   @Test
@@ -135,7 +138,7 @@ class RegistrationServiceTest {
         "the password that was entered by the user should not be encoded yet and therefor not match by the criteria of passwordEncoder");
 
     // actual call of confirmation method
-    registrationService.confirmRegistrationOfUser(username, token, token);
+    registrationService.confirmRegistrationOfUser(email, token, token);
 
     // update the user after registration
     Userx confirmedUser = userxRepository.findFirstByUsername(username);
@@ -150,11 +153,24 @@ class RegistrationServiceTest {
   }
 
   @Test
-  void resendRegistrationEmailToUser() {}
+  @DirtiesContext
+  @WithMockUser(
+      username = "user1",
+      authorities = {"MANAGER", "REGISTERED_USER"})
+  void resendRegistrationEmailToUser() {
+    String email = "example@mail.com";
+    Userx user = userxRepository.findFirstByUsername("user1");
+    user.setEmail(email);
+    user.setEnabled(false);
+    userxService.saveUser(user);
 
-  @Test
-  void loadUserByEmail() {}
+    String token = tokenService.generateToken();
 
-  @Test
-  void loadUserByUsername() {}
+    // actual call
+    registrationService.resendRegistrationEmailToUser(email, token);
+
+    // since we tested sendRegistrationEmail before, we can just verify the call to the method with
+    // any parameters
+    verify(mockedEmailService, times(1)).sendEmail(anyString(), anyString(), anyString());
+  }
 }

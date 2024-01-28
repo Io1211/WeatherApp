@@ -3,7 +3,6 @@ package at.qe.skeleton.tests;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.services.RegistrationService;
 import at.qe.skeleton.internal.services.TokenService;
-import at.qe.skeleton.internal.services.UserxService;
 import at.qe.skeleton.internal.ui.beans.UserRegistrationBean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +12,7 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Test class for the UserRegistrationBean class. {@link UserRegistrationBean} */
+/** Test class for the UserRegistrationBean class. {@link UserRegistrationBean} */
 class UserRegistrationBeanTest {
 
   @InjectMocks private UserRegistrationBean userRegistrationBean;
@@ -22,8 +20,6 @@ class UserRegistrationBeanTest {
   @Mock private RegistrationService registrationService;
 
   @Mock private TokenService tokenService;
-
-  @Mock private UserxService userService;
 
   @BeforeEach
   void setUp() {
@@ -49,7 +45,7 @@ class UserRegistrationBeanTest {
   @Test
   void testConfirmRegistrationOfUser() {
     Userx user = new Userx();
-    user.setUsername("user");
+    user.setEmail("test@mail.com");
     user.setEnabled(false);
     userRegistrationBean.setToken("12345");
     userRegistrationBean.setUser(user);
@@ -58,6 +54,6 @@ class UserRegistrationBeanTest {
     userRegistrationBean.setInsertedToken("12345");
     userRegistrationBean.confirmRegistration();
 
-    verify(registrationService).confirmRegistrationOfUser(user.getUsername(), "12345", "12345");
+    verify(registrationService).confirmRegistrationOfUser(user.getEmail(), "12345", "12345");
   }
 }

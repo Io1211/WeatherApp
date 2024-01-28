@@ -3,7 +3,6 @@ package at.qe.skeleton.internal.services;
 import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.repositories.UserxRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -68,8 +67,8 @@ public class RegistrationService {
   }
 
   /** Confirms the registration of a user. Throws a RuntimeException if the token is invalid. */
-  public void confirmRegistrationOfUser(String username, String token, String insertedToken) {
-    Userx user = userRepository.findFirstByUsername(username);
+  public void confirmRegistrationOfUser(String email, String token, String insertedToken) {
+    Userx user = userRepository.findFirstByEmail(email);
     if (tokenService.validateToken(insertedToken, token)) {
       user.setEnabled(true);
       user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -93,14 +92,4 @@ public class RegistrationService {
       throw new RuntimeException("Invalid Email.");
     }
   }
-
-  public Userx loadUserByEmail(String email) {
-    return userRepository.findFirstByEmail(email);
-  }
-
-  public Userx loadUserByUsername(String username) {
-    return userRepository.findFirstByUsername(username);
-  }
 }
-
-// todo write tests
