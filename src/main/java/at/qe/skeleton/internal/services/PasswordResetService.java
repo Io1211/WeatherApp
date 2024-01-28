@@ -4,6 +4,7 @@ import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.UserxRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -58,7 +59,7 @@ public class PasswordResetService {
   }
 
   /** Sends a password reset email to the user. */
-  public void sendForgetPasswordEmail(Userx user) {
+  public void sendForgetPasswordEmail(Userx user) throws IllegalArgumentException, MailException {
     emailService.sendEmail(
         user.getEmail(),
         "Reset your password",

@@ -84,7 +84,7 @@ public class UserDetailController {
   }
 
   /** Action to save the currently displayed user. */
-  public void doSaveUser() throws NoCreditCardFoundException {
+  public void doSaveUser() {
     resetPassword();
     if (!user.isPremium() && initializeRoles.contains(UserxRole.PREMIUM_USER)) {
       try {
@@ -128,8 +128,10 @@ public class UserDetailController {
   public void sendResetPasswordAdmin() {
     try {
       passwordResetService.sendForgetPasswordEmail(user);
+    } catch (IllegalArgumentException e) {
+      warningHelper.addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
     } catch (MailException e) {
-      warningHelper.addMessage("User does not have an email address.", FacesMessage.SEVERITY_ERROR);
+      warningHelper.addMessage("Could not send email.", FacesMessage.SEVERITY_ERROR);
     }
   }
 
