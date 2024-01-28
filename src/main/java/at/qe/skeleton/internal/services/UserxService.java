@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.Userx;
+import at.qe.skeleton.internal.model.UserxRole;
 import at.qe.skeleton.internal.repositories.UserxRepository;
 import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +30,9 @@ public class UserxService {
   /**
    * Returns a collection of all users.
    *
-   * @return colletion of all users
+   * @return collection of all users
    */
-  @PreAuthorize("hasAuthority('ADMIN')")
+  @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('MANAGER')")
   public Collection<Userx> getAllUsers() {
     return userRepository.findAll();
   }
@@ -92,5 +93,19 @@ public class UserxService {
   private Userx getAuthenticatedUser() {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     return userRepository.findFirstByUsername(auth.getName());
+  }
+
+  public void activatePremium(Userx user) {
+    user.addRole(UserxRole.PREMIUM_USER);
+    userRepository.save(user);
+  }
+
+  public void deactivatePremium(Userx user) {
+    user.removeRole(UserxRole.PREMIUM_USER);
+    userRepository.save(user);
+  }
+
+  public boolean isPremium(Userx user) {
+    return user.getRoles().contains(UserxRole.PREMIUM_USER);
   }
 }

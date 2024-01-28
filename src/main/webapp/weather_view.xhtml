@@ -10,14 +10,16 @@
 
     <ui:define name="content">
         <h:form id="weatherForm">
-            <p:panel header="Weather overview for the next few days:" id="Response">
+            <p:panel id="Response">
                 <div>
-                    <h4>Location searched for:
+                    <h2>
                         #{weatherBean.location.city},
                         #{weatherBean.location.country}
+
                         <!-- check wether this gets rendered even when state is null-->
                         <h:outputText value=",#{weatherBean.location.state}"
                                       rendered="#{not empty weatherBean.location.state}"/>
+
                         <p:commandButton id="toggleFavorite"
                                          action="#{weatherBean.toggleFavorite()}"
                                          rendered="#{sessionInfoBean.loggedIn}"
@@ -25,15 +27,15 @@
                                          styleClass="#{weatherBean.isFavorite() ? 'rounded-button ui-button-help' : 'rounded-button ui-button-help ui-button-outlined'}"
                                          update="toggleFavorite"
                                          style="margin-left: 20px"/>
-                    </h4>
+                    </h2>
 
                     <br/>
+                    <h:outputText value="Current Weather"
+                                  style="font-weight: bold; font-size: 20px; margin-bottom: 10px; display: flex;"/>
 
-                    <h:panelGroup layout="block" style="display: flex; font-size: 14px;">
+                    <h:panelGroup layout="block" style="display: flex; font-size: 14px; margin-bottom: 50px;">
 
                         <h:panelGrid columns="2" styleClass="weather-info">
-                            <h:outputText value="Current Weather" style="font-weight: bold; font-size: 16px;"/>
-                            <h:outputText value=""/>
 
                             <h:outputText value="Description:" style="font-weight: bold;"/>
                             <h:outputText value="#{weatherBean.weatherDTO.currentWeather().weather().description()}"/>
@@ -51,6 +53,12 @@
                             <h:outputText value="Wind Direction:" style="font-weight: bold;"/>
                             <h:outputText
                                     value="#{weatherBean.degreesToCardinal(weatherBean.weatherDTO.currentWeather().windDirection())}"/>
+
+                            <!-- There is no POP value in weatherDTO/current weatherDTO, instead the current one from hourly weather is taken. -->
+                            <h:outputText value="Pop:" style="font-weight: bold;"/>
+                            <h:outputText
+                                    value="#{weatherBean.getHourlyWeatherEntries().get(0).probabilityOfPrecipitation()}"/>
+
                         </h:panelGrid>
 
 
@@ -60,15 +68,18 @@
 
                     <br/>
 
-                    <h5 style="margin-top:0">Weather for the next 24 hours:</h5>
+                    <h:outputText value="Weather for the next hours"
+                                  style="font-weight: bold; font-size: 20px; margin-bottom: 20px; display: flex;"/>
                     <h:form>
-                        <div class="card">
+                        <div class="card" style="margin-bottom: 50px;">
                             <p:dataTable var="hourlyWeatherEntries" value="#{weatherBean.getHourlyWeatherEntries()}"
-                                         style="font-size: 14px" paginator="true" paginatorPosition="bottom" rows="10">
+                                         style="font-size: 14px;" paginator="true"
+                                         paginatorPosition="bottom"
+                                         rows="10">
 
                                 <p:column headerText="Time">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(hourlyWeatherEntries.timestamp(), 'dd.MM.yyyy: HH:mm')}"/>
+                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), hourlyWeatherEntries.timestamp(), 'dd.MM.yyyy: HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Weather" style="width: 12%;">
@@ -97,35 +108,54 @@
                                     <h:outputText value="#{hourlyWeatherEntries.probabilityOfPrecipitation()}"/>
                                 </p:column>
 
+                                <!-- Additional premium weather stats: -->
+
+                                <p:column headerText="Humidity [%]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{hourlyWeatherEntries.humidity()}"/>
+                                </p:column>
+
+                                <p:column headerText="Pressure [hPa]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{hourlyWeatherEntries.pressure()}"/>
+                                </p:column>
+
+                                <p:column headerText="Cloudiness [%]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{hourlyWeatherEntries.clouds()}"/>
+                                </p:column>
+
+                                <p:column headerText="Visibility [m]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{hourlyWeatherEntries.visibility()}"/>
+                                </p:column>
+
                             </p:dataTable>
                         </div>
                     </h:form>
 
                     <br/>
 
-                    <h5 style="margin-top:0">Weather for today and the next 3 days:</h5>
+                    <h:outputText value="Daily Weather"
+                                  style="font-weight: bold; font-size: 20px; margin-bottom: 20px; display: flex;"/>
                     <h:form>
                         <div class="card">
                             <p:dataTable var="dailyWeatherEntries" value="#{weatherBean.getDailyWeatherEntries()}"
-                                         style="font-size: 14px">
+                                         style="font-size: 12px">
 
                                 <p:column headerText="Day">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.timestamp(), 'dd.MM.yyyy')}"/>
+                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.timestamp(), 'dd.MM.yyyy')}"/>
                                 </p:column>
 
-                                <p:column headerText="Summary" style="width: 12%;">
-                                    <h:outputText value="#{dailyWeatherEntries.summary()}" style="font-size: 12px"/>
+                                <p:column headerText="Summary" style="width: 8%;">
+                                    <h:outputText value="#{dailyWeatherEntries.summary()}" style="font-size: 10px"/>
                                 </p:column>
 
                                 <p:column headerText="Sunrise">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunrise(), 'HH:mm')}"/>
+                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.sunrise(), 'HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Sunset">
                                     <h:outputText
-                                            value="#{weatherBean.formatInstantToDateTime(dailyWeatherEntries.sunset(), 'HH:mm')}"/>
+                                            value="#{weatherBean.formatInstantToDateTime(weatherBean.weatherDTO.timezone(), dailyWeatherEntries.sunset(), 'HH:mm')}"/>
                                 </p:column>
 
                                 <p:column headerText="Temperature [C]">
@@ -157,7 +187,7 @@
                                             value="#{weatherBean.degreesToCardinal(dailyWeatherEntries.windDirection())}"/>
                                 </p:column>
 
-                                <p:column headerText="Wind gust">
+                                <p:column headerText="Wind gust [km/h]">
                                     <h:outputText value="#{weatherBean.msToKmh(dailyWeatherEntries.windGust())}"/>
                                 </p:column>
 
@@ -172,6 +202,29 @@
                                 <p:column headerText="Snow [mm/h]">
                                     <h:outputText value="#{dailyWeatherEntries.snow()}"/>
                                 </p:column>
+
+                                <!-- Additional premium weather stats: -->
+
+                                <p:column headerText="Humidity [%]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{dailyWeatherEntries.humidity()}"/>
+                                </p:column>
+
+                                <p:column headerText="Pressure [hPa]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{dailyWeatherEntries.pressure()}"/>
+                                </p:column>
+
+                                <p:column headerText="Dew point [C]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{dailyWeatherEntries.dewPoint()}"/>
+                                </p:column>
+
+                                <p:column headerText="Cloudiness [%]" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{dailyWeatherEntries.clouds()}"/>
+                                </p:column>
+
+                                <p:column headerText="Moon phase" rendered="#{sessionInfoBean.isUserPremium()}">
+                                    <h:outputText value="#{dailyWeatherEntries.moonPhase()}"/>
+                                </p:column>
+
                             </p:dataTable>
                         </div>
                     </h:form>

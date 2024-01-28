@@ -11,10 +11,8 @@
     <h:form id="headerForm">
 
         <p:menubar>
-            <!--We can add Billing Management here-->
             <p:submenu label="Billing Management" rendered="#{sessionInfoBean.hasRole('MANAGER')}">
-                <p:menuitem value="Manager Action 1"/>
-                <p:menuitem value="Manager Action 2"/>
+                <p:menuitem value="Manage Billing" url="/manager/billing.xhtml"/>
             </p:submenu>
             <p:submenu label="Admin Submenu" rendered="#{sessionInfoBean.hasRole('ADMIN')}">
                 <p:menuitem value="Manage Users" url="/admin/users.xhtml"/>
@@ -31,8 +29,18 @@
             </p:submenu>
 
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
-            <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
+
+            <p:menuitem value="Activate Premium"
+                        action="#{subscriptionBean.activatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and !sessionInfoBean.userPremium}"
+                        update="headerForm"/>
+            <p:menuitem value="Deactivate Premium"
+                        action="#{subscriptionBean.deactivatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and sessionInfoBean.userPremium}"
+                        update="headerForm"/>
+
+            <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
 
             <p:menuitem>
 

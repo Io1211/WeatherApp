@@ -63,9 +63,14 @@ public class EditCreditCardBean {
     return creditCard;
   }
 
-  private void addMessage(String summary, FacesMessage.Severity severity) {
+  private void addErrorMessage(String summary) {
     FacesContext.getCurrentInstance()
-        .addMessage(null, new FacesMessage(severity, summary, "detail"));
+        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, "detail"));
+  }
+
+  private void addMessage(String summary) {
+    FacesContext.getCurrentInstance()
+        .addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, summary, "detail"));
   }
 
   /**
@@ -78,22 +83,50 @@ public class EditCreditCardBean {
       creditCard.setUser(sessionInfoBean.getCurrentUser());
       creditCardService.saveCreditCard(creditCard);
       sessionInfoBean.getCurrentUser().setCreditCard(creditCard);
-      addMessage("Credit card saved.", FacesMessage.SEVERITY_INFO);
+      addMessage("Credit card saved.");
     } catch (IllegalArgumentException e) {
-      addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
+      addErrorMessage(e.getMessage());
       return null;
     }
     return "credit_card_details.xhtml";
   }
 
   /**
-   * Update the credit card of the current user by deleting the old one and saving the new one..
+   * Saves the credit card of the current user in the premium activation context.
+   *
+   * @return the page to navigate to after saving the credit card.
+   */
+  public String saveCreditCardPremium() {
+    try {
+      creditCard.setUser(sessionInfoBean.getCurrentUser());
+      creditCardService.saveCreditCard(creditCard);
+      addMessage("Credit card saved.");
+    } catch (IllegalArgumentException e) {
+      addErrorMessage(e.getMessage());
+      return null;
+    }
+    return "premium_activation_cc.xhtml";
+  }
+
+  /**
+   * Update the credit card of the current user by deleting the old one and saving the new one.
    *
    * @return the page to navigate to after the update.
    */
   public String updateCreditCard() {
     creditCardService.deleteCreditCardFromUser(sessionInfoBean.getCurrentUserName());
     return saveCreditCard();
+  }
+
+  /**
+   * Update the credit card in the premium activation context by deleting the old one and saving the
+   * new one.
+   *
+   * @return the page to navigate to after the update.
+   */
+  public String updateCreditCardPremium() {
+    creditCardService.deleteCreditCardFromUser(sessionInfoBean.getCurrentUserName());
+    return saveCreditCardPremium();
   }
 
   /**

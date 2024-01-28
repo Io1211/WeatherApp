@@ -13,11 +13,14 @@
             <p:messages autoUpdate="true" closable="true"/>
             <p:panel header="Add New Credit Card">
                 <h:panelGrid columns="2" cellpadding="5">
-                    <p:outputLabel for="cardNumber" value="Card Number:"/>
-                    <p:inputText id="cardNumber" value="#{editCreditCardBean.creditCard.cardnumber}" required="true"
-                                 requiredMessage="Card Number is required"/>
 
-                    <p:outputLabel for="expirationDate" value="Expiration Date:"/>
+                    <p:outputLabel for="cardNumber" value="Card Number:"/>
+                    <p:inputMask id="cardNumber" maxlength="19" value="#{editCreditCardBean.creditCard.cardnumber}"
+                                 required="true" requiredMessage="Card Number is required">
+                        <p:keyFilter regEx="/[0-9_]/i"/>
+                    </p:inputMask>
+
+                    <p:outputLabel for="expirationDate" value="Expiration Date (mm/yyyy):"/>
                     <p:inputMask id="expirationDate" value="#{editCreditCardBean.creditCard.expirationDate}"
                                  mask="99/9999" slotChar=" " required="true"
                                  requiredMessage="Expiration Date is required">

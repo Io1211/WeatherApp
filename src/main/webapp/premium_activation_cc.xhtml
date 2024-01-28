@@ -7,11 +7,9 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
-        <h:form id="creditcardForm">
+        <h:form id="premiumActivationCCForm">
 
-            <p:dataTable id="creditcardTable" var="creditcard" value="#{creditCardDetailsBean.creditcard}" lazy="false"
-                         emptyMessage="You have not stored a credit card at the moment.
-                         Add a credit card before activating Premium!">
+            <p:dataTable id="creditcardTable" var="creditcard" value="#{creditCardDetailsBean.creditcard}" lazy="false">
                 <p:column headerText="Number">
                     <h:outputText value="#{creditcard.cardnumber}"/>
                 </p:column>
@@ -22,12 +20,11 @@
                     <h:outputText value="#{creditcard.cardType}"/>
                 </p:column>
             </p:dataTable>
+
             <br/>
-            <p:commandButton value="Add new Credit Card" action="add_credit_card.xhtml" style="margin-right: 30px;"/>
-            <p:commandButton value="Delete" action="#{creditCardDetailsBean.deleteCreditCard}"
-                             update=":headerForm creditcardForm"
+            <p:commandButton value="Activate Premium" action="#{subscriptionBean.activatePremiumSubscription}"
                              style="margin-right: 30px;"/>
-            <p:commandButton value="Edit" action="edit_cc.xhtml"/>
+            <p:commandButton value="Edit" action="edit_cc_sub.xhtml"/>
 
 
         </h:form>

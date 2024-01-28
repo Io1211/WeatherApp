@@ -23,6 +23,8 @@ public class CreditCardService {
 
   @Autowired private CreditCardRepository creditCardRepository;
 
+  @Autowired private UserxService userxService;
+
   public void saveCreditCard(CreditCard creditCard) throws IllegalArgumentException {
     if (!validateDate(creditCard.getExpirationDate())) {
       throw new IllegalArgumentException("Invalid expiration date.");
@@ -35,6 +37,13 @@ public class CreditCardService {
   }
 
   public void deleteCreditCard(CreditCard creditCard) {
+    if (creditCard == null) {
+      throw new IllegalArgumentException("Credit card cannot be null.");
+    }
+    if (userxService.isPremium(creditCard.getUser())) {
+      throw new IllegalArgumentException(
+          "You are a premium user. You cannot delete your credit card.");
+    }
     creditCardRepository.delete(creditCard);
   }
 

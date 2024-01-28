@@ -36,6 +36,7 @@ class UserRegistrationBeanTest {
     userRegistrationBean.setUser(testUser);
     when(tokenService.generateToken()).thenReturn("12345");
 
+
     String result = userRegistrationBean.register();
 
     assertEquals("confirm_registration", result);

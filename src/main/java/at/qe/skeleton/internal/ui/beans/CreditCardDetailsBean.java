@@ -2,7 +2,6 @@ package at.qe.skeleton.internal.ui.beans;
 
 import at.qe.skeleton.internal.model.CreditCard;
 import at.qe.skeleton.internal.services.CreditCardService;
-import at.qe.skeleton.internal.ui.beans.SessionInfoBean;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +31,12 @@ public class CreditCardDetailsBean {
   }
 
   public void deleteCreditCard() {
-    creditCardService.deleteCreditCard(getCreditcard());
-    addMessage("Credit Card deleted", FacesMessage.SEVERITY_INFO);
+    try {
+      creditCardService.deleteCreditCard(getCreditcard());
+      addMessage("Credit Card deleted", FacesMessage.SEVERITY_INFO);
+    } catch (IllegalArgumentException e) {
+      addMessage(e.getMessage(), FacesMessage.SEVERITY_ERROR);
+    }
   }
 
   // todo: message auslagern nach andis merge
