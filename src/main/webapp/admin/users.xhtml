@@ -40,7 +40,8 @@
                                    icon="ui-icon-alert"/>
                     </p:commandButton>
                     <p:spacer width="10"/>
-                    <p:commandButton icon="pi pi-unlock" title="Reset Password" action="#{userDetailController.sendResetPasswordAdmin()}"
+                    <p:commandButton icon="pi pi-unlock" title="Reset Password"
+                                     action="#{userDetailController.sendResetPasswordAdmin()}"
                                      update=":userForm:usersTable">
                         <f:setPropertyActionListener value="#{user}" target="#{userDetailController.user}"/>
                         <p:confirm header="Password Reset Confirmation"
@@ -88,7 +89,8 @@
                     <p:separator/>
                     <h:panelGrid columns="3">
                         <p:commandButton value="Save" action="#{userDetailController.doSaveUser()}"
-                                         oncomplete="PF('userEditDialog').hide()" update=":userForm:usersTable :userForm:messages"/>
+                                         oncomplete="PF('userEditDialog').hide()"
+                                         update=":userForm:usersTable :userForm:messages"/>
                         <p:commandButton value="Reload" action="#{userDetailController.doReloadUser()}"
                                          update=":userForm:userData"/>
                         <p:commandButton value="Abort" onclick="PF('userEditDialog').hide()"/>

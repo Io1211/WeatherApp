@@ -74,7 +74,8 @@ public class UserDetailController implements Serializable {
   }
 
   public String getNewPassword() {
-    return newPassword;}
+    return newPassword;
+  }
 
   public void setNewPassword(String newPassword) {
     this.newPassword = newPassword;
@@ -102,22 +103,22 @@ public class UserDetailController implements Serializable {
         initializeRoles.remove(UserxRole.PREMIUM_USER);
       }
     }
-        if(user.isPremium() && !initializeRoles.contains(UserxRole.PREMIUM_USER)){
-          try{
-            subscriptionService.deactivatePremiumSubscription(user);
-          }
-          catch (NoSubscriptionFoundException | NoActivePremiumSubscriptionFoundException |
-                 MoneyGlitchAvoidanceException e){
-            FacesContext.getCurrentInstance()
-                    .addMessage(
-                            null, 
-                            new jakarta.faces.application.FacesMessage(
-                                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
-                                    "Error",
-                                    "User just signed up. Please try again later."));
-            initializeRoles.add(UserxRole.PREMIUM_USER);
-          }
-        }
+    if (user.isPremium() && !initializeRoles.contains(UserxRole.PREMIUM_USER)) {
+      try {
+        subscriptionService.deactivatePremiumSubscription(user);
+      } catch (NoSubscriptionFoundException
+          | NoActivePremiumSubscriptionFoundException
+          | MoneyGlitchAvoidanceException e) {
+        FacesContext.getCurrentInstance()
+            .addMessage(
+                null,
+                new jakarta.faces.application.FacesMessage(
+                    jakarta.faces.application.FacesMessage.SEVERITY_ERROR,
+                    "Error",
+                    "User just signed up. Please try again later."));
+        initializeRoles.add(UserxRole.PREMIUM_USER);
+      }
+    }
     user.setRoles(initializeRoles);
     user = this.userService.saveUser(user);
   }
