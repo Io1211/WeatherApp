@@ -61,7 +61,7 @@ Alexander Blaas
 
 **Missing features**
 
-Holiday Planner will not be implemented.
+The holiday planner feature has not been implemented.
 
 
 
