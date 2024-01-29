@@ -1,21 +1,20 @@
 <ui:composition xmlns="http://www.w3c.org/1999/xhtml"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="/WEB-INF/templates/main.xhtml">
     <ui:define name="content">
         <h:form id="confirmRegistration_form">
-            <p:messages id="messages" showDetail="false" autoUpdate="true" closable="true"/>
             <h:panelGrid columns="2">
 
                 <p:outputLabel for="token" value="Token:"/>
                 <p:inputText id="token" value="#{userRegistrationBean.insertedToken}" required="true"/>
 
-                <p:commandButton value="Confirm registration" action="#{userRegistrationBean.confirmRegistration}"
-                                 update="messages"/>
+                <p:commandButton value="Confirm registration" action="#{userRegistrationBean.confirmRegistration}"/>
 
+                <h:outputLink value="/resend_registration_token.xhtml">Resend token</h:outputLink>
             </h:panelGrid>
+
         </h:form>
     </ui:define>
 </ui:composition>

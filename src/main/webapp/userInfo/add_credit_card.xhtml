@@ -10,27 +10,28 @@
 
     <ui:define name="content">
         <h:form id="addCreditCardForm">
-            <p:messages autoUpdate="true" closable="true"/>
             <p:panel header="Add New Credit Card">
                 <h:panelGrid columns="2" cellpadding="5">
-                    <p:outputLabel for="cardNumber" value="Card Number:"/>
-                    <p:inputText id="cardNumber" value="#{creditCardBean.creditCard.cardnumber}" required="true"
-                                 requiredMessage="Card Number is required"/>
 
-                    <p:outputLabel for="expirationDate" value="Expiration Date:"/>
-                    <p:inputMask id="expirationDate" value="#{creditCardBean.creditCard.expirationDate}"
+                    <p:outputLabel for="cardNumber" value="Card Number:"/>
+                    <p:inputMask id="cardNumber" maxlength="19" value="#{editCreditCardBean.creditCard.cardnumber}"
+                                 required="true" requiredMessage="Card Number is required">
+                        <p:keyFilter regEx="/[0-9_]/i"/>
+                    </p:inputMask>
+
+                    <p:outputLabel for="expirationDate" value="Expiration Date (mm/yyyy):"/>
+                    <p:inputMask id="expirationDate" value="#{editCreditCardBean.creditCard.expirationDate}"
                                  mask="99/9999" slotChar=" " required="true"
                                  requiredMessage="Expiration Date is required">
                     </p:inputMask>
 
                     <p:outputLabel for="cardType" value="Card Type:"/>
-                    <p:selectOneMenu id="cardType" value="#{creditCardBean.creditCard.cardType}" required="true"
+                    <p:selectOneMenu id="cardType" value="#{editCreditCardBean.creditCard.cardType}" required="true"
                                      requiredMessage="Card Type is required">
-                        <f:selectItems value="#{creditCardBean.cardTypes}" var="type" itemValue="#{type}"
-                                       itemLabel="#{type}"/>
+                        <f:selectItems value="#{editCreditCardBean.cardTypes}"/>
                     </p:selectOneMenu>
 
-                    <p:commandButton value="Save" action="#{creditCardBean.saveCreditCard}"
+                    <p:commandButton value="Save" action="#{editCreditCardBean.saveCreditCard}"
                                      update=":addCreditCardForm"/>
                 </h:panelGrid>
             </p:panel>

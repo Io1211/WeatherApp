@@ -53,15 +53,14 @@ public class AuditLogService {
    * @param userx is the user which is being deleted.
    * @return the Log statement
    */
-  public String saveDeletedUserEntry(Userx userx) {
+  public AuditLog saveDeletedUserEntry(Userx userx) {
     String msg =
         "User "
             + userx.getUsername()
             + " with role(s) "
             + convertRolesToString(userx)
             + " has been deleted.";
-    saveEntry(msg);
-    return msg;
+    return saveEntry(msg);
   }
 
   /**
@@ -70,15 +69,14 @@ public class AuditLogService {
    * @param userx is the user which has been created.
    * @return the Log statement
    */
-  public String saveCreatedUserEntry(Userx userx) {
+  public AuditLog saveCreatedUserEntry(Userx userx) {
     String msg =
         "User "
             + userx.getUsername()
             + " with role(s) "
             + convertRolesToString(userx)
             + " has been saved.";
-    saveEntry(msg);
-    return msg;
+    return saveEntry(msg);
   }
 
   /** Displays all audit logs saved. Requires Admin rights. */

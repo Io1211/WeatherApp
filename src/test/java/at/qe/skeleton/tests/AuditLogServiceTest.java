@@ -1,10 +1,12 @@
 package at.qe.skeleton.tests;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -94,7 +96,7 @@ public class AuditLogServiceTest {
     testUser.setRoles(userRoles);
 
     // actual method call
-    auditLogService.saveCreatedUserEntry(testUser);
+    AuditLog logBeforeSaving = auditLogService.saveCreatedUserEntry(testUser);
 
     // expected log message
     String expectedMessage =
@@ -104,6 +106,65 @@ public class AuditLogServiceTest {
     // the test will fail if no element has been saved since get(0) can't be done on an empty list
     List<AuditLog> als = auditLogRepository.findAll();
     assertEquals(1, als.size());
-    assertEquals(als.get(0).getMessage(), expectedMessage);
+    AuditLog logAfterSaving = als.get(0);
+
+    assertEquals(logBeforeSaving, logAfterSaving, "log before and after Saving should be equal");
+
+    assertEquals(
+        expectedMessage,
+        logAfterSaving.getMessage(),
+        "The Log retrieved from db does not display expected message");
+    // log
+
+  }
+
+  @Test
+  public void auditLogsShouldNotBeEqual() {
+    // set up TestUserData
+    String username = "testUser";
+    Set<UserxRole> userRoles = Sets.newSet(UserxRole.ADMIN, UserxRole.PREMIUM_USER);
+    testUser.setUsername(username);
+    testUser.setRoles(userRoles);
+
+    AuditLog auditLogOnCreation = auditLogService.saveCreatedUserEntry(testUser);
+    AuditLog auditLogOnDeletion = auditLogService.saveDeletedUserEntry(testUser);
+
+    Assertions.assertNotEquals(
+        auditLogOnCreation,
+        auditLogOnDeletion,
+        "according to overwritten equals method, these auditlogs should not be equal");
+  }
+
+  @Test
+  public void auditLogEqualsTest() {
+    // set up TestUserData
+    String username = "testUser";
+    Set<UserxRole> userRoles = Sets.newSet(UserxRole.ADMIN, UserxRole.PREMIUM_USER);
+    testUser.setUsername(username);
+    testUser.setRoles(userRoles);
+    // a basic auditlog
+    AuditLog auditLog = auditLogService.saveCreatedUserEntry(testUser);
+    // create anotherAuditlog with same id
+    AuditLog auditLogWithSameId = new AuditLog();
+    auditLogWithSameId.setId(auditLog.getId());
+    // create a different Auditlog
+    AuditLog auditLogDifferentId = auditLogService.saveDeletedUserEntry(testUser);
+
+    String notAnAuditLogObject = "not an auditLog";
+    AuditLog auditLogNull = null;
+
+    Assertions.assertEquals(
+        auditLog, auditLog, "should equal, since it is exact same object reference");
+    Assertions.assertEquals(
+        auditLog,
+        auditLogWithSameId,
+        "according to overwritten equals method, these auditlogs should not be equal");
+    Assertions.assertNotEquals(
+        auditLog, auditLogDifferentId, "Ids should be different, therefore should not equal");
+    Assertions.assertNotEquals(
+        auditLog,
+        notAnAuditLogObject,
+        "this is not an auditLog Object and should not equal an auditLog Object");
+    Assertions.assertNotEquals(auditLog, auditLogNull, "AuditLog should not equal null");
   }
 }

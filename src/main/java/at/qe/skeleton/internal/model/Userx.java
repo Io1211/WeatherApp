@@ -1,7 +1,6 @@
 package at.qe.skeleton.internal.model;
 
 import jakarta.persistence.*;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -23,24 +22,31 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   @Serial private static final long serialVersionUID = 1L;
 
+  /** The username is used as the primary id for this entity. */
   @Id
   @Column(length = 100)
   private String username;
 
+  /** The {@link Userx} who created this user. */
   @ManyToOne(optional = true)
   private Userx createUser;
 
+  /** The date and time when this user was created. */
   @Column(nullable = false)
   @CreationTimestamp
   private LocalDateTime createDate;
 
+  /** The {@link Userx} who last updated this user. */
   @ManyToOne(optional = true)
   private Userx updateUser;
 
+  /** The date and time when this user was last updated. */
   @UpdateTimestamp private LocalDateTime updateDate;
 
-  // FetchType.EAGER is used because Lazy loading complicates testing / makes testing more
-  // error-prone
+  /**
+   * The list of {@link Favorite} entities for this user. FetchType.EAGER is used because Lazy
+   * loading complicates testing makes testing more error-prone
+   */
   @OneToMany(
       cascade = CascadeType.ALL,
       mappedBy = "user",
@@ -48,6 +54,10 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
       fetch = FetchType.EAGER)
   private List<Favorite> favorites;
 
+  /**
+   * The {@link FavoriteDataConfig} entity for this user. It's the configuration of the view of the
+   * favorites.
+   */
   @OneToOne(optional = false, cascade = CascadeType.ALL, orphanRemoval = true)
   private FavoriteDataConfig favoriteDataConfig;
 
@@ -58,17 +68,34 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   private String email;
   private String phone;
 
+  /**
+   * The {@link Subscription} entity for this user. If the user is a premium user, this entity is
+   * not null.
+   */
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  private Subscription subscription;
+
+  /** The enabled status of this user. If the user is disabled, he can't log in. */
   boolean enabled;
 
+  /**
+   * The {@link CreditCard} entity for this user. Is not allowed to be null, if the user is a
+   * premium user.
+   */
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "credit_card_id", referencedColumnName = "id")
   private CreditCard creditCard;
 
+  /**
+   * The {@link UserxRole} entities for this user. FetchType.EAGER is used because Lazy loading
+   * complicates testing makes testing more error-prone.
+   */
   @ElementCollection(targetClass = UserxRole.class, fetch = FetchType.EAGER)
   @CollectionTable(name = "Userx_UserxRole")
   @Enumerated(EnumType.STRING)
   private Set<UserxRole> roles;
 
+  /** The default constructor for the entity. The favorite data config is initialized. */
   @PrePersist
   public void onCreate() {
     this.setFavoriteDataConfig(new FavoriteDataConfig());
@@ -136,6 +163,14 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
 
   public void setRoles(Set<UserxRole> roles) {
     this.roles = roles;
+  }
+
+  public void addRole(UserxRole role) {
+    this.roles.add(role);
+  }
+
+  public void removeRole(UserxRole role) {
+    this.roles.remove(role);
   }
 
   public List<Favorite> getFavorites() {
@@ -235,5 +270,17 @@ public class Userx implements Persistable<String>, Serializable, Comparable<User
   @Override
   public int compareTo(Userx o) {
     return this.username.compareTo(o.getUsername());
+  }
+
+  public boolean isPremium() {
+    return getRoles().contains(UserxRole.PREMIUM_USER);
+  }
+
+  public Subscription getSubscription() {
+    return subscription;
+  }
+
+  public void setSubscription(Subscription subscription) {
+    this.subscription = subscription;
   }
 }

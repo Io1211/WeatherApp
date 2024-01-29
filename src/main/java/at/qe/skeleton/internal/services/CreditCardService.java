@@ -1,6 +1,7 @@
 package at.qe.skeleton.internal.services;
 
 import at.qe.skeleton.internal.model.CreditCard;
+import at.qe.skeleton.internal.model.Userx;
 import at.qe.skeleton.internal.repositories.CreditCardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -22,6 +23,8 @@ public class CreditCardService {
 
   @Autowired private CreditCardRepository creditCardRepository;
 
+  @Autowired private UserxService userxService;
+
   public void saveCreditCard(CreditCard creditCard) throws IllegalArgumentException {
     if (!validateDate(creditCard.getExpirationDate())) {
       throw new IllegalArgumentException("Invalid expiration date.");
@@ -34,6 +37,13 @@ public class CreditCardService {
   }
 
   public void deleteCreditCard(CreditCard creditCard) {
+    if (creditCard == null) {
+      throw new IllegalArgumentException("Credit card cannot be null.");
+    }
+    if (userxService.isPremium(creditCard.getUser())) {
+      throw new IllegalArgumentException(
+          "You are a premium user. You cannot delete your credit card.");
+    }
     creditCardRepository.delete(creditCard);
   }
 
@@ -44,14 +54,20 @@ public class CreditCardService {
     }
   }
 
-  public CreditCard loadCreditCard(Long id) {
-    return creditCardRepository.findCreditCardByUserId(id);
+  public CreditCard loadCreditCard(Userx userx) {
+    return creditCardRepository.findCreditCardByUser(userx);
   }
 
   public CreditCard loadCreditCardByUsername(String username) {
     return creditCardRepository.findByUserId_Username(username);
   }
 
+  /**
+   * Validates the expiration date of the credit card.
+   *
+   * @param date the expiration date of the credit card
+   * @return true if the date is in the future, false otherwise
+   */
   public static boolean validateDate(String date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
 

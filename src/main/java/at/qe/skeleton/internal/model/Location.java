@@ -20,6 +20,7 @@ public class Location implements Persistable<LocationId>, Serializable {
 
   private String state;
 
+  /** The {@link CurrentAndForecastAnswer} entity associated with this location. */
   @OneToOne
   @JoinColumn(name = "weather_id")
   private CurrentAndForecastAnswer weather;

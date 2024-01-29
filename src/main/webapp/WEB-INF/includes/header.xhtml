@@ -11,10 +11,8 @@
     <h:form id="headerForm">
 
         <p:menubar>
-            <!--We can add Billing Management here-->
             <p:submenu label="Billing Management" rendered="#{sessionInfoBean.hasRole('MANAGER')}">
-                <p:menuitem value="Manager Action 1"/>
-                <p:menuitem value="Manager Action 2"/>
+                <p:menuitem value="Manage Billing" url="/manager/billing.xhtml"/>
             </p:submenu>
             <p:submenu label="Admin Submenu" rendered="#{sessionInfoBean.hasRole('ADMIN')}">
                 <p:menuitem value="Manage Users" url="/admin/users.xhtml"/>
@@ -23,7 +21,7 @@
             <p:menuitem value="My Favorites" url="/secured/favoritesOverview.xhtml"
                         rendered="#{sessionInfoBean.loggedIn}"/>
 
-            <p:menuitem value="Configure overview" url="/secured/overview_config.xhtml"
+            <p:menuitem value="Configure favorites" url="/secured/overview_config.xhtml"
                         rendered="#{sessionInfoBean.loggedIn}"/>
 
             <p:submenu label="User Info" rendered="#{sessionInfoBean.loggedIn}">
@@ -31,23 +29,35 @@
             </p:submenu>
 
             <p:menuitem value="Login" url="/login.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
-            <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
             <p:menuitem value="Registration" url="/registration.xhtml" rendered="#{!sessionInfoBean.loggedIn}"/>
+
+            <p:menuitem value="Activate Premium"
+                        action="#{subscriptionBean.activatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and !sessionInfoBean.userPremium}"
+                        update="headerForm"/>
+            <p:menuitem value="Deactivate Premium"
+                        action="#{subscriptionBean.deactivatePremiumSubscription}"
+                        rendered="#{sessionInfoBean.loggedIn and sessionInfoBean.userPremium}"
+                        update="headerForm"/>
+
+            <p:menuitem value="Logout" url="/logout" rendered="#{sessionInfoBean.loggedIn}"/>
 
             <p:menuitem>
 
-                <p:autoComplete id="locationSearchField" value="#{weatherApiDemoBean.locationSearchInput}"
+                <p:autoComplete id="locationSearchField" value="#{weatherBean.locationSearchInput}"
                                 completeMethod="#{autoCompleteController.autoCompleteLocation}"
                                 style="margin-right: 10px;" emptyMessage="no results"/>
 
                 <p:commandButton value="Search" id="commitSearchRequest"
-                                 action="#{weatherApiDemoBean.performLocationSearch()}"
+                                 action="#{weatherBean.performLocationSearch()}"
                                  update="headerForm">
                 </p:commandButton>
             </p:menuitem>
 
         </p:menubar>
-        <p:messages id="message" showDetail="false"/>
+        <p:messages id="messages" showDetail="false" closable="true">
+            <p:autoUpdate/>
+        </p:messages>
     </h:form>
 </ui:composition>
 </body>
